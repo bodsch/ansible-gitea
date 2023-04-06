@@ -1,0 +1,9 @@
+---
+
+gitea_version: 1.19.0
+
+# /{{ gitea_version }} /gitea-{{ gitea_version }}-linux-amd64
+# https://github.com/go-gitea/gitea/releases/tag/v1.19.0
+gitea_release_download_url: "https://github.com/go-gitea/gitea/releases"
+
+...

@@ -1,0 +1,214 @@
+---
+
+- name: include OS specific configuration ({{ ansible_distribution }} ({{ ansible_os_family }}) {{ ansible_distribution_major_version }})
+  ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
+  vars:
+    params:
+      paths:
+        - "vars"
+      files:
+        # eg. debian-10 / ubuntu-20.04 / centos-8 / oraclelinux-8
+        - "{{ ansible_distribution | lower }}-{{ ansible_distribution_major_version }}.yml"
+        # eg. archlinux-systemd / archlinux-openrc
+        - "{{ ansible_distribution | lower }}-{{ ansible_service_mgr | lower }}.yml"
+        # eg. debian / ubuntu / centos / oraclelinux
+        - "{{ ansible_distribution | lower }}.yml"
+        # eg. redhat / debian / archlinux
+        - "{{ ansible_os_family | lower }}.yml"
+        # artixlinux
+        - "{{ ansible_os_family | lower | replace(' ', '') }}.yml"
+        - default.yaml
+      skip: true
+
+- name: update package cache
+  ansible.builtin.package:
+    update_cache: true
+
+- name: define delegate instance for download handling
+  ansible.builtin.set_fact:
+    gitea_delegate_to: "{{ ansible_host }}"
+    gitea_local_tmp_directory: "{{
+        lookup('env', 'CUSTOM_LOCAL_TMP_DIRECTORY') |
+        default('/var/cache/ansible/gitea', true) }}/{{ gitea_version }}"
+  when:
+    - gitea_direct_download
+
+- name: install dependency
+  ansible.builtin.package:
+    name: "{{ gitea_requirements }}"
+    state: present
+
+- name: get latest release
+  delegate_to: localhost
+  become: false
+  run_once: true
+  when:
+    - gitea_version == "latest"
+  block:
+    - name: get latest release
+      delegate_to: localhost
+      become: false
+      run_once: true
+      bodsch.scm.github_latest:
+        project: go-gitea
+        repository: gitea
+        user: "{{ lookup('env', 'GH_USER') | default(omit) }}"
+        password: "{{ lookup('env', 'GH_TOKEN') | default(omit) }}"
+      register: _latest_release
+
+    - name: re-define gitea_version
+      ansible.builtin.set_fact:
+        gitea_version: "{{ _latest_release.latest_release }}"
+
+- name: detect our installation path '{{ gitea_install_path | dirname }}'
+  ansible.builtin.stat:
+    path: "{{ gitea_install_path | dirname }}"
+    get_checksum: false
+  register: stat_gitea_path
+  ignore_errors: true
+
+- name: detect old installation
+  ansible.builtin.stat:
+    path: /bin/gitea
+    get_checksum: false
+  register: stat_old_gitea_path
+  ignore_errors: true
+
+- name: detect if this an upgrade
+  ansible.builtin.set_fact:
+    gitea_upgrade: "{{ stat_gitea_path | upgrade(stat_old_gitea_path) }}"
+
+- name: old installation
+  when:
+    - gitea_upgrade
+  block:
+    - name: stop old service
+      ansible.builtin.service:
+        name: gitea-server
+        state: stopped
+        enabled: false
+      notify:
+        - daemon-reload
+
+    - name: uninstall old gitea installation
+      ansible.builtin.package:
+        name: gitea
+        state: absent
+
+    - name: remove installed systemd unit
+      ansible.builtin.file:
+        state: absent
+        path: "{{ item }}"
+      loop:
+        - /etc/systemd/system/gitea-server.service
+        - /usr/lib/systemd/system/gitea-server.service
+
+    - name: remove installed gitea
+      ansible.builtin.file:
+        state: absent
+        path: "{{ stat_gitea_path.stat.path }}"
+      when:
+        - stat_gitea_path.stat.path is defined
+        - stat_gitea_path.stat.path | string | length > 0
+
+- name: flush handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: detect installed gitea binary {{ gitea_install_path }}/bin/gitea
+  ansible.builtin.stat:
+    path: "{{ gitea_install_path }}/bin/gitea-server"
+  register: stat_gitea_binary
+
+- name: create download directory
+  become: false
+  delegate_to: "{{ gitea_delegate_to }}"
+  run_once: "{{ 'false' if gitea_direct_download else 'true' }}"
+  ansible.builtin.file:
+    path: "{{ gitea_local_tmp_directory }}"
+    state: directory
+    mode: 0750
+
+- name: user and group handling
+  when:
+    - gitea_system_user != "root"
+  block:
+    - name: create gitea group
+      ansible.builtin.group:
+        name: "{{ gitea_system_group }}"
+        state: present
+        system: true
+
+    - name: create gitea user
+      ansible.builtin.user:
+        name: "{{ gitea_system_user }}"
+        groups: "{{ gitea_system_group }}"
+        append: true
+        shell: /usr/sbin/nologin
+        system: true
+        createhome: false
+        home: /nonexistent
+
+- name: create install directory
+  ansible.builtin.file:
+    path: "{{ gitea_install_path }}"
+    state: directory
+    owner: "{{ gitea_system_user }}"
+    group: "{{ gitea_system_group }}"
+    mode: 0755
+
+- name: create ansible local facts directory
+  ansible.builtin.file:
+    dest: /etc/ansible/facts.d
+    state: directory
+    owner: root
+    group: root
+    mode: 0775
+
+# - name: merge gitea configuration between defaults and custom
+#   ansible.builtin.set_fact:
+#     gitea_config_alerting: "{{ gitea_defaults_config_alerting | combine(gitea_config_alerting, recursive=True) }}"
+#     gitea_config_analytics: "{{ gitea_defaults_config_analytics | combine(gitea_config_analytics, recursive=True) }}"
+#     gitea_config_annotations: "{{ gitea_defaults_config_annotations | combine(gitea_config_annotations, recursive=True) }}"
+#     gitea_config_auth: "{{ gitea_defaults_config_auth | combine(gitea_config_auth, recursive=True) }}"
+#     gitea_config_aws: "{{ gitea_defaults_config_aws | combine(gitea_config_aws, recursive=True) }}"
+#     gitea_config_azure: "{{ gitea_defaults_config_azure | combine(gitea_config_azure, recursive=True) }}"
+#     gitea_config_dashboards: "{{ gitea_defaults_config_dashboards | combine(gitea_config_dashboards, recursive=True) }}"
+#     gitea_config_database: "{{ gitea_defaults_config_database | combine(gitea_config_database, recursive=True) }}"
+#     gitea_config_dataproxy: "{{ gitea_defaults_config_dataproxy | combine(gitea_config_dataproxy, recursive=True) }}"
+#     gitea_config_datasources: "{{ gitea_defaults_config_datasources | combine(gitea_config_datasources, recursive=True) }}"
+#     gitea_config_date_formats: "{{ gitea_defaults_config_date_formats | combine(gitea_config_date_formats, recursive=True) }}"
+#     gitea_config_emails: "{{ gitea_defaults_config_emails | combine(gitea_config_emails, recursive=True) }}"
+#     gitea_config_enterprise: "{{ gitea_defaults_config_enterprise | combine(gitea_config_enterprise, recursive=True) }}"
+#     gitea_config_explore: "{{ gitea_defaults_config_explore | combine(gitea_config_explore, recursive=True) }}"
+#     gitea_config_expressions: "{{ gitea_defaults_config_expressions | combine(gitea_config_expressions, recursive=True) }}"
+#     gitea_config_external_image_storage: "{{ gitea_defaults_config_external_image_storage | combine(gitea_config_external_image_storage, recursive=True) }}"
+#     gitea_config_feature_toggles: "{{ gitea_defaults_config_feature_toggles | combine(gitea_config_feature_toggles, recursive=True) }}"
+#     gitea_config_general: "{{ gitea_defaults_config_general | combine(gitea_config_general, recursive=True) }}"
+#     gitea_config_geomap: "{{ gitea_defaults_config_geomap | combine(gitea_config_geomap, recursive=True) }}"
+#     gitea_config_gitea_com: "{{ gitea_defaults_config_gitea_com | combine(gitea_config_gitea_com, recursive=True) }}"
+#     gitea_config_help: "{{ gitea_defaults_config_help | combine(gitea_config_help, recursive=True) }}"
+#     gitea_config_live: "{{ gitea_defaults_config_live | combine(gitea_config_live, recursive=True) }}"
+#     gitea_config_log: "{{ gitea_defaults_config_log | combine(gitea_config_log, recursive=True) }}"
+#     gitea_config_metrics: "{{ gitea_defaults_config_metrics | combine(gitea_config_metrics, recursive=True) }}"
+#     gitea_config_panels: "{{ gitea_defaults_config_panels | combine(gitea_config_panels, recursive=True) }}"
+#     gitea_config_paths: "{{ gitea_defaults_config_paths | combine(gitea_config_paths, recursive=True) }}"
+#     gitea_config_plugin: "{{ gitea_defaults_config_plugin | combine(gitea_config_plugin, recursive=True) }}"
+#     gitea_config_plugins: "{{ gitea_defaults_config_plugins | combine(gitea_config_plugins, recursive=True) }}"
+#     gitea_config_profile: "{{ gitea_defaults_config_profile | combine(gitea_config_profile, recursive=True) }}"
+#     gitea_config_query_history: "{{ gitea_defaults_config_query_history | combine(gitea_config_query_history, recursive=True) }}"
+#     gitea_config_quota: "{{ gitea_defaults_config_quota | combine(gitea_config_quota, recursive=True) }}"
+#     gitea_config_rbac: "{{ gitea_defaults_config_rbac | combine(gitea_config_rbac, recursive=True) }}"
+#     gitea_config_remote_cache: "{{ gitea_defaults_config_remote_cache | combine(gitea_config_remote_cache, recursive=True) }}"
+#     gitea_config_rendering: "{{ gitea_defaults_config_rendering | combine(gitea_config_rendering, recursive=True) }}"
+#     gitea_config_security: "{{ gitea_defaults_config_security | combine(gitea_config_security, recursive=True) }}"
+#     gitea_config_server: "{{ gitea_defaults_config_server | combine(gitea_config_server, recursive=True) }}"
+#     gitea_config_smtp: "{{ gitea_defaults_config_smtp | combine(gitea_config_smtp, recursive=True) }}"
+#     gitea_config_snapshots: "{{ gitea_defaults_config_snapshots | combine(gitea_config_snapshots, recursive=True) }}"
+#     gitea_config_tracing: "{{ gitea_defaults_config_tracing | combine(gitea_config_tracing, recursive=True) }}"
+#     gitea_config_unified_alerting: "{{ gitea_defaults_config_unified_alerting | combine(gitea_config_unified_alerting, recursive=True) }}"
+#     gitea_config_users: "{{ gitea_defaults_config_users | combine(gitea_config_users, recursive=True) }}"
+#     gitea_config_ldap: "{{ gitea_defaults_config_ldap | combine(gitea_config_ldap, recursive=True) }}"
+#     gitea_api: "{{ gitea_defaults_api | combine(gitea_api, recursive=True) }}"
+#     gitea_service_accounts: "{{ gitea_defaults_service_accounts | combine(gitea_service_accounts, recursive=True) }}"
+
+...

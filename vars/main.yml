@@ -1,0 +1,19 @@
+---
+
+gitea_main_version: "{{ gitea_version[0:3] }}"
+
+gitea_install_path: /opt/gitea/{{ gitea_version }}
+
+gitea_delegate_to: localhost
+
+gitea_local_tmp_directory: "{{
+  lookup('env', 'CUSTOM_LOCAL_TMP_DIRECTORY') |
+  default(lookup('env', 'HOME') ~ '/.cache/ansible/gitea', true) }}/{{ gitea_version }}"
+
+gitea_cache_directory: /var/cache/ansible/gitea
+
+gitea_remote_tmp_directory: "{{ gitea_cache_directory }}/{{ gitea_version }}"
+
+gitea_requirements: []
+
+...
