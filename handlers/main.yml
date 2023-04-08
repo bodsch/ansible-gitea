@@ -1,4 +1,27 @@
 ---
 
+- name: restart gitea
+  become: true
+  ansible.builtin.service:
+    name: gitea
+    state: restarted
+  when:
+    - gitea_valid_config is defined
+    - gitea_valid_config.rc is defined
+    - gitea_valid_config.rc == 0
+
+- name: reload gitea
+  become: true
+  ansible.builtin.service:
+    name: gitea
+    state: reloaded
+
+- name: daemon-reload
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+    force: true
+  when:
+    - ansible_service_mgr | lower == "systemd"
 
 ...

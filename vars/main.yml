@@ -16,4 +16,650 @@ gitea_remote_tmp_directory: "{{ gitea_cache_directory }}/{{ gitea_version }}"
 
 gitea_requirements: []
 
+
+gitea_defaults_actions:
+  enabled: false
+  default_actions_url: ""
+
+gitea_defaults_admin:
+  # Disallow regular (non-admin) users from creating organizations.
+  disable_regular_org_creation: ""                # false
+  # Default configuration for email notifications for users (user configurable).
+  # Options: enabled, onmention, disabled
+  default_email_notifications: ""                 # enabled
+
+gitea_defaults_api:
+  enable_swagger: ""                              # true
+  max_response_items: ""                          # 50
+  default_paging_num: ""                          # 30
+  default_git_trees_per_page: ""                  # 1000
+  default_max_blob_size: ""                       # 10485760
+
+gitea_defaults_attachment:
+  enabled: true
+  # ;; Comma-separated list of allowed file extensions (`.zip`),
+  # mime types (`text/plain`) or
+  # wildcard type (`image/*`, `audio/*`, `video/*`).
+  # Empty value or `*/*` allows all types.
+  allowed_types:
+    - "image/*"
+    # - ".csv"
+    # - ".docx"
+    # - ".fodg"
+    # - ".fodp"
+    # - ".fods"
+    # - ".fodt"
+    # - ".gif"
+    # - ".gz"
+    # - ".jpeg"
+    # - ".jpg"
+    # - ".log"
+    # - ".md"
+    # - ".mov"
+    # - ".mp4"
+    # - ".odf"
+    # - ".odg"
+    # - ".odp"
+    # - ".ods"
+    # - ".odt"
+    # - ".patch"
+    # - ".pdf"
+    # - ".png"
+    # - ".pptx"
+    # - ".svg"
+    # - ".tgz"
+    # - ".txt"
+    # - ".webm"
+    # - ".xls"
+    # - ".xlsx"
+    # - ".zip"
+  max_size: 4
+  max_files: 5
+  storage_type: local
+  serve_direct: false
+  path: data/attachments
+  minio:
+    endpoint: localhost:9000
+    access_key_id: ""
+    secret_access_key: ""
+    bucket: gitea
+    location: us-east-1
+    base_path: attachments/
+    use_ssl: false
+    insecure_skip_verify: false
+    checksum_algorithm: default
+
+gitea_defaults_cache:
+  enabled: true
+  # either "memory", "redis", "memcache", or "twoqueue". default is "memory"
+  adapter: memory
+  interval: 60
+  # ;; for "redis" and "memcache", connection host address
+  # ;; redis: `redis://127.0.0.1:6379/0?pool_size=100&idle_timeout=180s`
+  # ;; memcache: `127.0.0.1:11211`
+  # ;; twoqueue: `{"size":50000,"recent_ratio":0.25,"ghost_ratio":0.5}` or `50000`
+  host: ""
+  item_ttl: 16h
+  last_commit:
+    enabled: true
+    item_ttl: 8760h
+    commits_count: 1000
+
+gitea_defaults_camo:
+  enabled: false
+  # ; url to a camo image proxy, it **is required** if camo is enabled.
+  server_url: ""
+  # ; hmac to encode urls with, it **is required** if camo is enabled.
+  hmac_key: ""
+  # ; set to true to use camo for https too lese only non https urls are proxyed
+  allways: false
+
+gitea_defaults_cron:
+  enabled: true
+  run_at_start: false
+  # Note: ``SCHEDULE`` accept formats
+  #    - Full crontab specs, e.g. "* * * * * ?"
+  #    - Descriptors, e.g. "@midnight", "@every 1h30m"
+  archive_cleanup:
+    comment: ""
+    enabled: true
+    run_at_start: true
+    notice_on_success: false
+    schedule: "@midnight"
+    older_than: 24h
+  update_mirrors:
+    comment: ""
+    enabled: true
+    run_at_start: false
+    notice_on_success: false
+    schedule: "@every 10m"
+    pull_limit: 50
+    push_limit: 50
+  repo_health_check:
+    comment: ""
+    enabled: true
+    run_at_start: false
+    notice_on_success: false
+    schedule: "@midnight"
+    timeout: 60s
+    args: ""
+    #  arguments for command 'git fsck', e.g. "--unreachable --tags"
+    #  see more on http://git-scm.com/docs/git-fsck
+  check_repo_stats:
+    comment: "Check repository statistics"
+    enabled: true
+    run_at_start: true
+    notice_on_success: false
+    schedule: "@midnight"
+  update_migration_poster_id:
+    comment: ""
+    enabled: true
+    run_at_start: true
+    notice_on_success: false
+    schedule: "@midnight"
+  sync_external_users:
+    comment: Synchronize external user data (only LDAP user synchronization is supported)
+    enabled: true
+    run_at_start: false
+    notice_on_success: false
+    schedule: "@midnight"
+    update_existing: true
+  deleted_branches_cleanup:
+    comment: clean-up deleted branches
+    enabled: true
+    run_at_start: true
+    notice_on_success: false
+    schedule: "@midnight"
+    older_than: 24h
+  cleanup_hook_task_table:
+    comment: cleanup hook_task table
+    enabled: true
+    run_at_start: false
+    schedule: "@midnight"
+    cleanup_type: olderthan
+    older_than: 168h
+    number_to_keep: 10
+  cleanup_packages:
+    comment: cleanup expired packages
+    enabled: true
+    run_at_start: true
+    notice_on_success: false
+    schedule: "@midnight"
+    older_than: 24h
+  # Extended cron task - not enabled by default
+  delete_inactive_accounts:
+    comment: delete all unactivated accounts
+    enabled: false
+    run_at_start: false
+    notice_on_success: false
+    schedule: "@annually"
+    older_than: 168h
+  delete_repo_archives:
+    comment: delete all repository archives
+    enabled: false
+    run_at_start: false
+    notice_on_success: false
+    schedule: "@annually"
+  git_gc_repos:
+    comment: garbage collect all repositories
+    enabled: false
+    run_at_start: false
+    notice_on_success: false
+    schedule: "@every 72h"
+    timeout: 60s
+    #  arguments for command 'git gc'
+    #  the default value is same with [git] -> GC_ARGS
+    args: ""
+  resync_all_sshkeys:
+    comment: update the '.ssh/authorized_keys' file with Gitea SSH keys
+    enabled: false
+    run_at_start: false
+    notice_on_success: false
+    schedule: "@every 72h"
+  resync_all_hooks:
+    comment: resynchronize pre-receive, update and post-receive hooks of all repositories.
+    enabled: false
+    run_at_start: false
+    notice_on_success: false
+    schedule: "@every 72h"
+  reinit_missing_repos:
+    comment: reinitialize all missing git repositories for which records exist
+    enabled: false
+    run_at_start: false
+    notice_on_success: false
+    schedule: "@every 72h"
+  delete_missing_repos:
+    comment: delete all repositories missing their Git files
+    enabled: false
+    run_at_start: false
+    notice_on_success: false
+    schedule: "@every 72h"
+  delete_generated_repository_avatars:
+    comment: delete generated repository avatars
+    enabled: false
+    run_at_start: false
+    notice_on_success: false
+    schedule: "@every 72h"
+  delete_old_actions:
+    comment: delete all old actions from database
+    enabled: false
+    run_at_start: false
+    notice_on_success: false
+    schedule: "@every 168h"
+    older_than: 8760h
+  update_checker:
+    comment: check for new gitea versions
+    enabled: true
+    run_at_start: false
+    enable_success_notice: false
+    schedule: "@every 168h"
+    http_endpoint: https://dl.gitea.io/gitea/version.json
+  delete_old_system_notices:
+    comment: delete all old system notices from database
+    enabled: false
+    run_at_start: false
+    no_success_notice: false
+    schedule: "@every 168h"
+    older_than: 8760h
+  gc_lfs:
+    comment: garbage collect lfs pointers in repositories
+    enabled: false
+    run_at_start: false
+    schedule: "@every 24h"
+    older_than: 168h
+    last_updated_more_than_ago: 72h
+    number_to_check_per_repo: 100
+    proportion_to_check_per_repo: 0.6
+
+gitea_defaults_database:
+  db_type: sqlite3
+  # mariadb configuration
+  host: ""                        # 127.0.0.1:3306 ; can use socket e.g. /var/run/mysqld/mysqld.sock
+  name: ""                        # gitea
+  user: ""                        # root
+  passwd: ""                      # ;use passwd: `your password` for quoting if you use special characters in the password.
+  ssl_mode: ""                    # false ; either "false" (default), "true", or "skip-verify"
+  charset: ""                     # utf8mb4 ;either "utf8" or "utf8mb4", default is "utf8mb4".
+  # ; postgres configuration
+  # db_type: postgres
+  # host: 127.0.0.1:5432 ; can use socket e.g. /var/run/postgresql/
+  # name: gitea
+  # user: root
+  # passwd =
+  # schema =
+  # ssl_mode=disable ;either "disable" (default), "require", or "verify-full"
+  # sqlite configuration
+  path: data/gitea.db             #
+  sqlite_timeout: ""              # query timeout defaults to: 500
+  sqlite_journal_mode: ""         # defaults to sqlite database default (often delete), can be used to enable wal mode. https://www.sqlite.org/pragma.html#pragma_journal_mode
+  # mssql configuration
+  # db_type: mssql
+  # host: 172.17.0.2:1433
+  # name: gitea
+  # user: sa
+  # passwd: mwantsasecurepassword1
+  iterate_buffer_size: 50
+  log_sql: false
+  # ;
+  # ; maximum number of db connect retries
+  db_retries: 10
+  # ;
+  # ; backoff time per db retry (time.duration)
+  db_retry_backoff: 3s
+  # ;
+  # ; max idle database connections on connection pool, default is 2
+  max_idle_conns: 2
+  # ;
+  # ; database connection max life time, default is 0 or 3s mysql (see #6804 & #7071 for reasoning)
+  conn_max_lifetime: 3s
+  # ;
+  # ; database maximum number of open connections, default is 0 meaning no maximum
+  max_open_conns: 0
+  # ;
+  # ; whether execute database models migrations automatically
+  auto_migration: true
+
+gitea_defaults_federation:
+  enabled: false
+  share_user_statistics: true
+  max_size: 4
+  algorithms:
+    - rsa-sha256
+    - rsa-sha512
+    - ed25519
+  digest_algorithm: SHA-256
+  get_headers:
+    - "(request-target)"
+    - Date
+  post_headers:
+    - "(request-target)"
+    - Date
+    - Digest
+
+gitea_defaults_git:
+  path: ""
+  home_path: "%(app_data_path)s/home"
+  disable_diff_highlight: false
+  max_git_diff_lines: 1000
+  max_git_diff_line_characters: 5000
+  max_git_diff_files: 100
+  commits_range_size: 50
+  branches_range_size: 20
+  gc_args: ""
+  enable_auto_git_wire_protocol: true
+  pull_request_push_message: true
+  large_object_threshold: 1048576
+  disable_core_protect_ntfs: false
+  disable_partial_clone: false
+  # git operation timeout in seconds
+  timeout:
+    default: 360
+    migrate: 600
+    mirror: 300
+    clone: 300
+    pull: 300
+    gc: 60
+  # git reflog timeout in days
+  reflog:
+    enabled: true
+    expiration: 90
+
+gitea_defaults_highlight: {}
+gitea_defaults_i18n:
+  # The first locale will be used as the default if user browser's language doesn't match any locale in the list.
+  langs:
+    - en-US
+    - de-DE
+    - fr-FR
+  names:
+    - English,
+    - Deutsch,
+    - Français
+
+gitea_defaults_indexer:
+  # issue indexer type, currently support: bleve, db, elasticsearch or meilisearch default is bleve
+  issue_indexer_type: bleve
+  # issue indexer storage path, available when ISSUE_INDEXER_TYPE is bleve
+  issue_indexer_path: indexers/issues.bleve
+  # issue indexer connection string, available when ISSUE_INDEXER_TYPE is elasticsearch or meilisearch
+  issue_indexer_conn_str: http://elastic:changeme@localhost:9200
+  # issue indexer name, available when ISSUE_INDEXER_TYPE is elasticsearch
+  issue_indexer_name: gitea_issues
+  # timeout the indexer if it takes longer than this to start.
+  # set to -1 to disable timeout.
+  startup_timeout: 30s
+  # issue indexer queue, currently support: channel, levelqueue or redis, default is levelqueue (deprecated - use [queue.issue_indexer])
+  issue_indexer_queue_type: levelqueue                      # ; **DEPRECATED** use settings in `[queue.issue_indexer]`.
+  # when issue_indexer_queue_type is levelqueue, this will be the path where the queue will be saved.
+  # this can be overridden by `issue_iNDEXER_QUEUE_CONN_STR`.
+  # default is queues/common
+  issue_indexer_queue_dir: queues/common                    # ; **DEPRECATED** use settings in `[queue.issue_indexer]`. Relative paths will be made absolute against `%(APP_DATA_PATH)s`.
+  # when `issue_indexer_queue_type` is `redis`, this will store the redis connection string.
+  # when `issue_indexer_queue_type` is `levelqueue`, this is a directory or additional options of
+  # the form `leveldb://path/to/db?option=value&....`, and overrides `ISSUE_INDEXER_QUEUE_DIR`.
+  issue_indexer_queue_conn_str: "addrs=127.0.0.1:6379 db=0" # ; **DEPRECATED** use settings in `[queue.issue_indexer]`.
+  # batch queue number, default is 20
+  issue_indexer_queue_batch_number: 20                      # ; **DEPRECATED** use settings in `[queue.issue_indexer]`.
+  # repo indexer by default disabled, since it uses a lot of disk space
+  repo_indexer_enabled: false
+  # code search engine type, could be `bleve` or `elasticsearch`.
+  repo_indexer_type: bleve
+  # index file used for code search. available when `REPO_INDEXER_TYPE` is bleve
+  repo_indexer_path: indexers/repos.bleve
+  # code indexer connection string, available when `REPO_INDEXER_TYPE` is elasticsearch. i.e. http://elastic:changeme@localhost:9200
+  repo_indexer_conn_str: ""
+  # code indexer name, available when `REPO_INDEXER_TYPE` is elasticsearch
+  repo_indexer_name: gitea_codes
+  # a comma separated list of glob patterns (see https://github.com/gobwas/glob) to include
+  # in the index; default is empty
+  repo_indexer_include: []
+  # a comma separated list of glob patterns to exclude from the index; ; default is empty
+  repo_indexer_exclude: []
+  update_buffer_len: 20;                                    # **deprecated** use settings in `[queue.issue_indexer]`.
+  max_file_size: 1048576
+
+gitea_defaults_lfs: {}
+gitea_defaults_log:
+  root_path: ""
+  mode:
+    - console
+    - file
+  level: info
+  disable_router_log: false
+  router: console
+  enable_access_log: false
+  access: file
+  # TODO
+  access_log_template: ""
+    # {{.Ctx.RemoteAddr}} - {{.Identity}}
+    # {{.Start.Format "[02/Jan/2006:15:04:05 -0700]" }}
+    # {{.Ctx.Req.Method}}
+    # {{.Ctx.Req.URL.RequestURI}}
+    # {{.Ctx.Req.Proto}}"
+    # {{.ResponseWriter.Status}}
+    # {{.ResponseWriter.Size}}
+    # \"{{.Ctx.Req.Referer}}\" \"{{.Ctx.Req.UserAgent}}\"
+  enable_ssh_log: false
+  stacktrace_level: none
+  buffer_len: 10000
+  # # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  # #  creating specific log configuration
+  # #
+  # #  you can set specific configuration for individual modes and subloggers
+  # #
+  # #  configuration available to all log modes/subloggers
+  # level: ""
+  # flags: stdflags
+  # expression: ""
+  # prefix: ""
+  # colorize: false
+  console:
+    #  for "console" mode only
+    stderr: false
+  file:
+    #  for "file" mode only
+    level: ""
+    #  set the file_name for the logger. if this is a relative path this
+    #  will be relative to root_path
+    file_name: ""
+    #  this enables automated log rotate(switch of following options), default is true
+    log_rotate: true
+    #  max size shift of a single file, default is 28 means 1 << 28, 256MB
+    max_size_shift: 28
+    #  segment log daily, default is true
+    daily_rotate: true
+    #  delete the log file after n days, default is 7
+    max_days: 7
+    #  compress logs with gzip
+    compress: true
+    #  compression level see godoc for compress/gzip
+    compression_level: -1
+  conn:
+    #  for "conn" mode only
+    level: ""
+    #  reconnect host for every single message, default is false
+    reconnect_on_msg: false
+    #  try to reconnect when connection is lost, default is false
+    reconnect: false
+    #  either "tcp", "unix" or "udp", default is "tcp"
+    protocol: tcp
+    #  host address
+    addr: ""
+  smtp:
+    #  for "smtp" mode only
+    level: ""
+    #  name displayed in mail title, default is "diagnostic message from server"
+    subject: diagnostic message from server
+    #  mail server
+    host: ""
+    #  mailer user name and password
+    user: ""
+    #  use passwd: `your password` for quoting if you use special characters in the password.
+    passwd: ""
+    #  receivers, can be one or more, e.g. 1@example.com,2@example.com
+    receivers: ""
+
+gitea_defaults_mailer:
+  enabled: false
+  #
+  # buffer length of channel, keep it as it is if you don't know what it is.
+  send_buffer_len: 100
+  #
+  # prefix displayed before subject in mail
+  subject_prefix: ""
+  #
+  # mail server protocol. one of "smtp", "smtps", "smtp+starttls", "smtp+unix", "sendmail", "dummy".
+  # - sendmail: use the operating system's `sendmail` command instead of SMTP. This is common on Linux systems.
+  # - dummy: send email messages to the log as a testing phase.
+  # if your provider does not explicitly say which protocol it uses but does provide a port,
+  # you can set smtp_port instead and this will be inferred.
+  # (before 1.18, see the notice, this was controlled via MAILER_TYPE and IS_TLS_ENABLED.)
+  protocol: ""
+  #
+  # mail server address, e.g. smtp.gmail.com.
+  # for smtp+unix, this should be a path to a unix socket instead.
+  # (before 1.18, see the notice, this was combined with SMTP_PORT as HOST.)
+  smtp_addr: ""
+  #
+  # mail server port. common ports are:
+  #   25:  insecure smtp
+  #   465: smtp secure
+  #   587: starttls
+  # if no protocol is specified, it will be inferred by this setting.
+  # (before 1.18, this was combined with SMTP_ADDR as HOST.)
+  smtp_port: ""
+  #
+  # enable helo operation. defaults to true.
+  enable_helo: true
+  #
+  # custom hostname for helo operation.
+  # if no value is provided, one is retrieved from system.
+  helo_hostname: ""
+  #
+  # if set to `true`, completely ignores server certificate validation errors.
+  # this option is unsafe. consider adding the certificate to the system trust store instead.
+  force_trust_server_cert: false
+  #
+  # use client certificate in connection.
+  use_client_cert: false
+  client_cert_file: custom/mailer/cert.pem
+  client_key_file: custom/mailer/key.pem
+  #
+  # mail from address, rfc 5322. This can be just an email address, or the `"Name" <email@example.com>` format
+  from: ""
+  #
+  # sometimes it is helpful to use a different address on the envelope. Set this to use ENVELOPE_FROM as the from on the envelope. Set to `<>` to send an empty address.
+  envelope_from: ""
+  #
+  # mailer user name and password, if required by provider.
+  user: ""
+  #
+  # use passwd: `your password` for quoting if you use special characters in the password.
+  passwd: ""
+  #
+  # send mails only in plain text, without HTML alternative
+  send_as_plain_text: false
+  #
+  # specify an alternative sendmail binary
+  sendmail_path: sendmail
+  #
+  # specify any extra sendmail arguments
+  # warning: if your sendmail program interprets options you should set this to "--" or terminate these args with "--"
+  sendmail_args: ""
+  #
+  # timeout for sendmail
+  sendmail_timeout: 5m
+  #
+  # convert \r\n to \n for sendmail
+  sendmail_convert_crlf: true
+
+gitea_defaults_markdown:
+  enable_hard_line_break_in_comments: true
+  enable_hard_line_break_in_documents: false
+  custom_url_schemes: []
+  file_extensions:
+    - ".md"
+    - ".markdown"
+    - ".mdown"
+    - ".mkd"
+  enable_math: true
+
+gitea_defaults_markup:
+  mermaid_max_source_characters: 5000
+  # the following keys can appear once to define a sanitation policy rule.
+  # this section can appear multiple times by adding a unique alphanumeric suffix to define multiple rules.
+  # e.g., [markup.sanitizer.1] -> [markup.sanitizer.2] -> [markup.sanitizer.TeX]
+  sanitizer: []
+  #  - id: 1
+  #    element: span
+  #    allow_attr: class
+  #    regexp: ^(info|warning|error)$
+  #  - id: 2
+  #    element: div
+  #    allow_attr: class
+  #    regexp: ^(info|warning|error)$
+  asciidoc:
+    enabled: false
+    file_extensions:
+      - .adoc
+      - .asciidoc
+    render_command: "asciidoc --out-file=- -"
+    is_input_file: false
+    render_content_mode: sanitized
+
+gitea_defaults_metrics:
+  enabled: false
+  # if you want to add authorization, specify a token here
+  token: ""
+  # enable issue by label metrics; default is false
+  enabled_issue_by_label: false
+  # enable issue by repository metrics; default is false
+  enabled_issue_by_repository: false
+
+gitea_defaults_migrations: {}
+gitea_defaults_mirror: {}
+gitea_defaults_oauth2: {}
+gitea_defaults_oauth2_client: {}
+gitea_defaults_openid: {}
+gitea_defaults_other: {}
+gitea_defaults_packages: {}
+gitea_defaults_picture: {}
+gitea_defaults_project: {}
+gitea_defaults_proxy: {}
+gitea_defaults_queue: {}
+gitea_defaults_repository: {}
+gitea_defaults_security: {}
+gitea_defaults_server: {}
+gitea_defaults_service: {}
+gitea_defaults_session: {}
+gitea_defaults_ssh: {}
+gitea_defaults_storage: {}
+gitea_defaults_task: {}
+gitea_defaults_time: {}
+gitea_defaults_ui: {}
+gitea_defaults_webhook: {}
+
+
+
+__gitea_files:
+  archive: "v{{ gitea_version }}/gitea-{{ gitea_version }}-linux-{{ system_architecture }}"
+  checksum: "v{{ gitea_version }}/gitea-{{ gitea_version }}-linux-{{ system_architecture }}.sha256"
+  binary: "gitea-{{ gitea_version }}-linux-{{ system_architecture }}"
+
+# ----------------------------------------------------------------------------------------
+
+gitea_upgrade: false
+
+gitea_defaults_directory: /etc/default
+
+go_arch_map:
+  x86_64: 'amd64'
+  aarch64: 'arm64'
+  armv7l: 'armv7'
+  armv6l: 'armv6'
+
+system_architecture: "{{ go_arch_map[ansible_architecture] | default(ansible_architecture) }}"
+
+systemd_lib_directory: /lib/systemd/system
+
 ...

@@ -10,10 +10,10 @@
 #
 # - name: install
 #   ansible.builtin.include_tasks: install.yml
-#
-# - name: configure
-#   ansible.builtin.include_tasks: configure.yml
-#
+
+- name: configure
+  ansible.builtin.include_tasks: configure.yml
+
 # - name: service
 #   ansible.builtin.include_tasks: service.yml
 

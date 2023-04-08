@@ -1,0 +1,13 @@
+{{ ansible_managed | comment }}
+
+[Unit]
+Description       = Gitea Web Socket
+PartOf            = gitea.service
+
+[Socket]
+Service           = gitea.service
+ListenStream      = <some_port>
+NoDelay           = true
+
+[Install]
+WantedBy          = sockets.target

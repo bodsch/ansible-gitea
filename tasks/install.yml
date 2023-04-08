@@ -1,0 +1,53 @@
+---
+
+- name: detect binary file for gitea
+  become: false
+  delegate_to: "{{ gitea_delegate_to }}"
+  run_once: "{{ 'false' if gitea_direct_download else 'true' }}"
+  ansible.builtin.stat:
+    path: "{{ gitea_local_tmp_directory }}/{{ __gitea_files.binary }}"
+  register: stat_file_binary
+
+- name: propagate files
+  when:
+    - stat_file_binary.stat.exists
+  block:
+    - name: propagate gitea binaries
+      ansible.builtin.copy:
+        src: "{{ gitea_local_tmp_directory }}/{{ __gitea_files.binary }}"
+        dest: "{{ gitea_install_path }}/gitea"
+        mode: 0755
+        owner: "{{ gitea_system_user }}"
+        group: "{{ gitea_system_group }}"
+        remote_src: "{{ 'true' if gitea_direct_download else 'false' }}"
+
+- name: make files executable
+  ansible.builtin.file:
+    path: "{{ gitea_install_path }}/gitea"
+    mode: 0755
+    owner: "{{ gitea_system_user }}"
+    group: "{{ gitea_system_group }}"
+
+- name: create local facts
+  ansible.builtin.template:
+    src: ansible_facts.j2
+    dest: /etc/ansible/facts.d/gitea.fact
+    mode: 0755
+
+- name: create link to binary
+  ansible.builtin.file:
+    src: "{{ gitea_install_path }}/gitea"
+    dest: "/usr/bin/gitea"
+    state: link
+    force: true
+    follow: false
+  notify:
+    - restart gitea
+
+- name: create gitea configuration directory
+  ansible.builtin.file:
+    path: "{{ gitea_config_dir }}"
+    state: directory
+    owner: root
+    group: "{{ gitea_system_group }}"
+    mode: 0770

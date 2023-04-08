@@ -6,4 +6,65 @@ gitea_version: 1.19.0
 # https://github.com/go-gitea/gitea/releases/tag/v1.19.0
 gitea_release_download_url: "https://github.com/go-gitea/gitea/releases"
 
+gitea_system_user: gitea
+gitea_system_group: gitea
+gitea_config_dir: /etc/gitea
+gitea_working_dir: /var/lib/gitea
+gitea_data_dir: /home/{{ gitea_system_user }}
+
+gitea_direct_download: false
+
+gitea_name: "Gitea: Git with a cup of tea"
+# Either "dev", "prod" or "test", default is "prod"
+gitea_run_mode: "test"
+
+gitea_actions: {}
+gitea_admin: {}
+gitea_api: {}
+gitea_attachment: {}
+gitea_cache: {}
+gitea_camo: {}
+gitea_cron: {}
+gitea_database: {}
+gitea_federation: {}
+gitea_git: {}
+gitea_highlight: {}
+gitea_i18n: {}
+gitea_indexer: {}
+gitea_log: {}
+gitea_mailer: {}
+gitea_markdown: {}
+gitea_markup: {}
+gitea_metrics: {}
+gitea_migrations: {}
+gitea_mirror: {}
+gitea_oauth2: {}
+gitea_oauth2_client: {}
+gitea_openid: {}
+gitea_other: {}
+gitea_packages: {}
+gitea_picture: {}
+gitea_project: {}
+gitea_proxy: {}
+gitea_queue: {}
+gitea_repository: {}
+gitea_security: {}
+gitea_server: {}
+gitea_service: {}
+gitea_session: {}
+gitea_ssh: {}
+gitea_storage: {}
+gitea_task: {}
+gitea_time: {}
+gitea_ui: {}
+gitea_webhook: {}
+
 ...
+
+
+
+# And place the original in /usr/lib/gitea with working files in /var/lib/gitea
+# and main configuration in /etc/gitea/app.ini
+#GITEA="/usr/lib/gitea/gitea"
+#WORK_DIR="/var/lib/gitea"
+#APP_INI="/etc/gitea/app.ini"
