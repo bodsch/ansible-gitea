@@ -1045,7 +1045,7 @@ ROOT = {{ gitea_repository.root }}
 SCRIPT_TYPE = bash
   {% endif %}
   {% if gitea_repository.detected_charsets_order | count > 0 %}
-DETECTED_CHARSETS_ORDER = {{ gitea_repository.detected_charsets_order | join(', ') }} ;;UTF-8, UTF-16BE, UTF-16LE, UTF-32BE, UTF-32LE, ISO-8859, windows-1252, ISO-8859, windows-1250, ISO-8859, ISO-8859, ISO-8859, windows-1253, ISO-8859, windows-1255, ISO-8859, windows-1251, windows-1256, KOI8-R, ISO-8859, windows-1254, Shift_JIS, GB18030, EUC-JP, EUC-KR, Big5, ISO-2022, ISO-2022, ISO-2022, IBM424_rtl, IBM424_ltr, IBM420_rtl, IBM420_ltr
+DETECTED_CHARSETS_ORDER = {{ gitea_repository.detected_charsets_order | join(', ') }}
   {% endif %}
   {% if gitea_repository.ansi_charset | default('') | string | length > 0 %}
 ANSI_CHARSET = {{ gitea_repository.ansi_charset }}
@@ -1281,663 +1281,686 @@ MERGES = {{ valid_merges | join(', ') }}
 
 {% if gitea_security is defined and
       gitea_security | count > 0 %}
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 [security]
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; Whether the installer is disabled (set to true to disable the installer)
-INSTALL_LOCK = false
-;;
-;; Global secret key that will be used
-;; This key is VERY IMPORTANT. If you lose it, the data encrypted by it (like 2FA secret) can't be decrypted anymore.
-SECRET_KEY =
-;;
-;; Alternative location to specify secret key, instead of this file; you cannot specify both this and SECRET_KEY, and must pick one
-;; This key is VERY IMPORTANT. If you lose it, the data encrypted by it (like 2FA secret) can't be decrypted anymore.
-;SECRET_KEY_URI = file:/etc/gitea/secret_key
-;;
-;; Secret used to validate communication within Gitea binary.
-INTERNAL_TOKEN=
-;;
-;; Alternative location to specify internal token, instead of this file; you cannot specify both this and INTERNAL_TOKEN, and must pick one
-;INTERNAL_TOKEN_URI = file:/etc/gitea/internal_token
-;;
-;; How long to remember that a user is logged in before requiring relogin (in days)
-;LOGIN_REMEMBER_DAYS = 7
-;;
-;; Name of the cookie used to store the current username.
-;COOKIE_USERNAME = gitea_awesome
-;;
-;; Name of cookie used to store authentication information.
-;COOKIE_REMEMBER_NAME = gitea_incredible
-;;
-;; Reverse proxy authentication header name of user name, email, and full name
-;REVERSE_PROXY_AUTHENTICATION_USER = X-WEBAUTH-USER
-;REVERSE_PROXY_AUTHENTICATION_EMAIL = X-WEBAUTH-EMAIL
-;REVERSE_PROXY_AUTHENTICATION_FULL_NAME = X-WEBAUTH-FULLNAME
-;;
-;; Interpret X-Forwarded-For header or the X-Real-IP header and set this as the remote IP for the request
-;REVERSE_PROXY_LIMIT = 1
-;;
-;; List of IP addresses and networks separated by comma of trusted proxy servers. Use `*` to trust all.
-;REVERSE_PROXY_TRUSTED_PROXIES = 127.0.0.0/8,::1/128
-;;
-;; The minimum password length for new Users
-;MIN_PASSWORD_LENGTH = 6
-;;
-;; Set to true to allow users to import local server paths
-;IMPORT_LOCAL_PATHS = false
-;;
-;; Set to false to allow users with git hook privileges to create custom git hooks.
-;; Custom git hooks can be used to perform arbitrary code execution on the host operating system.
-;; This enables the users to access and modify this config file and the Gitea database and interrupt the Gitea service.
-;; By modifying the Gitea database, users can gain Gitea administrator privileges.
-;; It also enables them to access other resources available to the user on the operating system that is running the Gitea instance and perform arbitrary actions in the name of the Gitea OS user.
-;; WARNING: This maybe harmful to you website or your operating system.
-;; WARNING: Setting this to true does not change existing hooks in git repos; adjust it before if necessary.
-;DISABLE_GIT_HOOKS = true
-;;
-;; Set to true to disable webhooks feature.
-;DISABLE_WEBHOOKS = false
-;;
-;; Set to false to allow pushes to gitea repositories despite having an incomplete environment - NOT RECOMMENDED
-;ONLY_ALLOW_PUSH_IF_GITEA_ENVIRONMENT_SET = true
-;;
-;;Comma separated list of character classes required to pass minimum complexity.
-;;If left empty or no valid values are specified, the default is off (no checking)
-;;Classes include "lower,upper,digit,spec"
-;PASSWORD_COMPLEXITY = off
-;;
-;; Password Hash algorithm, either "argon2", "pbkdf2", "scrypt" or "bcrypt"
-;PASSWORD_HASH_ALGO = pbkdf2
-;;
-;; Set false to allow JavaScript to read CSRF cookie
-;CSRF_COOKIE_HTTP_ONLY = true
-;;
-;; Validate against https://haveibeenpwned.com/Passwords to see if a password has been exposed
-;PASSWORD_CHECK_PWN = false
-;;
-;; Cache successful token hashes. API tokens are stored in the DB as pbkdf2 hashes however, this means that there is a potentially significant hashing load when there are multiple API operations.
-;; This cache will store the successfully hashed tokens in a LRU cache as a balance between performance and security.
-;SUCCESSFUL_TOKENS_CACHE_SIZE = 20
+  {% if gitea_security.install_lock | default('') | string | length > 0 %}
+INSTALL_LOCK = {{ gitea_security.install_lock | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_security.secret_key | default('') | string | length > 0 %}
+SECRET_KEY = {{ gitea_security.secret_key }}
+  {% endif %}
+  {% if gitea_security.secret_key_uri | default('') | string | length > 0 %}
+SECRET_KEY_URI = {{ gitea_security.secret_key_uri }}
+  {% endif %}
+  {% if gitea_security.internal_token | default('') | string | length > 0 %}
+INTERNAL_TOKEN = {{ gitea_security.internal_token }}
+  {% endif %}
+  {% if gitea_security.internal_token_uri | default('') | string | length > 0 %}
+INTERNAL_TOKEN_URI = {{ gitea_security.internal_token_uri }}
+  {% endif %}
+  {% if gitea_security.login_remember_days | default('') | string | length > 0 %}
+LOGIN_REMEMBER_DAYS = {{ gitea_security.login_remember_days }}
+  {% endif %}
+  {% if gitea_security.cookie_username | default('') | string | length > 0 %}
+COOKIE_USERNAME = {{ gitea_security.cookie_username }}
+  {% endif %}
+  {% if gitea_security.cookie_remember_name | default('') | string | length > 0 %}
+COOKIE_REMEMBER_NAME = {{ gitea_security.cookie_remember_name }}
+  {% endif %}
+  {% if gitea_security.reverse_proxy is defined and
+        gitea_security.reverse_proxy | count > 0 %}
+    {% if gitea_security.reverse_proxy.authentication.user | default('') | string | length > 0 %}
+REVERSE_PROXY_AUTHENTICATION_USER = {{ gitea_security.reverse_proxy.authentication.user }}
+    {% endif %}
+    {% if gitea_security.reverse_proxy.authentication.email | default('') | string | length > 0 %}
+REVERSE_PROXY_AUTHENTICATION_EMAIL = {{ gitea_security.reverse_proxy.authentication.email }}
+    {% endif %}
+    {% if gitea_security.reverse_proxy.authentication.full_name | default('') | string | length > 0 %}
+REVERSE_PROXY_AUTHENTICATION_FULL_NAME = {{ gitea_security.reverse_proxy.authentication.full_name }}
+    {% endif %}
+    {% if gitea_security.reverse_proxy.limit | default('') | string | length > 0 %}
+REVERSE_PROXY_LIMIT = {{ gitea_security.reverse_proxy.limit }}
+    {% endif %}
+    {% if gitea_security.reverse_proxy.trusted_proxies | count > 0 %}
+REVERSE_PROXY_TRUSTED_PROXIES = {{ gitea_security.reverse_proxy.trusted_proxies | join(', ') }}
+     {% endif %}
+  {% endif %}
+  {% if gitea_security.min_password_length | default('') | string | length > 0 %}
+MIN_PASSWORD_LENGTH = {{ gitea_security.min_password_length }}
+  {% endif %}
+  {% if gitea_security.import_local_paths | default('') | string | length > 0 %}
+IMPORT_LOCAL_PATHS = {{ gitea_security.import_local_paths | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_security.disable_git_hooks | default('') | string | length > 0 %}
+DISABLE_GIT_HOOKS = {{ gitea_security.disable_git_hooks | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_security.disable_webhooks | default('') | string | length > 0 %}
+DISABLE_WEBHOOKS = {{ gitea_security.disable_webhooks | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_security.only_allow_push_if_gitea_environment_set | default('') | string | length > 0 %}
+ONLY_ALLOW_PUSH_IF_GITEA_ENVIRONMENT_SET = {{ gitea_security.only_allow_push_if_gitea_environment_set | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_security.password_complexity | count > 0 %}
+    {% set valid_complexity = ["lower", "upper", "digit", "spec"] %}
+    {% set valid_complexity = gitea_security.password_complexity | bodsch.core.compare_list(compare_to_list=valid_complexity) %}
+    {% if valid_complexity %}
+PASSWORD_COMPLEXITY = {{ valid_complexity | join(', ') }}
+    {% else %}
+PASSWORD_COMPLEXITY = off
+    {% endif %}
+  {% endif %}
+  {% if gitea_security.password_hash_algo | default('') | string | length > 0 and
+        gitea_security.password_hash_algo in ["argon2", "pbkdf2", "scrypt", "bcrypt"] %}
+PASSWORD_HASH_ALGO = {{ gitea_security.password_hash_algo }}
+  {% endif %}
+  {% if gitea_security.csrf_cookie_http_only | default('') | string | length > 0 %}
+CSRF_COOKIE_HTTP_ONLY = {{ gitea_security.csrf_cookie_http_only | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_security.password_check_pwn | default('') | string | length > 0 %}
+PASSWORD_CHECK_PWN = {{ gitea_security.password_check_pwn | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_security.successful_tokens_cache_size | default('') | string | length > 0 %}
+SUCCESSFUL_TOKENS_CACHE_SIZE = {{ gitea_security.successful_tokens_cache_size }}
+  {% endif %}
 {% endif %}
-
-{#
-
 
 {% if gitea_server is defined and
       gitea_server | count > 0 %}
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 [server]
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; The protocol the server listens on. One of 'http', 'https', 'http+unix', 'fcgi' or 'fcgi+unix'. Defaults to 'http'
-;PROTOCOL = http
-;;
-;; Expect PROXY protocol headers on connections
-;USE_PROXY_PROTOCOL = false
-;;
-;; Use PROXY protocol in TLS Bridging mode
-;PROXY_PROTOCOL_TLS_BRIDGING = false
-;;
-; Timeout to wait for PROXY protocol header (set to 0 to have no timeout)
-;PROXY_PROTOCOL_HEADER_TIMEOUT=5s
-;;
-; Accept PROXY protocol headers with UNKNOWN type
-;PROXY_PROTOCOL_ACCEPT_UNKNOWN=false
-;;
-;; Set the domain for the server
-;DOMAIN = localhost
-;;
-;; Overwrite the automatically generated public URL. Necessary for proxies and docker.
-;ROOT_URL = %(PROTOCOL)s://%(DOMAIN)s:%(HTTP_PORT)s/
-;;
-;; when STATIC_URL_PREFIX is empty it will follow ROOT_URL
-;STATIC_URL_PREFIX =
-;;
-;; The address to listen on. Either a IPv4/IPv6 address or the path to a unix socket.
-;; If PROTOCOL is set to `http+unix` or `fcgi+unix`, this should be the name of the Unix socket file to use.
-;; Relative paths will be made absolute against the _`AppWorkPath`_.
-;HTTP_ADDR = 0.0.0.0
-;;
-;; The port to listen on. Leave empty when using a unix socket.
-;HTTP_PORT = 3000
-;;
-;; If REDIRECT_OTHER_PORT is true, and PROTOCOL is set to https an http server
-;; will be started on PORT_TO_REDIRECT and it will redirect plain, non-secure http requests to the main
-;; ROOT_URL.  Defaults are false for REDIRECT_OTHER_PORT and 80 for
-;; PORT_TO_REDIRECT.
-;REDIRECT_OTHER_PORT = false
-;PORT_TO_REDIRECT = 80
-;;
-;; expect PROXY protocol header on connections to https redirector.
-;REDIRECTOR_USE_PROXY_PROTOCOL = %(USE_PROXY_PROTOCOL)s
-;; Minimum and maximum supported TLS versions
-;SSL_MIN_VERSION=TLSv1.2
-;SSL_MAX_VERSION=
-;;
-;; SSL Curve Preferences
-;SSL_CURVE_PREFERENCES=X25519,P256
-;;
-;; SSL Cipher Suites
-;SSL_CIPHER_SUITES=; Will default to "ecdhe_ecdsa_with_aes_256_gcm_sha384,ecdhe_rsa_with_aes_256_gcm_sha384,ecdhe_ecdsa_with_aes_128_gcm_sha256,ecdhe_rsa_with_aes_128_gcm_sha256,ecdhe_ecdsa_with_chacha20_poly1305,ecdhe_rsa_with_chacha20_poly1305" if aes is supported by hardware, otherwise chacha will be first.
-;;
-;; Timeout for any write to the connection. (Set to -1 to disable all timeouts.)
-;PER_WRITE_TIMEOUT = 30s
-;;
-;; Timeout per Kb written to connections.
-;PER_WRITE_PER_KB_TIMEOUT = 30s
-;;
-;; Permission for unix socket
-;UNIX_SOCKET_PERMISSION = 666
-;;
-;; Local (DMZ) URL for Gitea workers (such as SSH update) accessing web service.
-;; In most cases you do not need to change the default value.
-;; Alter it only if your SSH server node is not the same as HTTP node.
-;; Do not set this variable if PROTOCOL is set to 'unix'.
-;LOCAL_ROOT_URL = %(PROTOCOL)s://%(HTTP_ADDR)s:%(HTTP_PORT)s/
-;;
-;; When making local connections pass the PROXY protocol header.
-;LOCAL_USE_PROXY_PROTOCOL = %(USE_PROXY_PROTOCOL)s
-;;
-;; Disable SSH feature when not available
-;DISABLE_SSH = false
-;;
-;; Whether to use the builtin SSH server or not.
-;START_SSH_SERVER = false
-;;
-;; Expect PROXY protocol header on connections to the built-in SSH server
-;SSH_SERVER_USE_PROXY_PROTOCOL = false
-;;
-;; Username to use for the builtin SSH server. If blank, then it is the value of RUN_USER.
-;BUILTIN_SSH_SERVER_USER = %(RUN_USER)s
-;;
-;; Domain name to be exposed in clone URL
-;SSH_DOMAIN = %(DOMAIN)s
-;;
-;; SSH username displayed in clone URLs.
-;SSH_USER = %(BUILTIN_SSH_SERVER_USER)s
-;;
-;; The network interface the builtin SSH server should listen on
-;SSH_LISTEN_HOST =
-;;
-;; Port number to be exposed in clone URL
-;SSH_PORT = 22
-;;
-;; The port number the builtin SSH server should listen on
-;SSH_LISTEN_PORT = %(SSH_PORT)s
-;;
-;; Root path of SSH directory, default is '~/.ssh', but you have to use '/home/git/.ssh'.
-;SSH_ROOT_PATH =
-;;
-;; Gitea will create a authorized_keys file by default when it is not using the internal ssh server
-;; If you intend to use the AuthorizedKeysCommand functionality then you should turn this off.
-;SSH_CREATE_AUTHORIZED_KEYS_FILE = true
-;;
-;; Gitea will create a authorized_principals file by default when it is not using the internal ssh server
-;; If you intend to use the AuthorizedPrincipalsCommand functionality then you should turn this off.
-;SSH_CREATE_AUTHORIZED_PRINCIPALS_FILE = true
-;;
-;; For the built-in SSH server, choose the ciphers to support for SSH connections,
-;; for system SSH this setting has no effect
-;SSH_SERVER_CIPHERS = chacha20-poly1305@openssh.com, aes128-ctr, aes192-ctr, aes256-ctr, aes128-gcm@openssh.com, aes256-gcm@openssh.com
-;;
-;; For the built-in SSH server, choose the key exchange algorithms to support for SSH connections,
-;; for system SSH this setting has no effect
-;SSH_SERVER_KEY_EXCHANGES = curve25519-sha256, ecdh-sha2-nistp256, ecdh-sha2-nistp384, ecdh-sha2-nistp521, diffie-hellman-group14-sha256, diffie-hellman-group14-sha1
-;;
-;; For the built-in SSH server, choose the MACs to support for SSH connections,
-;; for system SSH this setting has no effect
-;SSH_SERVER_MACS = hmac-sha2-256-etm@openssh.com, hmac-sha2-256, hmac-sha1
-;;
-;; For the built-in SSH server, choose the keypair to offer as the host key
-;; The private key should be at SSH_SERVER_HOST_KEY and the public SSH_SERVER_HOST_KEY.pub
-;; relative paths are made absolute relative to the %(APP_DATA_PATH)s
-;SSH_SERVER_HOST_KEYS=ssh/gitea.rsa, ssh/gogs.rsa
-;;
-;; Directory to create temporary files in when testing public keys using ssh-keygen,
-;; default is the system temporary directory.
-;SSH_KEY_TEST_PATH =
-;;
-;; Path to ssh-keygen, default is 'ssh-keygen' which means the shell is responsible for finding out which one to call.
-;SSH_KEYGEN_PATH = ssh-keygen
-;;
-;; Enable SSH Authorized Key Backup when rewriting all keys, default is true
-;SSH_AUTHORIZED_KEYS_BACKUP = true
-;;
-;; Determines which principals to allow
-;; - empty: if SSH_TRUSTED_USER_CA_KEYS is empty this will default to off, otherwise will default to email, username.
-;; - off: Do not allow authorized principals
-;; - email: the principal must match the user's email
-;; - username: the principal must match the user's username
-;; - anything: there will be no checking on the content of the principal
-;SSH_AUTHORIZED_PRINCIPALS_ALLOW = email, username
-;;
-;; Enable SSH Authorized Principals Backup when rewriting all keys, default is true
-;SSH_AUTHORIZED_PRINCIPALS_BACKUP = true
-;;
-;; Specifies the public keys of certificate authorities that are trusted to sign user certificates for authentication.
-;; Multiple keys should be comma separated.
-;; E.g."ssh-<algorithm> <key>". or "ssh-<algorithm> <key1>, ssh-<algorithm> <key2>".
-;; For more information see "TrustedUserCAKeys" in the sshd config manpages.
-;SSH_TRUSTED_USER_CA_KEYS =
-;; Absolute path of the `TrustedUserCaKeys` file gitea will manage.
-;; Default this `RUN_USER`/.ssh/gitea-trusted-user-ca-keys.pem
-;; If you're running your own ssh server and you want to use the gitea managed file you'll also need to modify your
-;; sshd_config to point to this file. The official docker image will automatically work without further configuration.
-;SSH_TRUSTED_USER_CA_KEYS_FILENAME =
-;;
-;; Enable exposure of SSH clone URL to anonymous visitors, default is false
-;SSH_EXPOSE_ANONYMOUS = false
-;;
-;; Timeout for any write to ssh connections. (Set to -1 to disable all timeouts.)
-;; Will default to the PER_WRITE_TIMEOUT.
-;SSH_PER_WRITE_TIMEOUT = 30s
-;;
-;; Timeout per Kb written to ssh connections.
-;; Will default to the PER_WRITE_PER_KB_TIMEOUT.
-;SSH_PER_WRITE_PER_KB_TIMEOUT = 30s
-;;
-;; Indicate whether to check minimum key size with corresponding type
-;MINIMUM_KEY_SIZE_CHECK = false
-;;
-;; Disable CDN even in "prod" mode
-;OFFLINE_MODE = false
-;DISABLE_ROUTER_LOG = false
-;;
-;; TLS Settings: Either ACME or manual
-;; (Other common TLS configuration are found before)
-;ENABLE_ACME = false
-;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; ACME automatic TLS settings
-;;
-;; ACME directory URL (e.g. LetsEncrypt's staging/testing URL: https://acme-staging-v02.api.letsencrypt.org/directory)
-;; Leave empty to default to LetsEncrypt's (production) URL
-;ACME_URL =
-;;
-;; Explicitly accept the ACME's TOS. The specific TOS cannot be retrieved at the moment.
-;ACME_ACCEPTTOS = false
-;;
-;; If the ACME CA is not in your system's CA trust chain, it can be manually added here
-;ACME_CA_ROOT =
-;;
-;; Email used for the ACME registration service
-;; Can be left blank to initialize at first run and use the cached value
-;ACME_EMAIL =
-;;
-;; ACME live directory (not to be confused with ACME directory URL: ACME_URL)
-;; (Refer to caddy's ACME manager https://github.com/caddyserver/certmagic)
-;ACME_DIRECTORY = https
-;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  Manual TLS settings: (Only applicable if ENABLE_ACME=false)
-;;
-;; Generate steps:
-;; $ ./gitea cert -ca=true -duration=8760h0m0s -host=myhost.example.com
-;;
-;; Or from a .pfx file exported from the Windows certificate store (do
-;; not forget to export the private key):
-;; $ openssl pkcs12 -in cert.pfx -out cert.pem -nokeys
-;; $ openssl pkcs12 -in cert.pfx -out key.pem -nocerts -nodes
-;; Paths are relative to CUSTOM_PATH
-;CERT_FILE = https/cert.pem
-;KEY_FILE = https/key.pem
-;;
-;; Root directory containing templates and static files.
-;; default is the path where Gitea is executed
-;STATIC_ROOT_PATH = ; Will default to the built-in value _`StaticRootPath`_
-;;
-;; Default path for App data
-;APP_DATA_PATH = data ; relative paths will be made absolute with _`AppWorkPath`_
-;;
-;; Enable gzip compression for runtime-generated content, static resources excluded
-;ENABLE_GZIP = false
-;;
-;; Application profiling (memory and cpu)
-;; For "web" command it listens on localhost:6060
-;; For "serve" command it dumps to disk at PPROF_DATA_PATH as (cpuprofile|memprofile)_<username>_<temporary id>
-;ENABLE_PPROF = false
-;;
-;; PPROF_DATA_PATH, use an absolute path when you start gitea as service
-;PPROF_DATA_PATH = data/tmp/pprof ; Path is relative to _`AppWorkPath`_
-;;
-;; Landing page, can be "home", "explore", "organizations", "login", or any URL such as "/org/repo" or even "https://anotherwebsite.com"
-;; The "login" choice is not a security measure but just a UI flow change, use REQUIRE_SIGNIN_VIEW to force users to log in.
-;LANDING_PAGE = home
-;;
-;; Enables git-lfs support. true or false, default is false.
-;LFS_START_SERVER = false
-;;
-;;
-;; LFS authentication secret, change this yourself
-LFS_JWT_SECRET =
-;;
-;; LFS authentication validity period (in time.Duration), pushes taking longer than this may fail.
-;LFS_HTTP_AUTH_EXPIRY = 20m
-;;
-;; Maximum allowed LFS file size in bytes (Set to 0 for no limit).
-;LFS_MAX_FILE_SIZE = 0
-;;
-;; Maximum number of locks returned per page
-;LFS_LOCKS_PAGING_NUM = 50
-;;
-;; Allow graceful restarts using SIGHUP to fork
-;ALLOW_GRACEFUL_RESTARTS = true
-;;
-;; After a restart the parent will finish ongoing requests before
-;; shutting down. Force shutdown if this process takes longer than this delay.
-;; set to a negative value to disable
-;GRACEFUL_HAMMER_TIME = 60s
-;;
-;; Allows the setting of a startup timeout and waithint for Windows as SVC service
-;; 0 disables this.
-;STARTUP_TIMEOUT = 0
-;;
-;; Static resources, includes resources on custom/, public/ and all uploaded avatars web browser cache time. Note that this cache is disabled when RUN_MODE is "dev". Default is 6h
-;STATIC_CACHE_TIME = 6h
+  {% if gitea_server.protocol | default('') | string | length > 0 and
+        gitea_server.protocol in  ["http", "https", "http+unix", "fcgi", "fcgi+unix"] %}
+PROTOCOL = {{ gitea_server.protocol }}
+  {% endif %}
+  {% if gitea_server.use_proxy_protocol | default('') | string | length > 0 %}
+USE_PROXY_PROTOCOL = {{ gitea_server.use_proxy_protocol | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.proxy_protocol_tls_bridging | default('') | string | length > 0 %}
+PROXY_PROTOCOL_TLS_BRIDGING = {{ gitea_server.proxy_protocol_tls_bridging | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.proxy_protocol_header_timeout | default('') | string | length > 0 %}
+PROXY_PROTOCOL_HEADER_TIMEOUT = {{ gitea_server.proxy_protocol_header_timeout }}
+  {% endif %}
+  {% if gitea_server.proxy_protocol_accept_unknown | default('') | string | length > 0 %}
+PROXY_PROTOCOL_ACCEPT_UNKNOWN = {{ gitea_server.proxy_protocol_accept_unknown | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.domain | default('') | string | length > 0 %}
+DOMAIN = {{ gitea_server.domain }}
+  {% endif %}
+  {% if gitea_server.root_url | default('') | string | length > 0 %}
+ROOT_URL = {{ gitea_server.root_url }}
+  {% endif %}
+  {% if gitea_server.static_url_prefix | default('') | string | length > 0 %}
+STATIC_URL_PREFIX = {{ gitea_server.static_url_prefix }}
+  {% endif %}
+  {% if gitea_server.http_addr | default('') | string | length > 0 %}
+HTTP_ADDR = {{ gitea_server.http_addr }}
+  {% endif %}
+  {% if gitea_server.http_port | default('') | string | length > 0 %}
+HTTP_PORT = {{ gitea_server.http_port }}
+  {% endif %}
+  {% if gitea_server.redirect_other_port | default('') | string | length > 0 %}
+REDIRECT_OTHER_PORT = {{ gitea_server.redirect_other_port | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% if gitea_server.port_to_redirect | default('') | string | length > 0 %}
+PORT_TO_REDIRECT = 80
+    {% endif %}
+  {% endif %}
+  {% if gitea_server.redirector_use_proxy_protocol | default('') | string | length > 0 %}
+REDIRECTOR_USE_PROXY_PROTOCOL = {{ gitea_server.redirector_use_proxy_protocol }}
+  {% endif %}
+  {% if gitea_server.ssl_min_version | default('') | string | length > 0 %}
+SSL_MIN_VERSION = {{ gitea_server.ssl_min_version }}
+  {% endif %}
+  {% if gitea_server.ssl_max_version | default('') | string | length > 0 %}
+SSL_MAX_VERSION = {{ gitea_server.ssl_max_version }}
+  {% endif %}
+  {% if gitea_server.ssl_curve_preferences | count > 0 %}
+SSL_CURVE_PREFERENCES = {{ gitea_server.ssl_curve_preferences | join(', ') }}
+  {% endif %}
+  {% if gitea_server.ssl_cipher_suites | count > 0 %}
+SSL_CIPHER_SUITES =  {{ gitea_server.ssl_cipher_suites | join(', ') }}
+  {% endif %}
+  {% if gitea_server.per_write_timeout | default('') | string | length > 0 %}
+PER_WRITE_TIMEOUT = {{ gitea_server.per_write_timeout }}
+  {% endif %}
+  {% if gitea_server.per_write_per_kb_timeout | default('') | string | length > 0 %}
+PER_WRITE_PER_KB_TIMEOUT = {{ gitea_server.per_write_per_kb_timeout }}
+  {% endif %}
+  {% if gitea_server.unix_socket_permission | default('') | string | length > 0 %}
+UNIX_SOCKET_PERMISSION = {{ gitea_server.unix_socket_permission }}
+  {% endif %}
+  {% if gitea_server.local_root_url | default('') | string | length > 0 %}
+LOCAL_ROOT_URL = {{ gitea_server.local_root_url }}
+  {% endif %}
+  {% if gitea_server.local_use_proxy_protocol | default('') | string | length > 0 %}
+LOCAL_USE_PROXY_PROTOCOL = {{ gitea_server.local_use_proxy_protocol }}
+  {% endif %}
+  {% if gitea_server.disable_ssh | default('') | string | length > 0 %}
+DISABLE_SSH = {{ gitea_server.disable_ssh | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.start_ssh_server | default('') | string | length > 0 %}
+START_SSH_SERVER = {{ gitea_server.start_ssh_server | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.ssh_server_use_proxy_protocol | default('') | string | length > 0 %}
+SSH_SERVER_USE_PROXY_PROTOCOL = {{ gitea_server.ssh_server_use_proxy_protocol | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.builtin_ssh_server_user | default('') | string | length > 0 %}
+BUILTIN_SSH_SERVER_USER = {{ gitea_server.builtin_ssh_server_user }}
+  {% endif %}
+  {% if gitea_server.ssh_domain | default('') | string | length > 0 %}
+SSH_DOMAIN = {{ gitea_server.ssh_domain }}
+  {% endif %}
+  {% if gitea_server.ssh_user | default('') | string | length > 0 %}
+SSH_USER = {{ gitea_server.ssh_user }}
+  {% endif %}
+  {% if gitea_server.ssh_listen_host | default('') | string | length > 0 %}
+SSH_LISTEN_HOST = {{ gitea_server.ssh_listen_host }}
+  {% endif %}
+  {% if gitea_server.ssh_port | default('') | string | length > 0 %}
+SSH_PORT = {{ gitea_server.ssh_port }}
+  {% endif %}
+  {% if gitea_server.ssh_listen_port | default('') | string | length > 0 %}
+SSH_LISTEN_PORT = {{ gitea_server.ssh_listen_port }}
+  {% endif %}
+  {% if gitea_server.ssh_root_path | default('') | string | length > 0 %}
+SSH_ROOT_PATH = {{ gitea_server.ssh_root_path }}
+  {% endif %}
+  {% if gitea_server.ssh_create_authorized_keys_file | default('') | string | length > 0 %}
+SSH_CREATE_AUTHORIZED_KEYS_FILE = {{ gitea_server.ssh_create_authorized_keys_file | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.ssh_create_authorized_principals_file | default('') | string | length > 0 %}
+SSH_CREATE_AUTHORIZED_PRINCIPALS_FILE = {{ gitea_server.ssh_create_authorized_principals_file | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.ssh_server_ciphers | count > 0 %}
+SSH_SERVER_CIPHERS = {{ gitea_server.ssh_server_ciphers | join(', ') }}
+  {% endif %}
+  {% if gitea_server.ssh_server_key_exchanges | count > 0 %}
+SSH_SERVER_KEY_EXCHANGES = {{ gitea_server.ssh_server_key_exchanges | join(', ') }}
+  {% endif %}
+  {% if gitea_server.ssh_server_macs | count > 0 %}
+SSH_SERVER_MACS = {{ gitea_server.ssh_server_macs | join(', ') }}
+  {% endif %}
+  {% if gitea_server.ssh_server_host_keys | count > 0 %}
+SSH_SERVER_HOST_KEYS = {{ gitea_server.ssh_server_host_keys | join(', ') }}
+  {% endif %}
+  {% if gitea_server.ssh_key_test_path | default('') | string | length > 0 %}
+SSH_KEY_TEST_PATH = {{ gitea_server.ssh_key_test_path }}
+  {% endif %}
+  {% if gitea_server.ssh_keygen_path | default('') | string | length > 0 %}
+SSH_KEYGEN_PATH = {{ gitea_server.ssh_keygen_path }}
+  {% endif %}
+  {% if gitea_server.ssh_authorized_keys_backup | default('') | string | length > 0 %}
+SSH_AUTHORIZED_KEYS_BACKUP = {{ gitea_server.ssh_authorized_keys_backup | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.ssh_authorized_principals_allow | default('') | string | length > 0 %}
+    {% if gitea_server.ssh_trusted_user_ca_keys is defined and
+          gitea_server.ssh_trusted_user_ca_keys | string | length == 0 %}
+      {% set valid_principals = ["off"] %}
+    {% else %}
+      {% set valid_principals = ["empty", "off", "email", "username", "anything"] %}
+      {% set valid_principals = gitea_server.ssh_authorized_principals_allow | bodsch.core.compare_list(compare_to_list=valid_principals) %}
+    {% endif %}
+SSH_AUTHORIZED_PRINCIPALS_ALLOW = {{ valid_principals | join(', ') }}
+  {% endif %}
+  {% if gitea_server.ssh_authorized_principals_backup | default('') | string | length > 0 %}
+SSH_AUTHORIZED_PRINCIPALS_BACKUP = {{ gitea_server.ssh_authorized_principals_backup | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.ssh_trusted_user_ca_keys | count > 0 %}
+SSH_TRUSTED_USER_CA_KEYS = {{ gitea_server.ssh_trusted_user_ca_keys | join(', ') }}
+  {% endif %}
+  {% if gitea_server.ssh_trusted_user_ca_keys_filename | default('') | string | length > 0 %}
+SSH_TRUSTED_USER_CA_KEYS_FILENAME = {{ gitea_server.ssh_trusted_user_ca_keys_filename }}
+  {% endif %}
+  {% if gitea_server.ssh_expose_anonymous | default('') | string | length > 0 %}
+SSH_EXPOSE_ANONYMOUS = {{ gitea_server.ssh_expose_anonymous | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.ssh_per_write_timeout | default('') | string | length > 0 %}
+SSH_PER_WRITE_TIMEOUT = {{ gitea_server.ssh_per_write_timeout }}
+  {% endif %}
+  {% if gitea_server.ssh_per_write_per_kb_timeout | default('') | string | length > 0 %}
+SSH_PER_WRITE_PER_KB_TIMEOUT = {{ gitea_server.ssh_per_write_per_kb_timeout }}
+  {% endif %}
+  {% if gitea_server.minimum_key_size_check | default('') | string | length > 0 %}
+MINIMUM_KEY_SIZE_CHECK = {{ gitea_server.minimum_key_size_check | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.offline_mode | default('') | string | length > 0 %}
+OFFLINE_MODE = {{ gitea_server.offline_mode | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.disable_router_log | default('') | string | length > 0 %}
+DISABLE_ROUTER_LOG = {{ gitea_server.disable_router_log | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.enable_acme | default('') | string | length > 0 %}
+ENABLE_ACME = {{ gitea_server.enable_acme | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% if gitea_server.acme_url | default('') | string | length > 0 %}
+ACME_URL = {{ gitea_server.acme_url }}
+    {% endif %}
+    {% if gitea_server.acme_accepttos | default('') | string | length > 0 %}
+ACME_ACCEPTTOS = {{ gitea_server.acme_accepttos | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% endif %}
+    {% if gitea_server.acme_ca_root | default('') | string | length > 0 %}
+ACME_CA_ROOT = {{ gitea_server.acme_ca_root }}
+    {% endif %}
+    {% if gitea_server.acme_email | default('') | string | length > 0 %}
+ACME_EMAIL = {{ gitea_server.acme_email }}
+    {% endif %}
+    {% if gitea_server.acme_directory | default('') | string | length > 0 %}
+ACME_DIRECTORY = {{ gitea_server.acme_directory }}
+    {% endif %}
+  {% endif %}
+  {% if gitea_server.cert_file | default('') | string | length > 0 %}
+CERT_FILE = {{ gitea_server.cert_file }}
+  {% endif %}
+  {% if gitea_server.key_file | default('') | string | length > 0 %}
+KEY_FILE = {{ gitea_server.key_file }}
+  {% endif %}
+  {% if gitea_server.static_root_path | default('') | string | length > 0 %}
+STATIC_ROOT_PATH = {{ gitea_server.static_root_path }}
+  {% endif %}
+  {% if gitea_server.app_data_path | default('') | string | length > 0 %}
+APP_DATA_PATH = {{ gitea_server.app_data_path }}
+  {% endif %}
+  {% if gitea_server.enable_gzip | default('') | string | length > 0 %}
+ENABLE_GZIP = {{ gitea_server.enable_gzip | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.enable_pprof | default('') | string | length > 0 %}
+ENABLE_PPROF = {{ gitea_server.enable_pprof | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.pprof_data_path | default('') | string | length > 0 %}
+PPROF_DATA_PATH = {{ gitea_server.pprof_data_path }}
+  {% endif %}
+  {% if gitea_server.landing_page | default('') | string | length > 0 and
+        gitea_server.landing_page in ["home", "explore", "organizations", "login"] %}
+    {#
+        Landing page, can be "home", "explore", "organizations", "login", or any URL such as "/org/repo" or even "https://anotherwebsite.com"
+        The "login" choice is not a security measure but just a UI flow change, use REQUIRE_SIGNIN_VIEW to force users to log in.
+    #}
+LANDING_PAGE = {{ gitea_server.landing_page }}
+  {% endif %}
+  {% if gitea_server.lfs_start_server | default('') | string | length > 0 %}
+LFS_START_SERVER = {{ gitea_server.lfs_start_server | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.lfs_jwt_secret | default('') | string | length > 0 %}
+LFS_JWT_SECRET = {{ gitea_server.lfs_jwt_secret }}
+  {% endif %}
+  {% if gitea_server.lfs_http_auth_expiry | default('') | string | length > 0 %}
+LFS_HTTP_AUTH_EXPIRY = {{ gitea_server.lfs_http_auth_expiry }}
+  {% endif %}
+  {% if gitea_server.lfs_max_file_size | default('') | string | length > 0 %}
+LFS_MAX_FILE_SIZE = {{ gitea_server.lfs_max_file_size }}
+  {% endif %}
+  {% if gitea_server.lfs_locks_paging_num | default('') | string | length > 0 %}
+LFS_LOCKS_PAGING_NUM = {{ gitea_server.lfs_locks_paging_num }}
+  {% endif %}
+  {% if gitea_server.allow_graceful_restarts | default('') | string | length > 0 %}
+ALLOW_GRACEFUL_RESTARTS = {{ gitea_server.allow_graceful_restarts | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.graceful_hammer_time | default('') | string | length > 0 %}
+GRACEFUL_HAMMER_TIME = {{ gitea_server.graceful_hammer_time }}
+  {% endif %}
+  {% if gitea_server.startup_timeout | default('') | string | length > 0 %}
+STARTUP_TIMEOUT = {{ gitea_server.startup_timeout }}
+  {% endif %}
+  {% if gitea_server.static_cache_time | default('') | string | length > 0 %}
+STATIC_CACHE_TIME = {{ gitea_server.static_cache_time }}
+  {% endif %}
 {% endif %}
-
-
-
-
-
-
-
-
-
-
 
 {% if gitea_service is defined and
       gitea_service | count > 0 %}
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 [service]
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; Time limit to confirm account/email registration
-;ACTIVE_CODE_LIVE_MINUTES = 180
-;;
-;; Time limit to perform the reset of a forgotten password
-;RESET_PASSWD_CODE_LIVE_MINUTES = 180
-;;
-;; Whether a new user needs to confirm their email when registering.
-;REGISTER_EMAIL_CONFIRM = false
-;;
-;; Whether a new user needs to be confirmed manually after registration. (Requires `REGISTER_EMAIL_CONFIRM` to be disabled.)
-;REGISTER_MANUAL_CONFIRM = false
-;;
-;; List of domain names that are allowed to be used to register on a Gitea instance
-;; gitea.io,example.com
-;EMAIL_DOMAIN_WHITELIST =
-;;
-;; Comma-separated list of domain names that are not allowed to be used to register on a Gitea instance
-;EMAIL_DOMAIN_BLOCKLIST =
-;;
-;; Disallow registration, only allow admins to create accounts.
-;DISABLE_REGISTRATION = false
-;;
-;; Allow registration only using gitea itself, it works only when DISABLE_REGISTRATION is false
-;ALLOW_ONLY_INTERNAL_REGISTRATION = false
-;;
-;; Allow registration only using third-party services, it works only when DISABLE_REGISTRATION is false
-;ALLOW_ONLY_EXTERNAL_REGISTRATION = false
-;;
-;; User must sign in to view anything.
-;REQUIRE_SIGNIN_VIEW = false
-;;
-;; Mail notification
-;ENABLE_NOTIFY_MAIL = false
-;;
-;; This setting enables gitea to be signed in with HTTP BASIC Authentication using the user's password
-;; If you set this to false you will not be able to access the tokens endpoints on the API with your password
-;; Please note that setting this to false will not disable OAuth Basic or Basic authentication using a token
-;ENABLE_BASIC_AUTHENTICATION = true
-;;
-;; More detail: https://github.com/gogits/gogs/issues/165
-;ENABLE_REVERSE_PROXY_AUTHENTICATION = false
-;ENABLE_REVERSE_PROXY_AUTO_REGISTRATION = false
-;ENABLE_REVERSE_PROXY_EMAIL = false
-;ENABLE_REVERSE_PROXY_FULL_NAME = false
-;;
-;; Enable captcha validation for registration
-;ENABLE_CAPTCHA = false
-;;
-;; Enable this to require captcha validation for login
-;REQUIRE_CAPTCHA_FOR_LOGIN = false
-;;
-;; Type of captcha you want to use. Options: image, recaptcha, hcaptcha, mcaptcha, cfturnstile.
-;CAPTCHA_TYPE = image
-;;
-;; Change this to use recaptcha.net or other recaptcha service
-;RECAPTCHA_URL = https://www.google.com/recaptcha/
-;; Enable recaptcha to use Google's recaptcha service
-;; Go to https://www.google.com/recaptcha/admin to sign up for a key
-;RECAPTCHA_SECRET =
-;RECAPTCHA_SITEKEY =
-;;
-;; For hCaptcha, create an account at https://accounts.hcaptcha.com/login to get your keys
-;HCAPTCHA_SECRET =
-;HCAPTCHA_SITEKEY =
-;;
-;; Change this to use demo.mcaptcha.org or your self-hosted mcaptcha.org instance.
-;MCAPTCHA_URL = https://demo.mcaptcha.org
-;;
-;; Go to your configured mCaptcha instance and register a sitekey
-;; and use your account's secret.
-;MCAPTCHA_SECRET =
-;MCAPTCHA_SITEKEY =
-;;
-;; Go to https://dash.cloudflare.com/?to=/:account/turnstile to sign up for a key
-;CF_TURNSTILE_SITEKEY =
-;CF_TURNSTILE_SECRET =
-;;
-;; Default value for KeepEmailPrivate
-;; Each new user will get the value of this setting copied into their profile
-;DEFAULT_KEEP_EMAIL_PRIVATE = false
-;;
-;; Default value for AllowCreateOrganization
-;; Every new user will have rights set to create organizations depending on this setting
-;DEFAULT_ALLOW_CREATE_ORGANIZATION = true
-;; Default value for IsRestricted
-;; Every new user will have restricted permissions depending on this setting
-;DEFAULT_USER_IS_RESTRICTED = false
-;;
-;; Either "public", "limited" or "private", default is "public"
-;; Limited is for users visible only to signed users
-;; Private is for users visible only to members of their organizations
-;; Public is for users visible for everyone
-;DEFAULT_USER_VISIBILITY = public
-;;
-;; Set which visibility modes a user can have
-;ALLOWED_USER_VISIBILITY_MODES = public,limited,private
-;;
-;; Either "public", "limited" or "private", default is "public"
-;; Limited is for organizations visible only to signed users
-;; Private is for organizations visible only to members of the organization
-;; Public is for organizations visible to everyone
-;DEFAULT_ORG_VISIBILITY = public
-;;
-;; Default value for DefaultOrgMemberVisible
-;; True will make the membership of the users visible when added to the organisation
-;DEFAULT_ORG_MEMBER_VISIBLE = false
-;;
-;; Default value for EnableDependencies
-;; Repositories will use dependencies by default depending on this setting
-;DEFAULT_ENABLE_DEPENDENCIES = true
-;;
-;; Dependencies can be added from any repository where the user is granted access or only from the current repository depending on this setting.
-;ALLOW_CROSS_REPOSITORY_DEPENDENCIES = true
-;;
-;; Enable heatmap on users profiles.
-;ENABLE_USER_HEATMAP = true
-;;
-;; Enable Timetracking
-;ENABLE_TIMETRACKING = true
-;;
-;; Default value for EnableTimetracking
-;; Repositories will use timetracking by default depending on this setting
-;DEFAULT_ENABLE_TIMETRACKING = true
-;;
-;; Default value for AllowOnlyContributorsToTrackTime
-;; Only users with write permissions can track time if this is true
-;DEFAULT_ALLOW_ONLY_CONTRIBUTORS_TO_TRACK_TIME = true
-;;
-;; Value for the domain part of the user's email address in the git log if user
-;; has set KeepEmailPrivate to true. The user's email will be replaced with a
-;; concatenation of the user name in lower case, "@" and NO_REPLY_ADDRESS. Default
-;; value is "noreply." + DOMAIN, where DOMAIN resolves to the value from server.DOMAIN
-;; Note: do not use the <DOMAIN> notation below
-;NO_REPLY_ADDRESS = ; noreply.<DOMAIN>
-;;
-;; Show Registration button
-;SHOW_REGISTRATION_BUTTON = true
-;;
-;; Show milestones dashboard page - a view of all the user's milestones
-;SHOW_MILESTONES_DASHBOARD_PAGE = true
-;;
-;; Default value for AutoWatchNewRepos
-;; When adding a repo to a team or creating a new repo all team members will watch the
-;; repo automatically if enabled
-;AUTO_WATCH_NEW_REPOS = true
-;;
-;; Default value for AutoWatchOnChanges
-;; Make the user watch a repository When they commit for the first time
-;AUTO_WATCH_ON_CHANGES = false
-;;
-;; Minimum amount of time a user must exist before comments are kept when the user is deleted.
-;USER_DELETE_WITH_COMMENTS_MAX_TIME = 0
-;; Valid site url schemes for user profiles
-;VALID_SITE_URL_SCHEMES=http,https
+  {% if gitea_service.active_code_live_minutes | default('') | string | length > 0 %}
+ACTIVE_CODE_LIVE_MINUTES = {{ gitea_service.active_code_live_minutes }}
+  {% endif %}
+  {% if gitea_service.reset_passwd_code_live_minutes | default('') | string | length > 0 %}
+RESET_PASSWD_CODE_LIVE_MINUTES = {{ gitea_service.reset_passwd_code_live_minutes }}
+  {% endif %}
+  {% if gitea_service.register_email_confirm | default('') | string | length > 0 %}
+REGISTER_EMAIL_CONFIRM = {{ gitea_service.register_email_confirm | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.register_manual_confirm | default('') | string | length > 0 %}
+REGISTER_MANUAL_CONFIRM = {{ gitea_service.register_manual_confirm | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.email_domain_whitelist | count > 0 %}
+EMAIL_DOMAIN_WHITELIST = {{ gitea_service.email_domain_whitelist | join(', ') }}
+  {% endif %}
+  {% if gitea_service.email_domain_blocklist | count > 0 %}
+EMAIL_DOMAIN_BLOCKLIST = {{ gitea_service.email_domain_blocklist | join(', ') }}
+  {% endif %}
+  {% if gitea_service.disable_registration | default('') | string | length > 0 %}
+DISABLE_REGISTRATION = {{ gitea_service.disable_registration | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.allow_only_internal_registration | default('') | string | length > 0 %}
+ALLOW_ONLY_INTERNAL_REGISTRATION = {{ gitea_service.allow_only_internal_registration | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.allow_only_external_registration | default('') | string | length > 0 %}
+ALLOW_ONLY_EXTERNAL_REGISTRATION = {{ gitea_service.allow_only_external_registration | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.require_signin_view | default('') | string | length > 0 %}
+REQUIRE_SIGNIN_VIEW = {{ gitea_service.require_signin_view | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.enable_notify_mail | default('') | string | length > 0 %}
+ENABLE_NOTIFY_MAIL = {{ gitea_service.enable_notify_mail | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.enable_basic_authentication | default('') | string | length > 0 %}
+ENABLE_BASIC_AUTHENTICATION = {{ gitea_service.enable_basic_authentication | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.enable_reverse_proxy_authentication | default('') | string | length > 0 %}
+ENABLE_REVERSE_PROXY_AUTHENTICATION = {{ gitea_service.enable_reverse_proxy_authentication | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.enable_reverse_proxy_auto_registration | default('') | string | length > 0 %}
+ENABLE_REVERSE_PROXY_AUTO_REGISTRATION = {{ gitea_service.enable_reverse_proxy_auto_registration | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.enable_reverse_proxy_email | default('') | string | length > 0 %}
+ENABLE_REVERSE_PROXY_EMAIL = {{ gitea_service.enable_reverse_proxy_email | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.enable_reverse_proxy_full_name | default('') | string | length > 0 %}
+ENABLE_REVERSE_PROXY_FULL_NAME = {{ gitea_service.enable_reverse_proxy_full_name | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.enable_captcha | default('') | string | length > 0 %}
+ENABLE_CAPTCHA = {{ gitea_service.enable_captcha | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.require_captcha_for_login | default('') | string | length > 0 %}
+REQUIRE_CAPTCHA_FOR_LOGIN = {{ gitea_service.require_captcha_for_login | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.captcha_type | default('') | string | length > 0 and
+        gitea_service.captcha_type in ["image", "recaptcha", "hcaptcha", "mcaptcha", "cfturnstile"] %}
+CAPTCHA_TYPE = {{ gitea_service.captcha_type }}
+    {% if gitea_service.captcha_type == "recaptcha" %}
+      {% if gitea_service.recaptcha_url | default('') | string | length > 0 %}
+RECAPTCHA_URL = {{ gitea_service.recaptcha_url }}
+      {% endif %}
+      {% if gitea_service.recaptcha_secret | default('') | string | length > 0 %}
+RECAPTCHA_SECRET = {{ gitea_service.recaptcha_secret }}
+      {% endif %}
+      {% if gitea_service.recaptcha_sitekey | default('') | string | length > 0 %}
+RECAPTCHA_SITEKEY = {{ gitea_service.recaptcha_sitekey }}
+      {% endif %}
+    {% endif %}
+    {% if gitea_service.captcha_type == "hcaptcha" %}
+      {% if gitea_service.hcaptcha_secret | default('') | string | length > 0 %}
+HCAPTCHA_SECRET = {{ gitea_service.hcaptcha_secret }}
+      {% endif %}
+      {% if gitea_service.hcaptcha_sitekey | default('') | string | length > 0 %}
+HCAPTCHA_SITEKEY = {{ gitea_service.hcaptcha_sitekey }}
+      {% endif %}
+    {% endif %}
+    {% if gitea_service.captcha_type == "mcaptcha" %}
+      {% if gitea_service.mcaptcha_url | default('') | string | length > 0 %}
+MCAPTCHA_URL = {{ gitea_service.mcaptcha_url }}
+      {% endif %}
+      {% if gitea_service.mcaptcha_secret | default('') | string | length > 0 %}
+MCAPTCHA_SECRET = {{ gitea_service.mcaptcha_secret }}
+      {% endif %}
+      {% if gitea_service.mcaptcha_sitekey | default('') | string | length > 0 %}
+MCAPTCHA_SITEKEY = {{ gitea_service.mcaptcha_sitekey }}
+      {% endif %}
+    {% endif %}
+    {% if gitea_service.captcha_type == "cfturnstile" %}
+      {% if gitea_service.cf_turnstile_sitekey | default('') | string | length > 0 %}
+CF_TURNSTILE_SITEKEY = {{ gitea_service.cf_turnstile_sitekey }}
+      {% endif %}
+      {% if gitea_service.cf_turnstile_secret | default('') | string | length > 0 %}
+CF_TURNSTILE_SECRET = {{ gitea_service.cf_turnstile_secret }}
+      {% endif %}
+    {% endif %}
+  {% endif %}
+  {% if gitea_service.default_keep_email_private | default('') | string | length > 0 %}
+DEFAULT_KEEP_EMAIL_PRIVATE = {{ gitea_service.default_keep_email_private | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.default_allow_create_organization | default('') | string | length > 0 %}
+DEFAULT_ALLOW_CREATE_ORGANIZATION = {{ gitea_service.default_allow_create_organization | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.default_user_is_restricted | default('') | string | length > 0 %}
+DEFAULT_USER_IS_RESTRICTED = {{ gitea_service.default_user_is_restricted | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.default_user_visibility | default('') | string | length > 0 and
+        gitea_service.default_user_visibility in ["public", "limited", "private"] %}
+DEFAULT_USER_VISIBILITY = {{ gitea_service.default_user_visibility }}
+  {% endif %}
+  {% if gitea_service.allowed_user_visibility_modes | count > 0 %}
+ALLOWED_USER_VISIBILITY_MODES = {{ gitea_service.allowed_user_visibility_modes | join(', ') }}
+  {% endif %}
+  {% if gitea_service.default_org_visibility | default('') | string | length > 0 and
+        gitea_service.default_org_visibility in ["public", "limited", "private"] %}
+DEFAULT_ORG_VISIBILITY = {{ gitea_service.default_org_visibility }}
+  {% endif %}
+  {% if gitea_service.default_org_member_visible | default('') | string | length > 0 %}
+DEFAULT_ORG_MEMBER_VISIBLE = {{ gitea_service.default_org_member_visible | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.default_enable_dependencies | default('') | string | length > 0 %}
+DEFAULT_ENABLE_DEPENDENCIES = {{ gitea_service.default_enable_dependencies | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.allow_cross_repository_dependencies | default('') | string | length > 0 %}
+ALLOW_CROSS_REPOSITORY_DEPENDENCIES = {{ gitea_service.allow_cross_repository_dependencies | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.enable_user_heatmap | default('') | string | length > 0 %}
+ENABLE_USER_HEATMAP = {{ gitea_service.enable_user_heatmap | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.enable_timetracking | default('') | string | length > 0 %}
+ENABLE_TIMETRACKING = {{ gitea_service.enable_timetracking | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.default_enable_timetracking | default('') | string | length > 0 %}
+DEFAULT_ENABLE_TIMETRACKING = {{ gitea_service.default_enable_timetracking | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.default_allow_only_contributors_to_track_time | default('') | string | length > 0 %}
+DEFAULT_ALLOW_ONLY_CONTRIBUTORS_TO_TRACK_TIME = {{ gitea_service.default_allow_only_contributors_to_track_time | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.no_reply_address | default('') | string | length > 0 %}
+NO_REPLY_ADDRESS = {{ gitea_service.no_reply_address }}
+  {% endif %}
+  {% if gitea_service.show_registration_button | default('') | string | length > 0 %}
+SHOW_REGISTRATION_BUTTON = {{ gitea_service.show_registration_button | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.show_milestones_dashboard_page | default('') | string | length > 0 %}
+SHOW_MILESTONES_DASHBOARD_PAGE = {{ gitea_service.show_milestones_dashboard_page | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.auto_watch_new_repos | default('') | string | length > 0 %}
+AUTO_WATCH_NEW_REPOS = {{ gitea_service.auto_watch_new_repos | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.auto_watch_on_changes | default('') | string | length > 0 %}
+AUTO_WATCH_ON_CHANGES = {{ gitea_service.auto_watch_on_changes | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.user_delete_with_comments_max_time | default('') | string | length > 0 %}
+USER_DELETE_WITH_COMMENTS_MAX_TIME = {{ gitea_service.user_delete_with_comments_max_time }}
+  {% endif %}
+  {% if gitea_service.valid_site_url_schemes | count > 0 %}
+VALID_SITE_URL_SCHEMES = {{ gitea_service.valid_site_url_schemes | join(', ') }}
+  {% endif %}
 {% endif %}
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Other Settings
-;;
-;; Uncomment the [section.header] if you wish to
-;; set the below settings.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-
-
-
-{% if gitea_cors is defined and
-      gitea_cors | count > 0 %}
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;[cors]
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; More information about CORS can be found here: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#The_HTTP_response_headers
-;; enable cors headers (disabled by default)
-;ENABLED = false
-;;
-;; scheme of allowed requests
-;SCHEME = http
-;;
-;; list of requesting domains that are allowed
-;ALLOW_DOMAIN = *
-;;
-;; allow subdomains of headers listed above to request
-;ALLOW_SUBDOMAIN = false
-;;
-;; list of methods allowed to request
-;METHODS = GET,HEAD,POST,PUT,PATCH,DELETE,OPTIONS
-;;
-;; max time to cache response
-;MAX_AGE = 10m
-;;
-;; allow request with credentials
-;ALLOW_CREDENTIALS = false
-;;
-;; headers to permit
-;HEADERS = Content-Type,User-Agent
-;;
-;; set X-FRAME-OPTIONS header
-;X_FRAME_OPTIONS = SAMEORIGIN
+{% if gitea_session is defined and
+      gitea_session | count > 0 %}
+[session]
+  {% if gitea_session.provider | default('') | string | length > 0 and
+        gitea_session.provider in ["memory", "file", "redis", "db", "mysql", "couchbase", "memcache", "postgres"] %}
+PROVIDER = {{ gitea_session.provider }}
+  {% endif %}
+  {% if gitea_session.provider_config | default('') | string | length > 0 and
+        gitea_session.provider_config != "memory" %}
+PROVIDER_CONFIG = {{ gitea_session.provider_config }}
+  {% endif %}
+  {% if gitea_session.cookie_name | default('') | string | length > 0 %}
+COOKIE_NAME = {{ gitea_session.cookie_name }}
+  {% endif %}
+  {% if gitea_session.cookie_secure | default('') | string | length > 0 %}
+COOKIE_SECURE = {{ gitea_session.cookie_secure | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_session.gc_interval_time | default('') | string | length > 0 %}
+GC_INTERVAL_TIME = {{ gitea_session.gc_interval_time }}
+  {% endif %}
+  {% if gitea_session.session_life_time | default('') | string | length > 0 %}
+SESSION_LIFE_TIME = {{ gitea_session.session_life_time }}
+  {% endif %}
+  {% if gitea_session.same_site | default('') | string | length > 0 and
+        gitea_session.same_site in ["none", "lax", "strict"] %}
+SAME_SITE = {{ gitea_session.same_site }}
+  {% endif %}
 {% endif %}
 
+{% if gitea_ssh is defined and
+      gitea_ssh | count > 0 %}
+  {% if gitea_ssh.minimum_key_sizes is defined and
+        gitea_ssh.minimum_key_sizes | count > 0 %}
+[ssh.minimum_key_sizes]
+    {% if gitea_ssh.minimum_key_sizes.ed25519 | default('') | string | length > 0 %}
+ED25519 = {{ gitea_ssh.minimum_key_sizes.ed25519 }}
+    {% endif %}
+    {% if gitea_ssh.minimum_key_sizes.ecdsa | default('') | string | length > 0 %}
+ECDSA = {{ gitea_ssh.minimum_key_sizes.ecdsa }}
+    {% endif %}
+    {% if gitea_ssh.minimum_key_sizes.rsa | default('') | string | length > 0 %}
+RSA = {{ gitea_ssh.minimum_key_sizes.rsa }}
+    {% endif %}
+    {% if gitea_ssh.minimum_key_sizes.dsa | default('') | string | length > 0 %}
+DSA = {{ gitea_ssh.minimum_key_sizes.dsa }}
+    {% endif %}
+  {% endif %}
+{% endif %}
+
+{% if gitea_storage is defined and
+      gitea_storage | count > 0 %}
+[storage]
+  {% if gitea_storage.storage_type | default('') | string | length > 0 %}
+STORAGE_TYPE = {{ gitea_storage.storage_type }}
+  {% endif %}
+  {% if gitea_storage.repo_archive is defined and
+        gitea_storage.repo_archive | count > 0 %}
+
+[storage.repo-archive]
+    {% if gitea_storage.repo_archive.storage_type | default('') | string | length > 0 %}
+STORAGE_TYPE = {{ gitea_storage.repo_archive.storage_type }}
+    {% endif %}
+  {% endif %}
+  {% if gitea_storage.packages is defined and
+        gitea_storage.packages | count > 0 %}
+
+[storage.packages]
+    {% if gitea_storage.packages.storage_type | default('') | string | length > 0 %}
+STORAGE_TYPE = {{ gitea_storage.packages.storage_type }}
+    {% endif %}
+  {% endif %}
+  {% if gitea_storage.my_minio is defined and
+        gitea_storage.my_minio | count > 0 %}
+
+[storage.my_minio]
+    {% if gitea_storage.my_minio.storage_type | default('') | string | length > 0 %}
+STORAGE_TYPE = {{ gitea_storage.my_minio.storage_type }}
+    {% endif %}
+    {% if gitea_storage.my_minio.minio_endpoint | default('') | string | length > 0 %}
+MINIO_ENDPOINT = {{ gitea_storage.my_minio.minio_endpoint }}
+    {% endif %}
+    {% if gitea_storage.my_minio.minio_access_key_id | default('') | string | length > 0 %}
+MINIO_ACCESS_KEY_ID = {{ gitea_storage.my_minio.minio_access_key_id }}
+    {% endif %}
+    {% if gitea_storage.my_minio.minio_secret_access_key | default('') | string | length > 0 %}
+MINIO_SECRET_ACCESS_KEY = {{ gitea_storage.my_minio.minio_secret_access_key }}
+    {% endif %}
+    {% if gitea_storage.my_minio.minio_bucket | default('') | string | length > 0 %}
+MINIO_BUCKET = {{ gitea_storage.my_minio.minio_bucket }}
+    {% endif %}
+    {% if gitea_storage.my_minio.minio_location | default('') | string | length > 0 %}
+MINIO_LOCATION = {{ gitea_storage.my_minio.minio_location }}
+    {% endif %}
+    {% if gitea_storage.my_minio.minio_use_ssl | default('') | string | length > 0 %}
+MINIO_USE_SSL = {{ gitea_storage.my_minio.minio_use_ssl | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% endif %}
+    {% if gitea_storage.my_minio.minio_insecure_skip_verify | default('') | string | length > 0 %}
+MINIO_INSECURE_SKIP_VERIFY = {{ gitea_storage.my_minio.minio_insecure_skip_verify | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% endif %}
+  {% endif %}
+  {% if gitea_storage.actions_log is defined and
+        gitea_storage.actions_log | count > 0 %}
+
+[storage.actions_log]
+    {% if gitea_storage.actions_log.storage_type | default('') | string | length > 0 %}
+STORAGE_TYPE = {{ gitea_storage.actions_log.storage_type }}
+    {% endif %}
+  {% endif %}
+{% endif %}
+
+{% if gitea_task is defined and
+      gitea_task | count > 0 %}
+[task]
+  {% if gitea_task.queue_type | default('') | string | length > 0 and
+        gitea_task.queue_type in ["channel", "redis"] %}
+QUEUE_TYPE = {{ gitea_task.queue_type }}
+    {% if gitea_task.queue_type == "channel" and
+          gitea_task.queue_length | default('') | string | length > 0 %}
+QUEUE_LENGTH = {{ gitea_task.queue_length }}
+    {% endif %}
+    {% if gitea_task.queue_type == "redis" and
+          gitea_task.queue_conn_str | default('') | string | length > 0 %}
+QUEUE_CONN_STR = {{ gitea_task.queue_conn_str }}
+    {% endif %}
+  {% endif %}
+{% endif %}
+
+{% if gitea_time is defined and
+      gitea_time | count > 0 %}
+[time]
+  {% if gitea_time.format | default('') | string | length > 0 %}
+FORMAT = {{ gitea_time.format }}
+  {% endif %}
+  {% if gitea_time.default_ui_location | default('') | string | length > 0 %}
+DEFAULT_UI_LOCATION = {{ gitea_time.default_ui_location }}
+  {% endif %}
+{% endif %}
 
 {% if gitea_ui is defined and
       gitea_ui | count > 0 %}
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;[ui]
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; Number of repositories that are displayed on one explore page
-;EXPLORE_PAGING_NUM = 20
-;;
-;; Number of issues that are displayed on one page
-;ISSUE_PAGING_NUM = 20
-;;
-;; Number of maximum commits displayed in one activity feed
-;FEED_MAX_COMMIT_NUM = 5
-;;
-;; Number of items that are displayed in home feed
-;FEED_PAGING_NUM = 20
-;;
-;; Number of items that are displayed in a single subsitemap
-;SITEMAP_PAGING_NUM = 20
-;;
-;; Number of maximum commits displayed in commit graph.
-;GRAPH_MAX_COMMIT_NUM = 100
-;;
-;; Number of line of codes shown for a code comment
-;CODE_COMMENT_LINES = 4
-;;
-;; Value of `theme-color` meta tag, used by Android >= 5.0
-;; An invalid color like "none" or "disable" will have the default style
-;; More info: https://developers.google.com/web/updates/2014/11/Support-for-theme-color-in-Chrome-39-for-Android
-;THEME_COLOR_META_TAG = `#6cc644`
-;;
-;; Max size of files to be displayed (default is 8MiB)
-;MAX_DISPLAY_FILE_SIZE = 8388608
-;;
-;; Whether the email of the user should be shown in the Explore Users page
-;SHOW_USER_EMAIL = true
-;;
-;; Set the default theme for the Gitea install
-;DEFAULT_THEME = auto
-;;
-;; All available themes. Allow users select personalized themes regardless of the value of `DEFAULT_THEME`.
-;THEMES = auto,gitea,arc-green
-;;
-;; All available reactions users can choose on issues/prs and comments.
-;; Values can be emoji alias (:smile:) or a unicode emoji.
-;; For custom reactions, add a tightly cropped square image to public/img/emoji/reaction_name.png
-;REACTIONS = +1, -1, laugh, hooray, confused, heart, rocket, eyes
-;;
-;; Additional Emojis not defined in the utf8 standard
-;; By default we support gitea (:gitea:), to add more copy them to public/img/emoji/emoji_name.png and add it to this config.
-;; Dont mistake it for Reactions.
-;CUSTOM_EMOJIS = gitea, codeberg, gitlab, git, github, gogs
-;;
-;; Whether the full name of the users should be shown where possible. If the full name isn't set, the username will be used.
-;DEFAULT_SHOW_FULL_NAME = false
-;;
-;; Whether to search within description at repository search on explore page.
-;SEARCH_REPO_DESCRIPTION = true
-;;
-;; Whether to enable a Service Worker to cache frontend assets
-;USE_SERVICE_WORKER = false
-;;
-;; Whether to only show relevant repos on the explore page when no keyword is specified and default sorting is used.
-;; A repo is considered irrelevant if it's a fork or if it has no metadata (no description, no icon, no topic).
-;ONLY_SHOW_RELEVANT_REPOS = false
+[ui]
+  {% if gitea_ui.explore_paging_num | default('') | string | length > 0 %}
+EXPLORE_PAGING_NUM = {{ gitea_ui.explore_paging_num }}
+  {% endif %}
+  {% if gitea_ui.issue_paging_num | default('') | string | length > 0 %}
+ISSUE_PAGING_NUM = {{ gitea_ui.issue_paging_num }}
+  {% endif %}
+  {% if gitea_ui.feed_max_commit_num | default('') | string | length > 0 %}
+FEED_MAX_COMMIT_NUM = {{ gitea_ui.feed_max_commit_num }}
+  {% endif %}
+  {% if gitea_ui.feed_paging_num | default('') | string | length > 0 %}
+FEED_PAGING_NUM = {{ gitea_ui.feed_paging_num }}
+  {% endif %}
+  {% if gitea_ui.sitemap_paging_num | default('') | string | length > 0 %}
+SITEMAP_PAGING_NUM = {{ gitea_ui.sitemap_paging_num }}
+  {% endif %}
+  {% if gitea_ui.graph_max_commit_num | default('') | string | length > 0 %}
+GRAPH_MAX_COMMIT_NUM = {{ gitea_ui.graph_max_commit_num }}
+  {% endif %}
+  {% if gitea_ui.code_comment_lines | default('') | string | length > 0 %}
+CODE_COMMENT_LINES = {{ gitea_ui.code_comment_lines }}
+  {% endif %}
+  {% if gitea_ui.theme_color_meta_tag | default('') | string | length > 0 %}
+THEME_COLOR_META_TAG = `{{ gitea_ui.theme_color_meta_tag }}`
+  {% endif %}
+  {% if gitea_ui.max_display_file_size | default('') | string | length > 0 %}
+MAX_DISPLAY_FILE_SIZE = {{ gitea_ui.max_display_file_size }}
+  {% endif %}
+  {% if gitea_ui.show_user_email | default('') | string | length > 0 %}
+SHOW_USER_EMAIL = {{ gitea_ui.show_user_email | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_ui.default_theme | default('') | string | length > 0 %}
+DEFAULT_THEME = {{ gitea_ui.default_theme }}
+  {% endif %}
+  {% if gitea_ui.themes | count > 0 %}
+THEMES = {{ gitea_ui.themes | join(', ') }}
+  {% endif %}
+  {% if gitea_ui.reactions | count > 0 %}
+REACTIONS = {{ gitea_ui.reactions | join(', ') }}
+  {% endif %}
+  {% if gitea_ui.custom_emojis | count > 0 %}
+CUSTOM_EMOJIS = {{ gitea_ui.custom_emojis | join(', ') }}
+  {% endif %}
+  {% if gitea_ui.default_show_full_name | default('') | string | length > 0 %}
+DEFAULT_SHOW_FULL_NAME = {{ gitea_ui.default_show_full_name | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_ui.search_repo_description | default('') | string | length > 0 %}
+SEARCH_REPO_DESCRIPTION = {{ gitea_ui.search_repo_description | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_ui.use_service_worker | default('') | string | length > 0 %}
+USE_SERVICE_WORKER = {{ gitea_ui.use_service_worker | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_ui.only_show_relevant_repos | default('') | string | length > 0 %}
+ONLY_SHOW_RELEVANT_REPOS = {{ gitea_ui.only_show_relevant_repos | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -2012,21 +2035,51 @@ LFS_JWT_SECRET =
 
 
 
-{% if gitea_ssh is defined and
-      gitea_ssh | count > 0 %}
+{#
 
+
+{% if gitea_cors is defined and
+      gitea_cors | count > 0 %}
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;[ssh.minimum_key_sizes]
+;[cors]
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
-;; Define allowed algorithms and their minimum key length (use -1 to disable a type)
-;ED25519 = 256
-;ECDSA = 256
-;RSA = 2047 ; we allow 2047 here because an otherwise valid 2048 bit RSA key can be reported as having 2047 bit length
-;DSA = -1 ; set to 1024 to switch on
+;; More information about CORS can be found here: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#The_HTTP_response_headers
+;; enable cors headers (disabled by default)
+;ENABLED = false
+;;
+;; scheme of allowed requests
+;SCHEME = http
+;;
+;; list of requesting domains that are allowed
+;ALLOW_DOMAIN = *
+;;
+;; allow subdomains of headers listed above to request
+;ALLOW_SUBDOMAIN = false
+;;
+;; list of methods allowed to request
+;METHODS = GET,HEAD,POST,PUT,PATCH,DELETE,OPTIONS
+;;
+;; max time to cache response
+;MAX_AGE = 10m
+;;
+;; allow request with credentials
+;ALLOW_CREDENTIALS = false
+;;
+;; headers to permit
+;HEADERS = Content-Type,User-Agent
+;;
+;; set X-FRAME-OPTIONS header
+;X_FRAME_OPTIONS = SAMEORIGIN
 {% endif %}
+
+
+
+
+
+
 
 
 
@@ -2120,74 +2173,10 @@ LFS_JWT_SECRET =
 {% endif %}
 
 
-{% if gitea_session is defined and
-      gitea_session | count > 0 %}
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;[session]
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; Either "memory", "file", "redis", "db", "mysql", "couchbase", "memcache" or "postgres"
-;; Default is "memory". "db" will reuse the configuration in [database]
-;PROVIDER = memory
-;;
-;; Provider config options
-;; memory: doesn't have any config yet
-;; file: session file path, e.g. `data/sessions`
-;; redis: `redis://127.0.0.1:6379/0?pool_size=100&idle_timeout=180s`
-;; mysql: go-sql-driver/mysql dsn config string, e.g. `root:password@/session_table`
-;PROVIDER_CONFIG = data/sessions ; Relative paths will be made absolute against _`AppWorkPath`_.
-;;
-;; Session cookie name
-;COOKIE_NAME = i_like_gitea
-;;
-;; If you use session in https only, default is false
-;COOKIE_SECURE = false
-;;
-;; Session GC time interval in seconds, default is 86400 (1 day)
-;GC_INTERVAL_TIME = 86400
-;;
-;; Session life time in seconds, default is 86400 (1 day)
-;SESSION_LIFE_TIME = 86400
-;;
-;; SameSite settings. Either "none", "lax", or "strict"
-;SAME_SITE=lax
-{% endif %}
-
-
-
-
-
 {% if gitea_attachment is defined and
       gitea_attachment | count > 0 %}
 
 {% endif %}
-
-
-{% if gitea_time is defined and
-      gitea_time | count > 0 %}
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;[time]
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; Specifies the format for fully outputted dates. Defaults to RFC1123
-;; Special supported values are ANSIC, UnixDate, RubyDate, RFC822, RFC822Z, RFC850, RFC1123, RFC1123Z, RFC3339, RFC3339Nano, Kitchen, Stamp, StampMilli, StampMicro and StampNano
-;; For more information about the format see http://golang.org/pkg/time/#pkg-constants
-;FORMAT =
-;;
-;; Location the UI time display i.e. Asia/Shanghai
-;; Empty means server's location setting
-;DEFAULT_UI_LOCATION =
-{% endif %}
-
-
-
-
-
-
 
 
 {% if gitea_hightlight is defined and
@@ -2203,116 +2192,6 @@ LFS_JWT_SECRET =
 {% endif %}
 
 
-
-
-
-
-
-
-
-
-
-
-{% if gitea_task is defined and
-      gitea_task | count > 0 %}
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;[task]
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; Task queue type, could be `channel` or `redis`.
-;QUEUE_TYPE = channel
-;;
-;; Task queue length, available only when `QUEUE_TYPE` is `channel`.
-;QUEUE_LENGTH = 1000
-;;
-;; Task queue connection string, available only when `QUEUE_TYPE` is `redis`.
-;; If there is a password of redis, use `redis://127.0.0.1:6379/0?pool_size=100&idle_timeout=180s`.
-;QUEUE_CONN_STR = "redis://127.0.0.1:6379/0?pool_size=100&idle_timeout=180s"
-{% endif %}
-
-
-
-
-
-
-
-
-
-
-
-{% if gitea_storage is defined and
-      gitea_storage | count > 0 %}
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; default storage for attachments, lfs and avatars
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;[storage]
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; storage type
-;STORAGE_TYPE = local
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; settings for repository archives, will override storage setting
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;[storage.repo-archive]
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; storage type
-;STORAGE_TYPE = local
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; settings for packages, will override storage setting
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;[storage.packages]
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; storage type
-;STORAGE_TYPE = local
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; customize storage
-;[storage.my_minio]
-;STORAGE_TYPE = minio
-;;
-;; Minio endpoint to connect only available when STORAGE_TYPE is `minio`
-;MINIO_ENDPOINT = localhost:9000
-;;
-;; Minio accessKeyID to connect only available when STORAGE_TYPE is `minio`
-;MINIO_ACCESS_KEY_ID =
-;;
-;; Minio secretAccessKey to connect only available when STORAGE_TYPE is `minio`
-;MINIO_SECRET_ACCESS_KEY =
-;;
-;; Minio bucket to store the attachments only available when STORAGE_TYPE is `minio`
-;MINIO_BUCKET = gitea
-;;
-;; Minio location to create bucket only available when STORAGE_TYPE is `minio`
-;MINIO_LOCATION = us-east-1
-;;
-;; Minio enabled ssl only available when STORAGE_TYPE is `minio`
-;MINIO_USE_SSL = false
-;;
-;; Minio skip SSL verification available when STORAGE_TYPE is `minio`
-;MINIO_INSECURE_SKIP_VERIFY = false
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; settings for action logs, will override storage setting
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;[storage.actions_log]
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; storage type
-;STORAGE_TYPE = local
-
-
-{% endif %}
 
 {% if gitea_lfs is defined and
       gitea_lfs | count > 0 %}
