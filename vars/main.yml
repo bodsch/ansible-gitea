@@ -14,8 +14,8 @@ gitea_cache_directory: /var/cache/ansible/gitea
 
 gitea_remote_tmp_directory: "{{ gitea_cache_directory }}/{{ gitea_version }}"
 
-gitea_requirements: []
-
+gitea_requirements:
+  - iproute2
 
 gitea_defaults_actions:
   enabled: false
@@ -703,7 +703,10 @@ gitea_defaults_server:
   ssl_min_version: ""                             # tlsv1.2
   ssl_max_version: ""
   ssl_curve_preferences: []                       # [x25519, p256]
-  # will default to "ecdhe_ecdsa_with_aes_256_gcm_sha384,ecdhe_rsa_with_aes_256_gcm_sha384,ecdhe_ecdsa_with_aes_128_gcm_sha256,ecdhe_rsa_with_aes_128_gcm_sha256,ecdhe_ecdsa_with_chacha20_poly1305,ecdhe_rsa_with_chacha20_poly1305" if aes is supported by hardware, otherwise chacha will be first.
+  # will default to
+  #     "ecdhe_ecdsa_with_aes_256_gcm_sha384,ecdhe_rsa_with_aes_256_gcm_sha384,ecdhe_ecdsa_with_aes_128_gcm_sha256,
+  #      ecdhe_rsa_with_aes_128_gcm_sha256,ecdhe_ecdsa_with_chacha20_poly1305,ecdhe_rsa_with_chacha20_poly1305"
+  # if aes is supported by hardware, otherwise chacha will be first.
   ssl_cipher_suites: []
   per_write_timeout: ""                           # 30s
   per_write_per_kb_timeout: ""                    # 30s
@@ -764,177 +767,147 @@ gitea_defaults_server:
   static_cache_time: ""                           # 6h
 
 gitea_defaults_service:
-  active_code_live_minutes: 180
-  reset_passwd_code_live_minutes: 180
-  register_email_confirm: false
-  register_manual_confirm: false
+  active_code_live_minutes: ""                    # 180
+  reset_passwd_code_live_minutes: ""              # 180
+  register_email_confirm: ""                      # false
+  register_manual_confirm: ""                     # false
   email_domain_whitelist: []
   email_domain_blocklist: []
-  disable_registration: false
-  allow_only_internal_registration: false
-  allow_only_external_registration: false
-  require_signin_view: false
-  enable_notify_mail: false
-  enable_basic_authentication: true
-  enable_reverse_proxy_authentication: false
-  enable_reverse_proxy_auto_registration: false
-  enable_reverse_proxy_email: false
-  enable_reverse_proxy_full_name: false
-  enable_captcha: false
-  require_captcha_for_login: false
-  captcha_type: image
-  recaptcha_url: https://www.google.com/recaptcha/
+  disable_registration: ""                        # false
+  allow_only_internal_registration: ""            # false
+  allow_only_external_registration: ""            # false
+  require_signin_view: ""                         # false
+  enable_notify_mail: ""                          # false
+  enable_basic_authentication: ""                 # true
+  enable_reverse_proxy_authentication: ""         # false
+  enable_reverse_proxy_auto_registration: ""      # false
+  enable_reverse_proxy_email: ""                  # false
+  enable_reverse_proxy_full_name: ""              # false
+  enable_captcha: ""                              # false
+  require_captcha_for_login: ""                   # false
+  captcha_type: ""                                # image
+  recaptcha_url: ""                               # https://www.google.com/recaptcha/
   recaptcha_secret: ""
   recaptcha_sitekey: ""
   hcaptcha_secret: ""
   hcaptcha_sitekey: ""
-  mcaptcha_url: https://demo.mcaptcha.org
+  mcaptcha_url: ""                                # https://demo.mcaptcha.org
   mcaptcha_secret: ""
   mcaptcha_sitekey: ""
   cf_turnstile_sitekey: ""
   cf_turnstile_secret: ""
-  default_keep_email_private: false
-  default_allow_create_organization: true
-  default_user_is_restricted: false
-  default_user_visibility: public
-  allowed_user_visibility_modes:
-    - public
-    - limited
-    - private
-  default_org_visibility: public
-  default_org_member_visible: false
-  default_enable_dependencies: true
-  allow_cross_repository_dependencies: true
-  enable_user_heatmap: true
-  enable_timetracking: true
-  default_enable_timetracking: true
-  default_allow_only_contributors_to_track_time: true
+  default_keep_email_private: ""                  # false
+  default_allow_create_organization: ""           # true
+  default_user_is_restricted: ""                  # false
+  default_user_visibility: ""                     # public
+  allowed_user_visibility_modes: []               # [public, limited, private]
+  default_org_visibility: ""                      # public
+  default_org_member_visible: ""                  # false
+  default_enable_dependencies: ""                 # true
+  allow_cross_repository_dependencies: ""         # true
+  enable_user_heatmap: ""                         # true
+  enable_timetracking: ""                         # true
+  default_enable_timetracking: ""                 # true
+  default_allow_only_contributors_to_track_time: "" # true
   no_reply_address: ""
-  show_registration_button: true
-  show_milestones_dashboard_page: true
-  auto_watch_new_repos: true
-  auto_watch_on_changes: false
-  user_delete_with_comments_max_time: 0
-  valid_site_url_schemes:
-    - http
-    - https
+  show_registration_button: ""                    # true
+  show_milestones_dashboard_page: ""              # true
+  auto_watch_new_repos: ""                        # true
+  auto_watch_on_changes: ""                       # false
+  user_delete_with_comments_max_time: ""          # 0
+  valid_site_url_schemes: []                      # [http, https]
 
 gitea_defaults_session:
-  provider: memory
-  provider_config: data/sessions
-  cookie_name: i_like_gitea
-  cookie_secure: false
-  gc_interval_time: 86400
-  session_life_time: 86400
-  same_site: lax
+  provider: ""                                    # memory
+  provider_config: ""                             # data/sessions
+  cookie_name: ""                                 # i_like_gitea
+  cookie_secure: ""                               # false
+  gc_interval_time: ""                            # 86400
+  session_life_time: ""                           # 86400
+  same_site: ""                                   # lax
 
 gitea_defaults_ssh:
-  minimum_key_sizes:
-    ed25519: 256
-    ecdsa: 256
-    rsa: 2047
-    dsa: -1
+  minimum_key_sizes: {}
+    # ed25519: 256
+    # ecdsa: 256
+    # rsa: 2047
+    # dsa: -1
 
 gitea_defaults_storage:
-  storage_type: local
+  storage_type: ""                                # local
   repo_-archive:
-    storage_type: local
+    storage_type: ""                              # local
   packages:
-    storage_type: local
+    storage_type: ""                              # local
   my_minio:
-    storage_type: minio
-    minio_endpoint: localhost:9000
+    storage_type: ""                              # minio
+    minio_endpoint: ""                            # localhost:9000
     minio_access_key_id: ""
     minio_secret_access_key: ""
-    minio_bucket: gitea
-    minio_location: us-east-1
-    minio_use_ssl: false
-    minio_insecure_skip_verify: false
+    minio_bucket: ""                              # gitea
+    minio_location: ""                            # us-east-1
+    minio_use_ssl: ""                             # false
+    minio_insecure_skip_verify: ""                # false
   actions_log:
-    storage_type: local
+    storage_type: ""                              # local
 
 gitea_defaults_task:
-  queue_type: channel
-  queue_length: 1000
-  queue_conn_str: "redis://127.0.0.1:6379/0?pool_size=100&idle_timeout=180s"
+  queue_type: ""                                  # channel
+  queue_length: ""                                # 1000
+  queue_conn_str: ""                              # "redis://127.0.0.1:6379/0?pool_size=100&idle_timeout=180s"
 
 gitea_defaults_time:
   format: ""
   default_ui_location: ""
 
 gitea_defaults_ui:
-  explore_paging_num: 20
-  issue_paging_num: 20
-  feed_max_commit_num: 5
-  feed_paging_num: 20
-  sitemap_paging_num: 20
-  graph_max_commit_num: 100
-  code_comment_lines: 4
-  theme_color_meta_tag: "#6cc644"
-  max_display_file_size: 8388608
-  show_user_email: true
-  default_theme: auto
-  themes:
-    - auto
-    - gitea
-    - arc-green
-  reactions:
-    - "+1"
-    - "-1"
-    - laugh
-    - hooray
-    - confused
-    - heart
-    - rocket
-    - eyes
-  custom_emojis:
-    - gitea
-    - codeberg
-    - gitlab
-    - git
-    - github
-    - gogs
-  default_show_full_name: false
-  search_repo_description: true
-  use_service_worker: false
-  only_show_relevant_repos: false
+  explore_paging_num: ""                          # 20
+  issue_paging_num: ""                            # 20
+  feed_max_commit_num: ""                         # 5
+  feed_paging_num: ""                             # 20
+  sitemap_paging_num: ""                          # 20
+  graph_max_commit_num: ""                        # 100
+  code_comment_lines: ""                          # 4
+  theme_color_meta_tag: ""                        # "#6cc644"
+  max_display_file_size: ""                       # 8388608
+  show_user_email: ""                             # true
+  default_theme: ""                               # auto
+  themes: []                                      # [auto, gitea, arc-green]
+  reactions: []                                   # ["+1", "-1", laugh, hooray, confused, heart, rocket, eyes]
+  custom_emojis: []                               # [gitea, codeberg, gitlab, git, github, gogs]
+  default_show_full_name: ""                      # false
+  search_repo_description: ""                     # true
+  use_service_worker: ""                          # false
+  only_show_relevant_repos: ""                    # false
   admin:
-    user_paging_num: 50
-    repo_paging_num: 50
-    notice_paging_num: 25
-    org_paging_num: 50
+    user_paging_num: ""                           # 50
+    repo_paging_num: ""                           # 50
+    notice_paging_num: ""                         # 25
+    org_paging_num: ""                            # 50
   user:
-    repo_paging_num: 15
+    repo_paging_num: ""                           # 15
   meta:
-    author: gitea - git with a cup of tea
-    description: gitea (git with a cup of tea) is a painless self-hosted Git service written in Go
-    keywords:
-      - go
-      - git
-      - self-hosted
-      - gitea
+    author: ""                                    # gitea - git with a cup of tea
+    description: ""                               # gitea (git with a cup of tea) is a painless self-hosted Git service written in Go
+    keywords: []                                  # [go, git, self-hosted, gitea]
   notification:
-    min_timeout: 10s
-    max_timeout: 60s
-    timeout_step: 10s
-    event_source_update_time: 10s
+    min_timeout: ""                               # 10s
+    max_timeout: ""                               # 60s
+    timeout_step: ""                              # 10s
+    event_source_update_time: ""                  # 10s
   svg:
-    enable_render: true
+    enable_render: ""                             # true
   csv:
-    max_file_size: 524288
+    max_file_size: ""                             # 524288
 
 gitea_defaults_webhook:
-  queue_length: 1000
-  deliver_timeout: 5
-  allowed_host_list:
-    - external
-  skip_tls_verify: false
-  paging_num: 10
+  queue_length: ""                                # 1000
+  deliver_timeout: ""                             # 5
+  allowed_host_list: []                           # [external]
+  skip_tls_verify: ""                             # false
+  paging_num: ""                                  # 10
   proxy_url: ""
   proxy_hosts: []
-
-
-
 
 __gitea_files:
   archive: "v{{ gitea_version }}/gitea-{{ gitea_version }}-linux-{{ system_architecture }}"

@@ -142,11 +142,11 @@
       ansible.builtin.user:
         name: "{{ gitea_system_user }}"
         groups: "{{ gitea_system_group }}"
-        append: true
-        shell: /usr/sbin/nologin
+        # append: true
+        shell: /bin/bash
         system: true
         createhome: false
-        home: /nonexistent
+        home: "{{ gitea_working_dir }}"
 
 - name: create install directory
   ansible.builtin.file:

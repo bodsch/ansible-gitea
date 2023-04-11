@@ -51,3 +51,26 @@
     owner: root
     group: "{{ gitea_system_group }}"
     mode: 0770
+
+- name: create gitea working directory
+  ansible.builtin.file:
+    path: "{{ gitea_working_dir }}"
+    state: directory
+    owner: root
+    group: "{{ gitea_system_group }}"
+    mode: 0770
+
+- name: create gitea custom directory tree
+  ansible.builtin.file:
+    path: "{{ gitea_working_dir }}/{{ item }}"
+    state: directory
+    owner: root
+    group: "{{ gitea_system_group }}"
+    mode: 0770
+  loop:
+    - log
+    - custom/options
+    - data
+    - data/gitea-repositories
+    - data/lfs
+    - data/home

@@ -70,8 +70,8 @@ ExecStart         = /usr/bin/gitea web ${OPTIONS}
 Restart=always
 
 Environment       = USER={{ gitea_system_user }}
-Environment       = HOME=/home/git
-Environment       = GITEA_WORK_DIR=/var/lib/gitea
+Environment       = HOME={{ gitea_working_dir }}
+Environment       = GITEA_WORK_DIR={{ gitea_working_dir }}
 
 # If you install Git to directory prefix other than default PATH (which happens
 # for example if you install other versions of Git side-to-side with

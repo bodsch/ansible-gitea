@@ -10,7 +10,7 @@ gitea_system_user: gitea
 gitea_system_group: gitea
 gitea_config_dir: /etc/gitea
 gitea_working_dir: /var/lib/gitea
-gitea_data_dir: /home/{{ gitea_system_user }}
+gitea_home_dir: /home/{{ gitea_system_user }}
 
 gitea_direct_download: false
 
