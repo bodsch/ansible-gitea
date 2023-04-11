@@ -1,0 +1,17 @@
+
+[markdown]
+  {% if gitea_markdown.enable_hard_line_break_in_comments | default('') | string | length > 0 %}
+ENABLE_HARD_LINE_BREAK_IN_COMMENTS = {{ gitea_markdown.enable_hard_line_break_in_comments | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_markdown.enable_hard_line_break_in_documents | default('') | string | length > 0 %}
+ENABLE_HARD_LINE_BREAK_IN_DOCUMENTS = {{ gitea_markdown.enable_hard_line_break_in_documents | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_markdown.custom_url_schemes | count > 0 %}
+CUSTOM_URL_SCHEMES = {{ gitea_markdown.custom_url_schemes | join(', ') }}
+  {% endif %}
+  {% if gitea_markdown.file_extensions | count > 0 %}
+FILE_EXTENSIONS = {{ gitea_markdown.file_extensions | join(', ') }}
+  {% endif %}
+  {% if gitea_markdown.enable_math | default('') | string | length > 0 %}
+ENABLE_MATH = {{ gitea_markdown.enable_math | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}

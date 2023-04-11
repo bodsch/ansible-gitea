@@ -1,0 +1,128 @@
+
+[ui]
+  {% if gitea_ui.explore_paging_num | default('') | string | length > 0 %}
+EXPLORE_PAGING_NUM = {{ gitea_ui.explore_paging_num }}
+  {% endif %}
+  {% if gitea_ui.issue_paging_num | default('') | string | length > 0 %}
+ISSUE_PAGING_NUM = {{ gitea_ui.issue_paging_num }}
+  {% endif %}
+  {% if gitea_ui.feed_max_commit_num | default('') | string | length > 0 %}
+FEED_MAX_COMMIT_NUM = {{ gitea_ui.feed_max_commit_num }}
+  {% endif %}
+  {% if gitea_ui.feed_paging_num | default('') | string | length > 0 %}
+FEED_PAGING_NUM = {{ gitea_ui.feed_paging_num }}
+  {% endif %}
+  {% if gitea_ui.sitemap_paging_num | default('') | string | length > 0 %}
+SITEMAP_PAGING_NUM = {{ gitea_ui.sitemap_paging_num }}
+  {% endif %}
+  {% if gitea_ui.graph_max_commit_num | default('') | string | length > 0 %}
+GRAPH_MAX_COMMIT_NUM = {{ gitea_ui.graph_max_commit_num }}
+  {% endif %}
+  {% if gitea_ui.code_comment_lines | default('') | string | length > 0 %}
+CODE_COMMENT_LINES = {{ gitea_ui.code_comment_lines }}
+  {% endif %}
+  {% if gitea_ui.theme_color_meta_tag | default('') | string | length > 0 %}
+THEME_COLOR_META_TAG = `{{ gitea_ui.theme_color_meta_tag }}`
+  {% endif %}
+  {% if gitea_ui.max_display_file_size | default('') | string | length > 0 %}
+MAX_DISPLAY_FILE_SIZE = {{ gitea_ui.max_display_file_size }}
+  {% endif %}
+  {% if gitea_ui.show_user_email | default('') | string | length > 0 %}
+SHOW_USER_EMAIL = {{ gitea_ui.show_user_email | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_ui.default_theme | default('') | string | length > 0 %}
+DEFAULT_THEME = {{ gitea_ui.default_theme }}
+  {% endif %}
+  {% if gitea_ui.themes | count > 0 %}
+THEMES = {{ gitea_ui.themes | join(', ') }}
+  {% endif %}
+  {% if gitea_ui.reactions | count > 0 %}
+REACTIONS = {{ gitea_ui.reactions | join(', ') }}
+  {% endif %}
+  {% if gitea_ui.custom_emojis | count > 0 %}
+CUSTOM_EMOJIS = {{ gitea_ui.custom_emojis | join(', ') }}
+  {% endif %}
+  {% if gitea_ui.default_show_full_name | default('') | string | length > 0 %}
+DEFAULT_SHOW_FULL_NAME = {{ gitea_ui.default_show_full_name | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_ui.search_repo_description | default('') | string | length > 0 %}
+SEARCH_REPO_DESCRIPTION = {{ gitea_ui.search_repo_description | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_ui.use_service_worker | default('') | string | length > 0 %}
+USE_SERVICE_WORKER = {{ gitea_ui.use_service_worker | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_ui.only_show_relevant_repos | default('') | string | length > 0 %}
+ONLY_SHOW_RELEVANT_REPOS = {{ gitea_ui.only_show_relevant_repos | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_ui.admin is defined and
+        gitea_ui.admin | count > 0 %}
+
+[ui.admin]
+    {% if gitea_ui.admin.user_paging_num | default('') | string | length > 0 %}
+USER_PAGING_NUM = {{ gitea_ui.admin.user_paging_num }}
+    {% endif %}
+    {% if gitea_ui.admin.repo_paging_num | default('') | string | length > 0 %}
+REPO_PAGING_NUM = {{ gitea_ui.admin.repo_paging_num }}
+    {% endif %}
+    {% if gitea_ui.admin.notice_paging_num | default('') | string | length > 0 %}
+NOTICE_PAGING_NUM = {{ gitea_ui.admin.notice_paging_num }}
+    {% endif %}
+    {% if gitea_ui.admin.org_paging_num | default('') | string | length > 0 %}
+ORG_PAGING_NUM = {{ gitea_ui.admin.org_paging_num }}
+    {% endif %}
+  {% endif %}
+  {% if gitea_ui.user is defined and
+        gitea_ui.user | count > 0 %}
+
+[ui.user]
+    {% if gitea_ui.user.repo_paging_num | default('') | string | length > 0 %}
+REPO_PAGING_NUM = {{ gitea_ui.user.repo_paging_num }}
+    {% endif %}
+  {% endif %}
+  {% if gitea_ui.meta is defined and
+        gitea_ui.meta | count > 0 %}
+
+[ui.meta]
+    {% if gitea_ui.meta.author | default('') | string | length > 0 %}
+AUTHOR = {{ gitea_ui.meta.author }}
+    {% endif %}
+    {% if gitea_ui.meta.description | default('') | string | length > 0 %}
+DESCRIPTION = {{ gitea_ui.meta.description }}
+    {% endif %}
+    {% if gitea_ui.meta.keywords | count > 0 %}
+KEYWORDS = {{ gitea_ui.meta.keywords | join(', ') }}
+    {% endif %}
+  {% endif %}
+  {% if gitea_ui.notification is defined and
+        gitea_ui.notification | count > 0 %}
+
+[ui.notification]
+    {% if gitea_ui.notification.min_timeout | default('') | string | length > 0 %}
+MIN_TIMEOUT = {{ gitea_ui.notification.min_timeout }}
+    {% endif %}
+    {% if gitea_ui.notification.max_timeout | default('') | string | length > 0 %}
+MAX_TIMEOUT = {{ gitea_ui.notification.max_timeout }}
+    {% endif %}
+    {% if gitea_ui.notification.timeout_step | default('') | string | length > 0 %}
+TIMEOUT_STEP = {{ gitea_ui.notification.timeout_step }}
+    {% endif %}
+    {% if gitea_ui.notification.event_source_update_time | default('') | string | length > 0 %}
+EVENT_SOURCE_UPDATE_TIME = {{ gitea_ui.notification.event_source_update_time }}
+    {% endif %}
+  {% endif %}
+  {% if gitea_ui.svg is defined and
+        gitea_ui.svg | count > 0 %}
+
+[ui.svg]
+    {% if gitea_ui.svg.enable_render | default('') | string | length > 0 %}
+ENABLE_RENDER = {{ gitea_ui.svg.enable_render | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% endif %}
+  {% endif %}
+  {% if gitea_ui.csv is defined and
+        gitea_ui.csv | count > 0 %}
+
+[ui.csv]
+    {% if gitea_ui.csv.max_file_size | default('') | string | length > 0 %}
+MAX_FILE_SIZE = {{ gitea_ui.csv.max_file_size }}
+    {% endif %}
+  {% endif %}

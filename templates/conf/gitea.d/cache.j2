@@ -1,0 +1,30 @@
+
+[cache]
+ENABLED = {{ gitea_cache.enabled | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% if gitea_cache.adapter  | default('') | string | length > 0 and
+        gitea_cache.adapter in ["memory", "redis", "memcache", "twoqueue"] %}
+ADAPTER = {{ gitea_cache.adapter }}
+  {% endif %}
+  {% if gitea_cache.adapter == "memory" and
+        gitea_cache.interval | default('') | string | length > 0 %}
+INTERVAL = {{ gitea_cache.interval }}
+  {% endif %}
+  {% if gitea_cache.adapter in ["redis", "memcache", "twoqueue"] and
+        gitea_cache.host | default('') | string | length > 0 %}
+HOST = {{ gitea_cache.host }}
+  {% endif %}
+  {% if gitea_cache.item_ttl | default('') | string | length > 0 %}
+ITEM_TTL = {{ gitea_cache.item_ttl }}
+  {% endif %}
+  {% if gitea_cache.last_commit | default('') | string | length > 0 and
+        gitea_cache.last_commit.enabled | default('false') | bool %}
+
+[cache.last_commit]
+ENABLED = {{ gitea_cache.last_commit.enabled | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% if gitea_cache.last_commit.item_ttl | default('') | string | length > 0 %}
+ITEM_TTL = {{ gitea_cache.last_commit.item_ttl }}
+    {% endif %}
+    {% if gitea_cache.last_commit.commits_count | default('') | string | length > 0 %}
+COMMITS_COUNT = 1000
+    {% endif %}
+  {% endif %}

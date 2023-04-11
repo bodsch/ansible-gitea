@@ -1,0 +1,7 @@
+
+[actions]
+ENABLED = {{ gitea_actions.enabled | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% if gitea_actions.default_actions_url is defined and
+        gitea_actions.default_actions_url | string | length > 0 %}
+DEFAULT_ACTIONS_URL = {{ gitea_actions.default_actions_url }}
+  {% endif %}

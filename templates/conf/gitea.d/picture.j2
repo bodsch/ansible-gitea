@@ -1,0 +1,36 @@
+
+[picture]
+  {% if gitea_picture.avatar_upload_path | default('') | string | length > 0 %}
+AVATAR_UPLOAD_PATH = {{ gitea_picture.avatar_upload_path }}
+  {% endif %}
+  {% if gitea_picture.repository_avatar_upload_path | default('') | string | length > 0 %}
+REPOSITORY_AVATAR_UPLOAD_PATH = {{ gitea_picture.repository_avatar_upload_path }}
+  {% endif %}
+  {% if gitea_picture.repository_avatar_fallback | default('') | string | length > 0 and
+        gitea_picture.repository_avatar_fallback in ["none", "random", "image"]    %}
+REPOSITORY_AVATAR_FALLBACK = {{ gitea_picture.repository_avatar_fallback }}
+  {% endif %}
+  {% if gitea_picture.repository_avatar_fallback_image | default('') | string | length > 0 %}
+REPOSITORY_AVATAR_FALLBACK_IMAGE = {{ gitea_picture.repository_avatar_fallback_image }}
+  {% endif %}
+  {% if gitea_picture.avatar_max_width | default('') | string | length > 0 %}
+AVATAR_MAX_WIDTH = {{ gitea_picture.avatar_max_width }}
+  {% endif %}
+  {% if gitea_picture.avatar_max_height | default('') | string | length > 0 %}
+AVATAR_MAX_HEIGHT = {{ gitea_picture.avatar_max_height }}
+  {% endif %}
+  {% if gitea_picture.avatar_rendered_size_factor | default('') | string | length > 0 %}
+AVATAR_RENDERED_SIZE_FACTOR = {{ gitea_picture.avatar_rendered_size_factor }}
+  {% endif %}
+  {% if gitea_picture.avatar_max_file_size | default('') | string | length > 0 %}
+AVATAR_MAX_FILE_SIZE = {{ gitea_picture.avatar_max_file_size }}
+  {% endif %}
+  {% if gitea_picture.gravatar_source | default('') | string | length > 0 %}
+GRAVATAR_SOURCE = {{ gitea_picture.gravatar_source }}
+  {% endif %}
+  {% if gitea_picture.disable_gravatar | default('') | string | length > 0 %}
+DISABLE_GRAVATAR = {{ gitea_picture.disable_gravatar | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_picture.enable_federated_avatar | default('') | string | length > 0 %}
+ENABLE_FEDERATED_AVATAR = {{ gitea_picture.enable_federated_avatar | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}

@@ -1,0 +1,8 @@
+
+[time]
+  {% if gitea_time.format | default('') | string | length > 0 %}
+FORMAT = {{ gitea_time.format }}
+  {% endif %}
+  {% if gitea_time.default_ui_location | default('') | string | length > 0 %}
+DEFAULT_UI_LOCATION = {{ gitea_time.default_ui_location }}
+  {% endif %}

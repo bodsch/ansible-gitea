@@ -1,0 +1,160 @@
+
+[service]
+  {% if gitea_service.active_code_live_minutes | default('') | string | length > 0 %}
+ACTIVE_CODE_LIVE_MINUTES = {{ gitea_service.active_code_live_minutes }}
+  {% endif %}
+  {% if gitea_service.reset_passwd_code_live_minutes | default('') | string | length > 0 %}
+RESET_PASSWD_CODE_LIVE_MINUTES = {{ gitea_service.reset_passwd_code_live_minutes }}
+  {% endif %}
+  {% if gitea_service.register_email_confirm | default('') | string | length > 0 %}
+REGISTER_EMAIL_CONFIRM = {{ gitea_service.register_email_confirm | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.register_manual_confirm | default('') | string | length > 0 %}
+REGISTER_MANUAL_CONFIRM = {{ gitea_service.register_manual_confirm | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.email_domain_whitelist | count > 0 %}
+EMAIL_DOMAIN_WHITELIST = {{ gitea_service.email_domain_whitelist | join(', ') }}
+  {% endif %}
+  {% if gitea_service.email_domain_blocklist | count > 0 %}
+EMAIL_DOMAIN_BLOCKLIST = {{ gitea_service.email_domain_blocklist | join(', ') }}
+  {% endif %}
+  {% if gitea_service.disable_registration | default('') | string | length > 0 %}
+DISABLE_REGISTRATION = {{ gitea_service.disable_registration | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.allow_only_internal_registration | default('') | string | length > 0 %}
+ALLOW_ONLY_INTERNAL_REGISTRATION = {{ gitea_service.allow_only_internal_registration | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.allow_only_external_registration | default('') | string | length > 0 %}
+ALLOW_ONLY_EXTERNAL_REGISTRATION = {{ gitea_service.allow_only_external_registration | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.require_signin_view | default('') | string | length > 0 %}
+REQUIRE_SIGNIN_VIEW = {{ gitea_service.require_signin_view | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.enable_notify_mail | default('') | string | length > 0 %}
+ENABLE_NOTIFY_MAIL = {{ gitea_service.enable_notify_mail | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.enable_basic_authentication | default('') | string | length > 0 %}
+ENABLE_BASIC_AUTHENTICATION = {{ gitea_service.enable_basic_authentication | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.enable_reverse_proxy_authentication | default('') | string | length > 0 %}
+ENABLE_REVERSE_PROXY_AUTHENTICATION = {{ gitea_service.enable_reverse_proxy_authentication | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.enable_reverse_proxy_auto_registration | default('') | string | length > 0 %}
+ENABLE_REVERSE_PROXY_AUTO_REGISTRATION = {{ gitea_service.enable_reverse_proxy_auto_registration | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.enable_reverse_proxy_email | default('') | string | length > 0 %}
+ENABLE_REVERSE_PROXY_EMAIL = {{ gitea_service.enable_reverse_proxy_email | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.enable_reverse_proxy_full_name | default('') | string | length > 0 %}
+ENABLE_REVERSE_PROXY_FULL_NAME = {{ gitea_service.enable_reverse_proxy_full_name | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.enable_captcha | default('') | string | length > 0 %}
+ENABLE_CAPTCHA = {{ gitea_service.enable_captcha | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.require_captcha_for_login | default('') | string | length > 0 %}
+REQUIRE_CAPTCHA_FOR_LOGIN = {{ gitea_service.require_captcha_for_login | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.captcha_type | default('') | string | length > 0 and
+        gitea_service.captcha_type in ["image", "recaptcha", "hcaptcha", "mcaptcha", "cfturnstile"] %}
+CAPTCHA_TYPE = {{ gitea_service.captcha_type }}
+    {% if gitea_service.captcha_type == "recaptcha" %}
+      {% if gitea_service.recaptcha_url | default('') | string | length > 0 %}
+RECAPTCHA_URL = {{ gitea_service.recaptcha_url }}
+      {% endif %}
+      {% if gitea_service.recaptcha_secret | default('') | string | length > 0 %}
+RECAPTCHA_SECRET = {{ gitea_service.recaptcha_secret }}
+      {% endif %}
+      {% if gitea_service.recaptcha_sitekey | default('') | string | length > 0 %}
+RECAPTCHA_SITEKEY = {{ gitea_service.recaptcha_sitekey }}
+      {% endif %}
+    {% endif %}
+    {% if gitea_service.captcha_type == "hcaptcha" %}
+      {% if gitea_service.hcaptcha_secret | default('') | string | length > 0 %}
+HCAPTCHA_SECRET = {{ gitea_service.hcaptcha_secret }}
+      {% endif %}
+      {% if gitea_service.hcaptcha_sitekey | default('') | string | length > 0 %}
+HCAPTCHA_SITEKEY = {{ gitea_service.hcaptcha_sitekey }}
+      {% endif %}
+    {% endif %}
+    {% if gitea_service.captcha_type == "mcaptcha" %}
+      {% if gitea_service.mcaptcha_url | default('') | string | length > 0 %}
+MCAPTCHA_URL = {{ gitea_service.mcaptcha_url }}
+      {% endif %}
+      {% if gitea_service.mcaptcha_secret | default('') | string | length > 0 %}
+MCAPTCHA_SECRET = {{ gitea_service.mcaptcha_secret }}
+      {% endif %}
+      {% if gitea_service.mcaptcha_sitekey | default('') | string | length > 0 %}
+MCAPTCHA_SITEKEY = {{ gitea_service.mcaptcha_sitekey }}
+      {% endif %}
+    {% endif %}
+    {% if gitea_service.captcha_type == "cfturnstile" %}
+      {% if gitea_service.cf_turnstile_sitekey | default('') | string | length > 0 %}
+CF_TURNSTILE_SITEKEY = {{ gitea_service.cf_turnstile_sitekey }}
+      {% endif %}
+      {% if gitea_service.cf_turnstile_secret | default('') | string | length > 0 %}
+CF_TURNSTILE_SECRET = {{ gitea_service.cf_turnstile_secret }}
+      {% endif %}
+    {% endif %}
+  {% endif %}
+  {% if gitea_service.default_keep_email_private | default('') | string | length > 0 %}
+DEFAULT_KEEP_EMAIL_PRIVATE = {{ gitea_service.default_keep_email_private | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.default_allow_create_organization | default('') | string | length > 0 %}
+DEFAULT_ALLOW_CREATE_ORGANIZATION = {{ gitea_service.default_allow_create_organization | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.default_user_is_restricted | default('') | string | length > 0 %}
+DEFAULT_USER_IS_RESTRICTED = {{ gitea_service.default_user_is_restricted | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.default_user_visibility | default('') | string | length > 0 and
+        gitea_service.default_user_visibility in ["public", "limited", "private"] %}
+DEFAULT_USER_VISIBILITY = {{ gitea_service.default_user_visibility }}
+  {% endif %}
+  {% if gitea_service.allowed_user_visibility_modes | count > 0 %}
+ALLOWED_USER_VISIBILITY_MODES = {{ gitea_service.allowed_user_visibility_modes | join(', ') }}
+  {% endif %}
+  {% if gitea_service.default_org_visibility | default('') | string | length > 0 and
+        gitea_service.default_org_visibility in ["public", "limited", "private"] %}
+DEFAULT_ORG_VISIBILITY = {{ gitea_service.default_org_visibility }}
+  {% endif %}
+  {% if gitea_service.default_org_member_visible | default('') | string | length > 0 %}
+DEFAULT_ORG_MEMBER_VISIBLE = {{ gitea_service.default_org_member_visible | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.default_enable_dependencies | default('') | string | length > 0 %}
+DEFAULT_ENABLE_DEPENDENCIES = {{ gitea_service.default_enable_dependencies | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.allow_cross_repository_dependencies | default('') | string | length > 0 %}
+ALLOW_CROSS_REPOSITORY_DEPENDENCIES = {{ gitea_service.allow_cross_repository_dependencies | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.enable_user_heatmap | default('') | string | length > 0 %}
+ENABLE_USER_HEATMAP = {{ gitea_service.enable_user_heatmap | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.enable_timetracking | default('') | string | length > 0 %}
+ENABLE_TIMETRACKING = {{ gitea_service.enable_timetracking | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.default_enable_timetracking | default('') | string | length > 0 %}
+DEFAULT_ENABLE_TIMETRACKING = {{ gitea_service.default_enable_timetracking | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.default_allow_only_contributors_to_track_time | default('') | string | length > 0 %}
+DEFAULT_ALLOW_ONLY_CONTRIBUTORS_TO_TRACK_TIME = {{ gitea_service.default_allow_only_contributors_to_track_time | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.no_reply_address | default('') | string | length > 0 %}
+NO_REPLY_ADDRESS = {{ gitea_service.no_reply_address }}
+  {% endif %}
+  {% if gitea_service.show_registration_button | default('') | string | length > 0 %}
+SHOW_REGISTRATION_BUTTON = {{ gitea_service.show_registration_button | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.show_milestones_dashboard_page | default('') | string | length > 0 %}
+SHOW_MILESTONES_DASHBOARD_PAGE = {{ gitea_service.show_milestones_dashboard_page | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.auto_watch_new_repos | default('') | string | length > 0 %}
+AUTO_WATCH_NEW_REPOS = {{ gitea_service.auto_watch_new_repos | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.auto_watch_on_changes | default('') | string | length > 0 %}
+AUTO_WATCH_ON_CHANGES = {{ gitea_service.auto_watch_on_changes | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_service.user_delete_with_comments_max_time | default('') | string | length > 0 %}
+USER_DELETE_WITH_COMMENTS_MAX_TIME = {{ gitea_service.user_delete_with_comments_max_time }}
+  {% endif %}
+  {% if gitea_service.valid_site_url_schemes | count > 0 %}
+VALID_SITE_URL_SCHEMES = {{ gitea_service.valid_site_url_schemes | join(', ') }}
+  {% endif %}

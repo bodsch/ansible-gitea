@@ -1,0 +1,42 @@
+
+[log]
+  {% if gitea_log.root_path | default('') | string | length > 0 %}
+ROOT_PATH = {{ gitea_log.root_path }}
+  {% endif %}
+  {% if gitea_log.mode | count > 0 %}
+     {% set valid_log_mode = ["console", "file", "conn", "smtp", "database"] %}
+     {% set log_mode = gitea_log.mode | bodsch.core.compare_list(compare_to_list=valid_log_mode) %}
+MODE = {{ log_mode | join(', ') }}
+  {% endif %}
+  {% if gitea_log.level | default('') | string | length > 0 and
+        gitea_log.level | lower in ["trace", "debug", "info", "warn", "error", "critical", "none"] %}
+LEVEL = {{ gitea_log.level }}
+  {% endif %}
+  {% if gitea_log.disable_router_log | default('') | string | length > 0 %}
+DISABLE_ROUTER_LOG = {{ gitea_log.disable_router_log | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_log.router | default('') | string | length > 0 %}
+ROUTER = {{ gitea_log.router }}
+  {% endif %}
+  {% if gitea_log.enable_access_log | default('') | string | length > 0 %}
+ENABLE_ACCESS_LOG = {{ gitea_log.enable_access_log | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_log.access | default('') | string | length > 0 %}
+ACCESS = {{ gitea_log.access }}
+  {% endif %}
+  {% if gitea_log.access_log_template | default('') | string | length > 0 %}
+  {#
+    {{.Ctx.RemoteAddr}} - {{.Identity}} {{.Start.Format "[02/Jan/2006:15:04:05 -0700]" }} "{{.Ctx.Req.Method}} {{.Ctx.Req.URL.RequestURI}} {{.Ctx.Req.Proto}}" {{.ResponseWriter.Status}} {{.ResponseWriter.Size}} "{{.Ctx.Req.Referer}}\" \"{{.Ctx.Req.UserAgent}}"
+  #}
+ACCESS_LOG_TEMPLATE = {{ gitea_log.access_log_template }}
+  {% endif %}
+  {% if gitea_log.enable_ssh_log | default('') | string | length > 0 %}
+ENABLE_SSH_LOG = {{ gitea_log.enable_ssh_log | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_log.stacktrace_level | default('') | string | length > 0 and
+        gitea_log.stacktrace_level | lower in ["trace", "debug", "info", "warn", "error", "critical", "none"] %}
+STACKTRACE_LEVEL = {{ gitea_log.stacktrace_level }}
+  {% endif %}
+  {% if gitea_log.buffer_len | default('') | string | length > 0 %}
+BUFFER_LEN = {{ gitea_log.buffer_len }}
+  {% endif %}

@@ -1,0 +1,60 @@
+
+[attachment]
+ENABLED = {{ gitea_attachment.enabled | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% if gitea_attachment.allowed_types is defined and
+        gitea_attachment.allowed_types | count > 0 %}
+ALLOWED_TYPES = {{ gitea_attachment.allowed_types | join(', ') }}
+  {% endif %}
+  {% if gitea_attachment.max_size | default('') | string | length > 0 %}
+MAX_SIZE = {{ gitea_attachment.max_size }}
+  {% endif %}
+  {% if gitea_attachment.max_files | default('') | string | length > 0 %}
+MAX_FILES = {{ gitea_attachment.max_files }}
+  {% endif %}
+  {% if gitea_attachment.storage_type | default('') | string | length > 0 and
+        gitea_attachment.storage_type in ["local", "minio"] %}
+STORAGE_TYPE = {{ gitea_attachment.storage_type }}
+  {% endif %}
+  {% if gitea_attachment.storage_type | default('') | string | length > 0 and
+        gitea_attachment.storage_type == "minio" and
+        gitea_attachment.serve_direct | default('') | string | length > 0 %}
+SERVE_DIRECT = {{ gitea_attachment.serve_direct | bool | ternary('true', 'false') }}
+  {% endif %}
+  {% if gitea_attachment.storage_type | default('') | string | length > 0 and
+        gitea_attachment.storage_type == "local" and
+        gitea_attachment.path | default('') | string | length > 0 %}
+PATH = {{ gitea_attachment.path }}
+  {% endif %}
+  {% if gitea_attachment.storage_type | default('') | string | length > 0 and
+        gitea_attachment.storage_type == "minio" and
+        gitea_attachment.minio is defined and
+        gitea_attachment.minio | count > 0 %}
+    {% if gitea_attachment.minio.endpoint | default('') | string | length > 0 %}
+MINIO_ENDPOINT = {{ gitea_attachment.minio.endpoint }}
+    {% endif %}
+    {% if gitea_attachment.minio.access_key_id | default('') | string | length > 0 %}
+MINIO_ACCESS_KEY_ID = {{ gitea_attachment.minio.access_key_id }}
+    {% endif %}
+    {% if gitea_attachment.minio.secret_access_key | default('') | string | length > 0 %}
+MINIO_SECRET_ACCESS_KEY = {{ gitea_attachment.minio.secret_access_key }}
+    {% endif %}
+    {% if gitea_attachment.minio.bucket | default('') | string | length > 0 %}
+MINIO_BUCKET = {{ gitea_attachment.minio.bucket }}
+    {% endif %}
+    {% if gitea_attachment.minio.location | default('') | string | length > 0 %}
+MINIO_LOCATION = {{ gitea_attachment.minio.location }}
+    {% endif %}
+    {% if gitea_attachment.minio.base_path | default('') | string | length > 0 %}
+MINIO_BASE_PATH = {{ gitea_attachment.minio.base_path }}
+    {% endif %}
+    {% if gitea_attachment.minio.use_ssl | default('') | string | length > 0 %}
+MINIO_USE_SSL = {{ gitea_attachment.minio.use_ssl | bool | ternary('true', 'false') }}
+    {% endif %}
+    {% if gitea_attachment.minio.insecure_skip_verify | default('') | string | length > 0 %}
+MINIO_INSECURE_SKIP_VERIFY = {{ gitea_attachment.minio.insecure_skip_verify | bool | ternary('true', 'false') }}
+    {% endif %}
+    {% if gitea_attachment.minio.checksum_algorithm | default('') | string | length > 0 and
+          gitea_attachment.minio.checksum_algorithm in ["default", "md5"] %}
+MINIO_CHECKSUM_ALGORITHM = {{ gitea_attachment.minio.checksum_algorithm }}
+    {% endif %}
+  {% endif %}

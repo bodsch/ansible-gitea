@@ -1,0 +1,13 @@
+
+[metrics]
+ENABLED = {{ gitea_metrics.enabled | default('false') | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% if gitea_metrics.token | default('') | string | length > 0 %}
+;; If you want to add authorization, specify a token here
+TOKEN = {{ gitea_metrics.token }}
+  {% endif %}
+  {% if gitea_metrics.enabled_issue_by_label | default('') | string | length > 0 %}
+ENABLED_ISSUE_BY_LABEL = {{ gitea_metrics.enabled_issue_by_label | default('false') | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_metrics.enabled_issue_by_repository | default('') | string | length > 0 %}
+ENABLED_ISSUE_BY_REPOSITORY = {{ gitea_metrics.enabled_issue_by_repository | default('false') | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}

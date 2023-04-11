@@ -1,0 +1,37 @@
+
+  {% if gitea_email.incoming is defined and
+        gitea_email.incoming | count > 0 and
+        gitea_email.incoming.enabled | bool %}
+[email.incoming]
+ENABLED = {{ gitea_email.incoming.enabled | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% if gitea_email.incoming.reply_to_address | default('') | string | length > 0 %}
+REPLY_TO_ADDRESS = {{ gitea_email.incoming.reply_to_address }}
+    {% endif %}
+    {% if gitea_email.incoming.host | default('') | string | length > 0 %}
+HOST = {{ gitea_email.incoming.host }}
+    {% endif %}
+    {% if gitea_email.incoming.port | default('') | string | length > 0 %}
+PORT = {{ gitea_email.incoming.port }}
+    {% endif %}
+    {% if gitea_email.incoming.username | default('') | string | length > 0 %}
+USERNAME = {{ gitea_email.incoming.username }}
+    {% endif %}
+    {% if gitea_email.incoming.password | default('') | string | length > 0 %}
+PASSWORD = {{ gitea_email.incoming.passwordgitea_email.incoming.port }}
+    {% endif %}
+    {% if gitea_email.incoming.use_tls | default('') | string | length > 0 %}
+USE_TLS = {{ gitea_email.incoming.use_tls | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% endif %}
+    {% if gitea_email.incoming.skip_tls_verify | default('') | string | length > 0 %}
+SKIP_TLS_VERIFY = {{ gitea_email.incoming.skip_tls_verify | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% endif %}
+    {% if gitea_email.incoming.mailbox | default('') | string | length > 0 %}
+MAILBOX = {{ gitea_email.incoming.mailbox }}
+    {% endif %}
+    {% if gitea_email.incoming.delete_handled_message | default('') | string | length > 0 %}
+DELETE_HANDLED_MESSAGE = {{ gitea_email.incoming.delete_handled_message | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% endif %}
+    {% if gitea_email.incoming.maximum_message_size | default('') | string | length > 0 %}
+MAXIMUM_MESSAGE_SIZE = {{ gitea_email.incoming.maximum_message_size }}
+    {% endif %}
+  {% endif %}

@@ -1,0 +1,17 @@
+
+  {% if gitea_ssh.minimum_key_sizes is defined and
+        gitea_ssh.minimum_key_sizes | count > 0 %}
+[ssh.minimum_key_sizes]
+    {% if gitea_ssh.minimum_key_sizes.ed25519 | default('') | string | length > 0 %}
+ED25519 = {{ gitea_ssh.minimum_key_sizes.ed25519 }}
+    {% endif %}
+    {% if gitea_ssh.minimum_key_sizes.ecdsa | default('') | string | length > 0 %}
+ECDSA = {{ gitea_ssh.minimum_key_sizes.ecdsa }}
+    {% endif %}
+    {% if gitea_ssh.minimum_key_sizes.rsa | default('') | string | length > 0 %}
+RSA = {{ gitea_ssh.minimum_key_sizes.rsa }}
+    {% endif %}
+    {% if gitea_ssh.minimum_key_sizes.dsa | default('') | string | length > 0 %}
+DSA = {{ gitea_ssh.minimum_key_sizes.dsa }}
+    {% endif %}
+  {% endif %}

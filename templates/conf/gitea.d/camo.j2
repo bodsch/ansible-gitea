@@ -1,0 +1,26 @@
+
+[camo]
+  {#
+    validate first:
+    server_url **is required** if camo is enabled.
+    hmac_key **is required** if camo is enabled.
+  #}
+  {% set gitea_camo_enabled = gitea_camo.enabled %}
+  {% if gitea_camo.server_url | default('') | string | length == 0 %}
+;; server_url **is required** if camo is enabled.
+    {% set gitea_camo_enabled = false %}
+  {% endif %}
+  {% if gitea_camo.hmac_key | default('') | string | length == 0 %}
+;; hmac_key **is required** if camo is enabled.
+    {% set gitea_camo_enabled = false %}
+  {% endif %}
+ENABLED = {{ gitea_camo_enabled | bool | ternary('true', 'false') }}
+  {% if gitea_camo.server_url | default('') | string | length > 0 %}
+SERVER_URL = {{ gitea_camo.server_url }}
+  {% endif %}
+  {% if gitea_camo.hmac_key | default('') | string | length > 0 %}
+HMAC_KEY = {{ gitea_camo.hmac_key }}
+  {% endif %}
+  {% if gitea_camo.allways | default('') | string | length > 0 %}
+ALLWAYS = {{ gitea_camo.allways | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}

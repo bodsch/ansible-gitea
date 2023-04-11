@@ -1,0 +1,81 @@
+
+[security]
+  {% if gitea_security.install_lock | default('') | string | length > 0 %}
+INSTALL_LOCK = {{ gitea_security.install_lock | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_security.secret_key | default('') | string | length > 0 %}
+SECRET_KEY = {{ gitea_security.secret_key }}
+  {% endif %}
+  {% if gitea_security.secret_key_uri | default('') | string | length > 0 %}
+SECRET_KEY_URI = {{ gitea_security.secret_key_uri }}
+  {% endif %}
+  {% if gitea_security.internal_token | default('') | string | length > 0 %}
+INTERNAL_TOKEN = {{ gitea_security.internal_token }}
+  {% endif %}
+  {% if gitea_security.internal_token_uri | default('') | string | length > 0 %}
+INTERNAL_TOKEN_URI = {{ gitea_security.internal_token_uri }}
+  {% endif %}
+  {% if gitea_security.login_remember_days | default('') | string | length > 0 %}
+LOGIN_REMEMBER_DAYS = {{ gitea_security.login_remember_days }}
+  {% endif %}
+  {% if gitea_security.cookie_username | default('') | string | length > 0 %}
+COOKIE_USERNAME = {{ gitea_security.cookie_username }}
+  {% endif %}
+  {% if gitea_security.cookie_remember_name | default('') | string | length > 0 %}
+COOKIE_REMEMBER_NAME = {{ gitea_security.cookie_remember_name }}
+  {% endif %}
+  {% if gitea_security.reverse_proxy is defined and
+        gitea_security.reverse_proxy | count > 0 %}
+    {% if gitea_security.reverse_proxy.authentication.user | default('') | string | length > 0 %}
+REVERSE_PROXY_AUTHENTICATION_USER = {{ gitea_security.reverse_proxy.authentication.user }}
+    {% endif %}
+    {% if gitea_security.reverse_proxy.authentication.email | default('') | string | length > 0 %}
+REVERSE_PROXY_AUTHENTICATION_EMAIL = {{ gitea_security.reverse_proxy.authentication.email }}
+    {% endif %}
+    {% if gitea_security.reverse_proxy.authentication.full_name | default('') | string | length > 0 %}
+REVERSE_PROXY_AUTHENTICATION_FULL_NAME = {{ gitea_security.reverse_proxy.authentication.full_name }}
+    {% endif %}
+    {% if gitea_security.reverse_proxy.limit | default('') | string | length > 0 %}
+REVERSE_PROXY_LIMIT = {{ gitea_security.reverse_proxy.limit }}
+    {% endif %}
+    {% if gitea_security.reverse_proxy.trusted_proxies | count > 0 %}
+REVERSE_PROXY_TRUSTED_PROXIES = {{ gitea_security.reverse_proxy.trusted_proxies | join(', ') }}
+     {% endif %}
+  {% endif %}
+  {% if gitea_security.min_password_length | default('') | string | length > 0 %}
+MIN_PASSWORD_LENGTH = {{ gitea_security.min_password_length }}
+  {% endif %}
+  {% if gitea_security.import_local_paths | default('') | string | length > 0 %}
+IMPORT_LOCAL_PATHS = {{ gitea_security.import_local_paths | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_security.disable_git_hooks | default('') | string | length > 0 %}
+DISABLE_GIT_HOOKS = {{ gitea_security.disable_git_hooks | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_security.disable_webhooks | default('') | string | length > 0 %}
+DISABLE_WEBHOOKS = {{ gitea_security.disable_webhooks | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_security.only_allow_push_if_gitea_environment_set | default('') | string | length > 0 %}
+ONLY_ALLOW_PUSH_IF_GITEA_ENVIRONMENT_SET = {{ gitea_security.only_allow_push_if_gitea_environment_set | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_security.password_complexity | count > 0 %}
+    {% set valid_complexity = ["lower", "upper", "digit", "spec"] %}
+    {% set valid_complexity = gitea_security.password_complexity | bodsch.core.compare_list(compare_to_list=valid_complexity) %}
+    {% if valid_complexity %}
+PASSWORD_COMPLEXITY = {{ valid_complexity | join(', ') }}
+    {% else %}
+PASSWORD_COMPLEXITY = off
+    {% endif %}
+  {% endif %}
+  {% if gitea_security.password_hash_algo | default('') | string | length > 0 and
+        gitea_security.password_hash_algo in ["argon2", "pbkdf2", "scrypt", "bcrypt"] %}
+PASSWORD_HASH_ALGO = {{ gitea_security.password_hash_algo }}
+  {% endif %}
+  {% if gitea_security.csrf_cookie_http_only | default('') | string | length > 0 %}
+CSRF_COOKIE_HTTP_ONLY = {{ gitea_security.csrf_cookie_http_only | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_security.password_check_pwn | default('') | string | length > 0 %}
+PASSWORD_CHECK_PWN = {{ gitea_security.password_check_pwn | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_security.successful_tokens_cache_size | default('') | string | length > 0 %}
+SUCCESSFUL_TOKENS_CACHE_SIZE = {{ gitea_security.successful_tokens_cache_size }}
+  {% endif %}

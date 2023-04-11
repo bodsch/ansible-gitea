@@ -1,0 +1,240 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
+; {{ ansible_managed }}
+{#
+; This file lists the default values used by Gitea
+;; Copy required sections to your own app.ini (default is custom/conf/app.ini)
+;; and modify as needed.
+;; Do not copy the whole file as-is, as it contains some invalid sections for illustrative purposes.
+;; If you don't know what a setting is you should not set it.
+;;
+;; see https://docs.gitea.io/en-us/config-cheat-sheet/ for additional documentation.
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Default Configuration (non-`app.ini` configuration)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; These values are environment-dependent but form the basis of a lot of values. They will be
+;; reported as part of the default configuration when running `gitea --help` or on start-up. The order they are emitted there is slightly different but we will list them here in the order they are set-up.
+;;
+;; - _`AppPath`_: This is the absolute path of the running gitea binary.
+;; - _`AppWorkPath`_: This refers to "working path" of the `gitea` binary. It is determined by using the first set thing in the following hierarchy:
+;;   - The `--work-path` flag passed to the binary
+;;   - The environment variable `$GITEA_WORK_DIR`
+;;   - A built-in value set at build time (see building from source)
+;;   - Otherwise it defaults to the directory of the _`AppPath`_
+;;   - If any of the above are relative paths then they are made absolute against
+;; the directory of the _`AppPath`_
+;; - _`CustomPath`_: This is the base directory for custom templates and other options.
+;; It is determined by using the first set thing in the following hierarchy:
+;;   - The `--custom-path` flag passed to the binary
+;;   - The environment variable `$GITEA_CUSTOM`
+;;   - A built-in value set at build time (see building from source)
+;;   - Otherwise it defaults to _`AppWorkPath`_`/custom`
+;;   - If any of the above are relative paths then they are made absolute against the
+;; the directory of the _`AppWorkPath`_
+;; - _`CustomConf`_: This is the path to the `app.ini` file.
+;;   - The `--config` flag passed to the binary
+;;   - A built-in value set at build time (see building from source)
+;;   - Otherwise it defaults to _`CustomPath`_`/conf/app.ini`
+;;   - If any of the above are relative paths then they are made absolute against the
+;; the directory of the _`CustomPath`_
+;;
+;; In addition there is _`StaticRootPath`_ which can be set as a built-in at build time, but will otherwise default to _`AppWorkPath`_
+#}
+APP_NAME = {{ gitea_name }}
+RUN_USER = {{ gitea_system_user }}
+{% set run_mod = "prod" %}
+{% if gitea_run_mode is defined and
+      gitea_run_mode | string | length > 0 and
+      gitea_run_mode in ["test", "dev", "prod"] %}
+{% set run_mod = gitea_run_mode %}
+{% endif %}
+RUN_MODE = {{ run_mod }}
+
+{% if gitea_actions is defined and
+      gitea_actions | count > 0 and
+      gitea_actions.enabled | default('false') | bool %}
+{% include('gitea.d/actions.j2') %}
+{% endif %}
+{% if gitea_admin is defined and
+      gitea_admin | count > 0 %}
+{% include('gitea.d/admin.j2') %}
+{% endif %}
+{% if gitea_api is defined and
+      gitea_api | count > 0 %}
+{% include('gitea.d/api.j2') %}
+{% endif %}
+{% if gitea_attachment is defined and
+      gitea_attachment | count > 0  and
+      gitea_attachment.enabled | default('false') | bool %}
+{% include('gitea.d/attachment.j2') %}
+{% endif %}
+{% if gitea_cache is defined and
+      gitea_cache | count > 0 and
+      gitea_cache.enabled | default('false') | bool %}
+{% include('gitea.d/cache.j2') %}
+{% endif %}
+{% if gitea_camo is defined and
+      gitea_camo | count > 0 and
+      gitea_camo.enabled | default('false') | bool %}
+{% include('gitea.d/camo.j2') %}
+{% endif %}
+{% if gitea_cors is defined and
+      gitea_cors | count > 0 and
+      gitea_cors.enabled | bool %}
+{% include('gitea.d/cors.j2') %}
+{% endif %}
+{% if gitea_cron is defined and
+      gitea_cron | count > 0 and
+      gitea_cron.enabled | default('false') | bool %}
+{% include('gitea.d/cron.j2') %}
+{% endif %}
+{% if gitea_database is defined and
+      gitea_database | count > 0 %}
+{% include('gitea.d/database.j2') %}
+{% endif %}
+{% if gitea_email is defined and
+      gitea_email | count > 0 %}
+{% include('gitea.d/email.j2') %}
+{% endif %}
+{% if gitea_federation is defined and
+      gitea_federation | count > 0 and
+      gitea_federation.enabled | default('false') | bool %}
+{% include('gitea.d/federation.j2') %}
+{% endif %}
+{% if gitea_git is defined and
+      gitea_git | count > 0 %}
+{% include('gitea.d/git.j2') %}
+{% endif %}
+{% if gitea_highlight is defined and
+      gitea_highlight | count > 0 %}
+{% include('gitea.d/highlight.j2') %}
+{% endif %}
+{% if gitea_i18n is defined and
+      gitea_i18n | count > 0 %}
+{% include('gitea.d/i18n.j2') %}
+{% endif %}
+{% if gitea_indexer is defined and
+      gitea_indexer | count > 0 %}
+{% include('gitea.d/indexer.j2') %}
+{% endif %}
+{% if gitea_lfs is defined and
+      gitea_lfs | count > 0 %}
+{% include('gitea.d/lfs.j2') %}
+{% endif %}
+{% if gitea_log is defined and
+      gitea_log | count > 0 %}
+{% include('gitea.d/log.j2') %}
+{% endif %}
+{% if gitea_mailer is defined and
+      gitea_mailer | count > 0 and
+      gitea_mailer.enabled | bool %}
+{% include('gitea.d/mailer.j2') %}
+{% endif %}
+{% if gitea_markdown is defined and
+      gitea_markdown | count > 0 %}
+{% include('gitea.d/markdown.j2') %}
+{% endif %}
+{% if gitea_markup is defined and
+      gitea_markup | count > 0 %}
+{% include('gitea.d/markup.j2') %}
+{% endif %}
+{% if gitea_metrics is defined and
+      gitea_metrics | count > 0 and
+      gitea_metrics.enabled | bool %}
+{% include('gitea.d/metrics.j2') %}
+{% endif %}
+{% if gitea_migrations is defined and
+      gitea_migrations | count > 0 %}
+{% include('gitea.d/migrations.j2') %}
+{% endif %}
+{% if gitea_mirror is defined and
+      gitea_mirror | count > 0 and
+      gitea_mirror.enabled | bool %}
+{% include('gitea.d/mirror.j2') %}
+{% endif %}
+{% if gitea_oauth2 is defined and
+      gitea_oauth2 | count > 0 and
+      gitea_oauth2.enabled | bool %}
+{% include('gitea.d/oauth2.j2') %}
+{% endif %}
+{% if gitea_oauth2_client is defined and
+      gitea_oauth2_client | count > 0 %}
+{% include('gitea.d/oauth2_client.j2') %}
+{% endif %}
+{% if gitea_openid is defined and
+      gitea_openid | count > 0 %}
+{% include('gitea.d/openid.j2') %}
+{% endif %}
+{% if gitea_other is defined and
+      gitea_other | count > 0 %}
+{% include('gitea.d/other.j2') %}
+{% endif %}
+{% if gitea_packages is defined and
+      gitea_packages | count > 0 and
+      gitea_packages.enabled | bool %}
+{% include('gitea.d/packages.j2') %}
+{% endif %}
+{% if gitea_picture is defined and
+      gitea_picture | count > 0 %}
+{% include('gitea.d/picture.j2') %}
+{% endif %}
+{% if gitea_project is defined and
+      gitea_project | count > 0 %}
+{% include('gitea.d/project.j2') %}
+{% endif %}
+{% if gitea_proxy is defined and
+      gitea_proxy | count > 0 and
+      gitea_proxy.proxy_enabled | bool %}
+{% include('gitea.d/proxy.j2') %}
+{% endif %}
+{% if gitea_queue is defined and
+      gitea_queue | count > 0 %}
+{% include('gitea.d/queue.j2') %}
+{% endif %}
+{% if gitea_repository is defined and
+      gitea_repository | count > 0 %}
+{% include('gitea.d/repository.j2') %}
+{% endif %}
+{% if gitea_security is defined and
+      gitea_security | count > 0 %}
+{% include('gitea.d/security.j2') %}
+{% endif %}
+{% if gitea_server is defined and
+      gitea_server | count > 0 %}
+{% include('gitea.d/server.j2') %}
+{% endif %}
+{% if gitea_service is defined and
+      gitea_service | count > 0 %}
+{% include('gitea.d/service.j2') %}
+{% endif %}
+{% if gitea_session is defined and
+      gitea_session | count > 0 %}
+{% include('gitea.d/session.j2') %}
+{% endif %}
+{% if gitea_ssh is defined and
+      gitea_ssh | count > 0 %}
+{% include('gitea.d/ssh.j2') %}
+{% endif %}
+{% if gitea_storage is defined and
+      gitea_storage | count > 0 %}
+{% include('gitea.d/storage.j2') %}
+{% endif %}
+{% if gitea_task is defined and
+      gitea_task | count > 0 %}
+{% include('gitea.d/task.j2') %}
+{% endif %}
+{% if gitea_time is defined and
+      gitea_time | count > 0 %}
+{% include('gitea.d/time.j2') %}
+{% endif %}
+{% if gitea_ui is defined and
+      gitea_ui | count > 0 %}
+{% include('gitea.d/ui.j2') %}
+{% endif %}
+
+{% if gitea_webhook is defined and
+      gitea_webhook | count > 0 %}
+{% include('gitea.d/webhook.j2') %}
+{% endif %}

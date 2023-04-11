@@ -1,0 +1,72 @@
+
+  {% if gitea_indexer.issue_indexer_type | default('') | string | length > 0 and
+        gitea_indexer.issue_indexer_type in ["bleve", "db", "elasticsearch", "meilisearch"] %}
+[indexer]
+ISSUE_INDEXER_TYPE = {{ gitea_indexer.issue_indexer_type }}
+    {% if gitea_indexer.issue_indexer_type == "bleve" and
+          gitea_indexer.issue_indexer_path | default('') | string | length > 0 %}
+ISSUE_INDEXER_PATH = {{ gitea_indexer.issue_indexer_path }}
+    {% endif %}
+    {% if gitea_indexer.issue_indexer_type in ["elasticsearch", "meilisearch"] and
+          gitea_indexer.issue_indexer_conn_str | default('') | string | length > 0 %}
+ISSUE_INDEXER_CONN_STR = {{ gitea_indexer.issue_indexer_conn_str }}
+    {% endif %}
+    {% if gitea_indexer.issue_indexer_type == "elasticsearch" and
+          gitea_indexer.issue_indexer_name | default('') | string | length > 0 %}
+ISSUE_INDEXER_NAME = {{ gitea_indexer.issue_indexer_name }}
+    {% endif %}
+    {% if gitea_indexer.startup_timeout | default('') | string | length > 0 %}
+STARTUP_TIMEOUT = {{ gitea_indexer.startup_timeout }}
+    {% endif %}
+    {% if gitea_indexer.issue_indexer_queue_type | default('') | string | length > 0 and
+          gitea_indexer.issue_indexer_queue_type in ["channel", "levelqueue", "redis"] %}
+;; **DEPRECATED** use settings in `[queue.issue_indexer]`.
+ISSUE_INDEXER_QUEUE_TYPE = {{ gitea_indexer.issue_indexer_queue_type }}
+    {% endif %}
+    {% if gitea_indexer.issue_indexer_type == "levelqueue" and
+          gitea_indexer.issue_indexer_queue_dir | default('') | string | length > 0 %}
+;; **DEPRECATED** use settings in `[queue.issue_indexer]`.
+ISSUE_INDEXER_QUEUE_DIR = {{ gitea_indexer.issue_indexer_queue_dir }}
+    {% endif %}
+    {% if gitea_indexer.issue_indexer_type in ["levelqueue", "redis"] and
+          gitea_indexer.issue_indexer_queue_conn_str | default('') | string | length > 0 %}
+;; **DEPRECATED** use settings in `[queue.issue_indexer]`.
+ISSUE_INDEXER_QUEUE_CONN_STR = {{ gitea_indexer.issue_indexer_queue_conn_str }}
+    {% endif %}
+    {% if gitea_indexer.issue_indexer_queue_batch_number | default('') | string | length > 0 %}
+;; **DEPRECATED** use settings in `[queue.issue_indexer]`.
+ISSUE_INDEXER_QUEUE_BATCH_NUMBER = {{ gitea_indexer.issue_indexer_queue_batch_number }}
+    {% endif %}
+    {% if gitea_indexer.repo_indexer_enabled | default('') | string | length > 0 %}
+REPO_INDEXER_ENABLED = {{ gitea_indexer.repo_indexer_enabled | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% endif %}
+    {% if gitea_indexer.issue_indexer_type in ["bleve", "elasticsearch"] and
+          gitea_indexer.issue_indexer_type | default('') | string | length > 0 %}
+REPO_INDEXER_TYPE = {{ gitea_indexer.issue_indexer_type }}
+    {% endif %}
+    {% if gitea_indexer.issue_indexer_type == "bleve" and
+          gitea_indexer.repo_indexer_path | default('') | string | length > 0 %}
+REPO_INDEXER_PATH = {{ gitea_indexer.repo_indexer_path }}
+    {% endif %}
+    {% if gitea_indexer.issue_indexer_type == "elasticsearch" and
+          gitea_indexer.repo_indexer_conn_str | default('') | string | length > 0 %}
+REPO_INDEXER_CONN_STR = {{ gitea_indexer.repo_indexer_conn_str }}
+    {% endif %}
+    {% if gitea_indexer.issue_indexer_type == "elasticsearch" and
+          gitea_indexer.repo_indexer_name | default('') | string | length > 0 %}
+REPO_INDEXER_NAME = {{ gitea_indexer.repo_indexer_name }}
+    {% endif %}
+    {% if gitea_indexer.repo_indexer_include | count > 0 %}
+REPO_INDEXER_INCLUDE = {{ gitea_indexer.repo_indexer_include | join(', ') }}
+    {% endif %}
+    {% if gitea_indexer.repo_indexer_exclude | count > 0 %}
+REPO_INDEXER_EXCLUDE = {{ gitea_indexer.repo_indexer_exclude | join(', ') }}
+    {% endif %}
+    {% if gitea_indexer.update_buffer_len | default('') | string | length > 0 %}
+;; **DEPRECATED** use settings in `[queue.issue_indexer]`.
+UPDATE_BUFFER_LEN = {{ gitea_indexer.update_buffer_len }}
+    {% endif %}
+    {% if gitea_indexer.max_file_size | default('') | string | length > 0 %}
+MAX_FILE_SIZE = {{ gitea_indexer.max_file_size }}
+    {% endif %}
+  {% endif %}

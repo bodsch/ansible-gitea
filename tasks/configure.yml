@@ -13,7 +13,7 @@
         group: "{{ gitea_system_group }}"
         mode: 0640
       notify:
-        - reload gitea
+        - restart gitea
 
     - name: create systemd service unit
       ansible.builtin.template:
@@ -48,8 +48,8 @@
 - name: create gitea configuration
   ansible.builtin.template:
     force: true
-    src: conf/app.ini.j2
-    dest: "{{ gitea_config_dir }}/app.ini"
+    src: conf/gitea.ini.j2
+    dest: "{{ gitea_config_dir }}/gitea.ini"
     owner: root
     group: "{{ gitea_system_group }}"
     mode: 0640

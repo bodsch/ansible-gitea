@@ -1,0 +1,21 @@
+
+[federation]
+ENABLED = {{ gitea_federation.enabled | default('false') | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% if gitea_federation.share_user_statistics | default('') | string | length > 0 %}
+SHARE_USER_STATISTICS = {{ gitea_federation.share_user_statistics | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_federation.max_size | default('') | string | length > 0 %}
+MAX_SIZE = {{ gitea_federation.max_size }}
+  {% endif %}
+  {% if gitea_federation.algorithms | default('') | string | length > 0 %}
+ALGORITHMS = {{ gitea_federation.algorithms | join(', ') }}
+  {% endif %}
+  {% if gitea_federation.digest_algorithm | default('') | string | length > 0 %}
+DIGEST_ALGORITHM = {{ gitea_federation.digest_algorithm }}
+  {% endif %}
+  {% if gitea_federation.get_headers | default('') | string | length > 0 %}
+GET_HEADERS = {{ gitea_federation.get_headers | join(', ') }}
+  {% endif %}
+  {% if gitea_federation.post_headers | default('') | string | length > 0 %}
+POST_HEADERS = {{ gitea_federation.post_headers | join(', ') }}
+  {% endif %}

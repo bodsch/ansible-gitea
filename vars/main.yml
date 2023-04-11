@@ -22,10 +22,7 @@ gitea_defaults_actions:
   default_actions_url: ""
 
 gitea_defaults_admin:
-  # Disallow regular (non-admin) users from creating organizations.
   disable_regular_org_creation: ""                # false
-  # Default configuration for email notifications for users (user configurable).
-  # Options: enabled, onmention, disabled
   default_email_notifications: ""                 # enabled
 
 gitea_defaults_api:
@@ -36,92 +33,68 @@ gitea_defaults_api:
   default_max_blob_size: ""                       # 10485760
 
 gitea_defaults_attachment:
-  enabled: true
-  # ;; Comma-separated list of allowed file extensions (`.zip`),
+  enabled: ""                                     # true
+  # list of allowed file extensions (`.zip`),
   # mime types (`text/plain`) or
   # wildcard type (`image/*`, `audio/*`, `video/*`).
   # Empty value or `*/*` allows all types.
-  allowed_types:
-    - "image/*"
-    # - ".csv"
-    # - ".docx"
-    # - ".fodg"
-    # - ".fodp"
-    # - ".fods"
-    # - ".fodt"
-    # - ".gif"
-    # - ".gz"
-    # - ".jpeg"
-    # - ".jpg"
-    # - ".log"
-    # - ".md"
-    # - ".mov"
-    # - ".mp4"
-    # - ".odf"
-    # - ".odg"
-    # - ".odp"
-    # - ".ods"
-    # - ".odt"
-    # - ".patch"
-    # - ".pdf"
-    # - ".png"
-    # - ".pptx"
-    # - ".svg"
-    # - ".tgz"
-    # - ".txt"
-    # - ".webm"
-    # - ".xls"
-    # - ".xlsx"
-    # - ".zip"
-  max_size: 4
-  max_files: 5
-  storage_type: local
-  serve_direct: false
-  path: data/attachments
+  allowed_types: []                               # []
+  max_size: ""                                    # 4
+  max_files: ""                                   # 5
+  storage_type: ""                                # local
+  serve_direct: ""                                # false
+  path: ""                                        # data/attachments
   minio:
-    endpoint: localhost:9000
+    endpoint: ""                                  # localhost:9000
     access_key_id: ""
     secret_access_key: ""
-    bucket: gitea
-    location: us-east-1
-    base_path: attachments/
-    use_ssl: false
-    insecure_skip_verify: false
-    checksum_algorithm: default
+    bucket: ""                                    # gitea
+    location: ""                                  # us-east-1
+    base_path: ""                                 # attachments/
+    use_ssl: ""                                   # false
+    insecure_skip_verify: ""                      # false
+    checksum_algorithm: ""                        # default
 
 gitea_defaults_cache:
-  enabled: true
-  # either "memory", "redis", "memcache", or "twoqueue". default is "memory"
-  adapter: memory
-  interval: 60
-  # ;; for "redis" and "memcache", connection host address
-  # ;; redis: `redis://127.0.0.1:6379/0?pool_size=100&idle_timeout=180s`
-  # ;; memcache: `127.0.0.1:11211`
-  # ;; twoqueue: `{"size":50000,"recent_ratio":0.25,"ghost_ratio":0.5}` or `50000`
+  enabled: ""                                     # true
+  adapter: ""                                     # memory ("memory", "redis", "memcache", or "twoqueue")
+  interval: ""                                    # 60
+  # for "redis" and "memcache", connection host address
+  #   - redis: `redis://127.0.0.1:6379/0?pool_size=100&idle_timeout=180s`
+  #   - memcache: `127.0.0.1:11211`
+  #   - twoqueue: `{"size":50000,"recent_ratio":0.25,"ghost_ratio":0.5}` or `50000`
   host: ""
-  item_ttl: 16h
+  item_ttl: ""                                    # 16h
   last_commit:
-    enabled: true
-    item_ttl: 8760h
-    commits_count: 1000
+    enabled: ""                                   # true
+    item_ttl: ""                                  # 8760h
+    commits_count: ""                             # 1000
 
 gitea_defaults_camo:
-  enabled: false
-  # ; url to a camo image proxy, it **is required** if camo is enabled.
+  enabled: ""                                     # false
   server_url: ""
-  # ; hmac to encode urls with, it **is required** if camo is enabled.
   hmac_key: ""
-  # ; set to true to use camo for https too lese only non https urls are proxyed
-  allways: false
+  allways: ""                                     # false
+
+gitea_defaults_cors:
+  enabled: ""                                     # false
+  scheme: ""                                      # http
+  allow_domain: []                                # ["*"]
+  allow_subdomain: ""                             # false
+  methods: []                                     # [GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS]
+  max_age: ""                                     # 10m
+  allow_credentials: ""                           # false
+  headers: []                                     # [Content-Type, User-Agent]
+  x_frame_options: []                             # [SAMEORIGIN]
 
 gitea_defaults_cron:
-  enabled: true
-  run_at_start: false
+  enabled: true                                   # true
+  run_at_start: false                             # false
   # Note: ``SCHEDULE`` accept formats
   #    - Full crontab specs, e.g. "* * * * * ?"
   #    - Descriptors, e.g. "@midnight", "@every 1h30m"
   archive_cleanup:
-    comment: ""
+    comment: ""                                   #
     enabled: true
     run_at_start: true
     notice_on_success: false
@@ -272,165 +245,138 @@ gitea_defaults_cron:
     proportion_to_check_per_repo: 0.6
 
 gitea_defaults_database:
-  db_type: sqlite3
+  db_type: sqlite3                                # sqlite2, mysql, postgres, mssql
   # mariadb configuration
-  host: ""                        # 127.0.0.1:3306 ; can use socket e.g. /var/run/mysqld/mysqld.sock
-  name: ""                        # gitea
-  user: ""                        # root
-  passwd: ""                      # ;use passwd: `your password` for quoting if you use special characters in the password.
-  ssl_mode: ""                    # false ; either "false" (default), "true", or "skip-verify"
-  charset: ""                     # utf8mb4 ;either "utf8" or "utf8mb4", default is "utf8mb4".
+  host: ""                                        # 127.0.0.1:3306 ; can use socket e.g. /var/run/mysqld/mysqld.sock
+  name: ""                                        # gitea
+  user: ""                                        # root
+  passwd: ""                                      # ;use passwd: `your password` for quoting if you use special characters in the password.
+  ssl_mode: ""                                    # false ; either "false" (default), "true", or "skip-verify"
+  charset: ""                                     # utf8mb4 ;either "utf8" or "utf8mb4", default is "utf8mb4".
   # ; postgres configuration
   # db_type: postgres
   # host: 127.0.0.1:5432 ; can use socket e.g. /var/run/postgresql/
   # name: gitea
   # user: root
-  # passwd =
-  # schema =
-  # ssl_mode=disable ;either "disable" (default), "require", or "verify-full"
+  # passwd: ""
+  # schema: ""
+  # ssl_mode: disable                             # either "disable" (default), "require", or "verify-full"
   # sqlite configuration
-  path: data/gitea.db             #
-  sqlite_timeout: ""              # query timeout defaults to: 500
-  sqlite_journal_mode: ""         # defaults to sqlite database default (often delete), can be used to enable wal mode. https://www.sqlite.org/pragma.html#pragma_journal_mode
+  path: data/gitea.db                             #
+  sqlite_timeout: ""                              # query timeout defaults to: 500
+  sqlite_journal_mode: ""                         # defaults to sqlite database default (often delete), can be used to enable wal mode.
   # mssql configuration
   # db_type: mssql
   # host: 172.17.0.2:1433
   # name: gitea
   # user: sa
-  # passwd: mwantsasecurepassword1
-  iterate_buffer_size: 50
-  log_sql: false
-  # ;
-  # ; maximum number of db connect retries
-  db_retries: 10
-  # ;
-  # ; backoff time per db retry (time.duration)
-  db_retry_backoff: 3s
-  # ;
-  # ; max idle database connections on connection pool, default is 2
-  max_idle_conns: 2
-  # ;
-  # ; database connection max life time, default is 0 or 3s mysql (see #6804 & #7071 for reasoning)
-  conn_max_lifetime: 3s
-  # ;
-  # ; database maximum number of open connections, default is 0 meaning no maximum
-  max_open_conns: 0
-  # ;
-  # ; whether execute database models migrations automatically
-  auto_migration: true
+  # passwd: ""
+  iterate_buffer_size: ""                         # 50
+  log_sql: ""                                     # false
+  db_retries: ""                                  # 10
+  db_retry_backoff: ""                            # 3s
+  max_idle_conns: ""                              # 2
+  conn_max_lifetime: ""                           # 3s
+  max_open_conns: ""                              # 0
+  auto_migration: ""                              # true
+
+gitea_defaults_email:
+  incoming:
+    enabled: ""                                   # false
+    reply_to_address: ""
+    host: ""
+    port: ""
+    username: ""
+    password: ""
+    use_tls: false
+    skip_tls_verify: true
+    mailbox: inbox
+    delete_handled_message: true
+    maximum_message_size: 10485760
 
 gitea_defaults_federation:
-  enabled: false
-  share_user_statistics: true
-  max_size: 4
-  algorithms:
-    - rsa-sha256
-    - rsa-sha512
-    - ed25519
-  digest_algorithm: SHA-256
-  get_headers:
-    - "(request-target)"
-    - Date
-  post_headers:
-    - "(request-target)"
-    - Date
-    - Digest
+  enabled: ""                                     # false
+  share_user_statistics: ""                       # true
+  max_size: ""                                    # 4
+  algorithms: []                                  # [rsa-sha256, rsa-sha512, ed25519]
+  digest_algorithm: ""                            # SHA-256
+  get_headers: []                                 # ["(request-target)", Date]
+  post_headers: []                                # ["(request-target)", Date, Digest]
 
 gitea_defaults_git:
   path: ""
-  home_path: "%(app_data_path)s/home"
-  disable_diff_highlight: false
-  max_git_diff_lines: 1000
-  max_git_diff_line_characters: 5000
-  max_git_diff_files: 100
-  commits_range_size: 50
-  branches_range_size: 20
+  home_path: ""                                   # "%(app_data_path)s/home"
+  disable_diff_highlight: ""                      # false
+  max_git_diff_lines: ""                          # 1000
+  max_git_diff_line_characters: ""                # 5000
+  max_git_diff_files: ""                          # 100
+  commits_range_size: ""                          # 50
+  branches_range_size: ""                         # 20
   gc_args: ""
-  enable_auto_git_wire_protocol: true
-  pull_request_push_message: true
-  large_object_threshold: 1048576
-  disable_core_protect_ntfs: false
-  disable_partial_clone: false
+  enable_auto_git_wire_protocol: ""               # true
+  pull_request_push_message: ""                   # true
+  large_object_threshold: ""                      # 1048576
+  disable_core_protect_ntfs: ""                   # false
+  disable_partial_clone: ""                       # false
   # git operation timeout in seconds
   timeout:
-    default: 360
-    migrate: 600
-    mirror: 300
-    clone: 300
-    pull: 300
-    gc: 60
+    default: ""                                   # 360
+    migrate: ""                                   # 600
+    mirror: ""                                    # 300
+    clone: ""                                     # 300
+    pull: ""                                      # 300
+    gc: ""                                        # 60
   # git reflog timeout in days
   reflog:
-    enabled: true
-    expiration: 90
+    enabled: ""                                   # true
+    expiration: ""                                # 90
 
-gitea_defaults_highlight: {}
+gitea_defaults_highlight:
+  mapping: {}
+  #  .toml: ini
 
 gitea_defaults_i18n:
   # The first locale will be used as the default if user browser's language doesn't match any locale in the list.
-  langs:
-    - en-US
-    - de-DE
-    - fr-FR
-  names:
-    - English,
-    - Deutsch,
-    - Français
+  langs: []                                       # [en-US, de-DE, fr-FR, ...]
+  names: []                                       # [English, Deutsch, Français, ... ]
 
 gitea_defaults_indexer:
-  # issue indexer type, currently support: bleve, db, elasticsearch or meilisearch default is bleve
-  issue_indexer_type: bleve
-  # issue indexer storage path, available when ISSUE_INDEXER_TYPE is bleve
-  issue_indexer_path: indexers/issues.bleve
-  # issue indexer connection string, available when ISSUE_INDEXER_TYPE is elasticsearch or meilisearch
-  issue_indexer_conn_str: http://elastic:changeme@localhost:9200
-  # issue indexer name, available when ISSUE_INDEXER_TYPE is elasticsearch
-  issue_indexer_name: gitea_issues
-  # timeout the indexer if it takes longer than this to start.
-  # set to -1 to disable timeout.
-  startup_timeout: 30s
-  # issue indexer queue, currently support: channel, levelqueue or redis, default is levelqueue (deprecated - use [queue.issue_indexer])
-  issue_indexer_queue_type: levelqueue                      # ; **DEPRECATED** use settings in `[queue.issue_indexer]`.
-  # when issue_indexer_queue_type is levelqueue, this will be the path where the queue will be saved.
-  # this can be overridden by `issue_iNDEXER_QUEUE_CONN_STR`.
-  # default is queues/common
-  issue_indexer_queue_dir: queues/common                    # ; **DEPRECATED** use settings in `[queue.issue_indexer]`. Relative paths will be made absolute against `%(APP_DATA_PATH)s`.
-  # when `issue_indexer_queue_type` is `redis`, this will store the redis connection string.
-  # when `issue_indexer_queue_type` is `levelqueue`, this is a directory or additional options of
-  # the form `leveldb://path/to/db?option=value&....`, and overrides `ISSUE_INDEXER_QUEUE_DIR`.
-  issue_indexer_queue_conn_str: "addrs=127.0.0.1:6379 db=0" # ; **DEPRECATED** use settings in `[queue.issue_indexer]`.
-  # batch queue number, default is 20
-  issue_indexer_queue_batch_number: 20                      # ; **DEPRECATED** use settings in `[queue.issue_indexer]`.
-  # repo indexer by default disabled, since it uses a lot of disk space
-  repo_indexer_enabled: false
-  # code search engine type, could be `bleve` or `elasticsearch`.
-  repo_indexer_type: bleve
-  # index file used for code search. available when `REPO_INDEXER_TYPE` is bleve
-  repo_indexer_path: indexers/repos.bleve
-  # code indexer connection string, available when `REPO_INDEXER_TYPE` is elasticsearch. i.e. http://elastic:changeme@localhost:9200
+  issue_indexer_type: ""                          # bleve (currently support: bleve, db, elasticsearch or meilisearch)
+  issue_indexer_path: ""                          # indexers/issues.bleve
+  issue_indexer_conn_str: ""                      # http://elastic:changeme@localhost:9200
+  issue_indexer_name: ""                          # gitea_issues
+  startup_timeout: ""                             # 30s
+  # ; **DEPRECATED** use settings in `[queue.issue_indexer]`.
+  issue_indexer_queue_type: ""                    # levelqueue (currently support: channel, levelqueue or redis)
+  # ; **DEPRECATED** use settings in `[queue.issue_indexer]`
+  issue_indexer_queue_dir: ""                     # queues/common
+  # ; **DEPRECATED** use settings in `[queue.issue_indexer]`.
+  issue_indexer_queue_conn_str: ""                # "addrs=127.0.0.1:6379 db=0"
+  # ; **DEPRECATED** use settings in `[queue.issue_indexer]`.
+  issue_indexer_queue_batch_number: ""            # 20
+  repo_indexer_enabled: ""                        # false
+  repo_indexer_type: ""                           # bleve
+  repo_indexer_path: ""                           # indexers/repos.bleve
   repo_indexer_conn_str: ""
-  # code indexer name, available when `REPO_INDEXER_TYPE` is elasticsearch
-  repo_indexer_name: gitea_codes
-  # a comma separated list of glob patterns (see https://github.com/gobwas/glob) to include
-  # in the index; default is empty
+  repo_indexer_name: ""                           # gitea_codes
   repo_indexer_include: []
-  # a comma separated list of glob patterns to exclude from the index; ; default is empty
   repo_indexer_exclude: []
-  update_buffer_len: 20;                                    # **deprecated** use settings in `[queue.issue_indexer]`.
-  max_file_size: 1048576
+  # **DEPRECATED** use settings in `[queue.issue_indexer]`.
+  update_buffer_len: ""                           # 20
+  max_file_size: ""                               # 1048576
 
-gitea_defaults_lfs: {}
+gitea_defaults_lfs:
+  storage_type: ""                                # local
+  path: ""                                        # data/lfs
 
 gitea_defaults_log:
   root_path: ""
-  mode:
-    - console
-    - file
-  level: info
-  disable_router_log: false
-  router: console
-  enable_access_log: false
-  access: file
+  mode: []                                        # [console, file]
+  level: ""                                       # info
+  disable_router_log: ""                          # false
+  router: ""                                      # console
+  enable_access_log: ""                           # false
+  access: ""                                      # file
   # TODO
   access_log_template: ""
     # {{.Ctx.RemoteAddr}} - {{.Identity}}
@@ -441,9 +387,9 @@ gitea_defaults_log:
     # {{.ResponseWriter.Status}}
     # {{.ResponseWriter.Size}}
     # \"{{.Ctx.Req.Referer}}\" \"{{.Ctx.Req.UserAgent}}\"
-  enable_ssh_log: false
-  stacktrace_level: none
-  buffer_len: 10000
+  enable_ssh_log: ""                              # false
+  stacktrace_level: ""                            # none
+  buffer_len: ""                                  # 10000
   # # ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   # #  creating specific log configuration
   # #
@@ -456,141 +402,62 @@ gitea_defaults_log:
   # prefix: ""
   # colorize: false
   console:
-    #  for "console" mode only
-    stderr: false
+    stderr: ""                                    # false
   file:
-    #  for "file" mode only
     level: ""
-    #  set the file_name for the logger. if this is a relative path this
-    #  will be relative to root_path
     file_name: ""
-    #  this enables automated log rotate(switch of following options), default is true
-    log_rotate: true
-    #  max size shift of a single file, default is 28 means 1 << 28, 256MB
-    max_size_shift: 28
-    #  segment log daily, default is true
-    daily_rotate: true
-    #  delete the log file after n days, default is 7
-    max_days: 7
-    #  compress logs with gzip
-    compress: true
-    #  compression level see godoc for compress/gzip
-    compression_level: -1
+    log_rotate: ""                                # true
+    max_size_shift: ""                            # 28
+    daily_rotate: ""                              # true
+    max_days: ""                                  # 7
+    compress: ""                                  # true
+    compression_level: ""                         # -1
   conn:
-    #  for "conn" mode only
     level: ""
-    #  reconnect host for every single message, default is false
-    reconnect_on_msg: false
-    #  try to reconnect when connection is lost, default is false
-    reconnect: false
-    #  either "tcp", "unix" or "udp", default is "tcp"
-    protocol: tcp
-    #  host address
+    reconnect_on_msg: ""                          # false
+    reconnect: ""                                 # false
+    protocol: ""                                  # tcp (either "tcp", "unix" or "udp")
     addr: ""
   smtp:
-    #  for "smtp" mode only
     level: ""
-    #  name displayed in mail title, default is "diagnostic message from server"
-    subject: diagnostic message from server
-    #  mail server
+    subject: ""                                   # diagnostic message from server
     host: ""
-    #  mailer user name and password
     user: ""
-    #  use passwd: `your password` for quoting if you use special characters in the password.
     passwd: ""
-    #  receivers, can be one or more, e.g. 1@example.com,2@example.com
-    receivers: ""
+    receivers: []
 
 gitea_defaults_mailer:
-  enabled: false
-  #
-  # buffer length of channel, keep it as it is if you don't know what it is.
-  send_buffer_len: 100
-  #
-  # prefix displayed before subject in mail
+  enabled: ""                                     # false
+  send_buffer_len: ""                             # 100
   subject_prefix: ""
-  #
-  # mail server protocol. one of "smtp", "smtps", "smtp+starttls", "smtp+unix", "sendmail", "dummy".
-  # - sendmail: use the operating system's `sendmail` command instead of SMTP. This is common on Linux systems.
-  # - dummy: send email messages to the log as a testing phase.
-  # if your provider does not explicitly say which protocol it uses but does provide a port,
-  # you can set smtp_port instead and this will be inferred.
-  # (before 1.18, see the notice, this was controlled via MAILER_TYPE and IS_TLS_ENABLED.)
-  protocol: ""
-  #
-  # mail server address, e.g. smtp.gmail.com.
-  # for smtp+unix, this should be a path to a unix socket instead.
-  # (before 1.18, see the notice, this was combined with SMTP_PORT as HOST.)
+  protocol: ""                                    # one of "smtp", "smtps", "smtp+starttls", "smtp+unix", "sendmail", "dummy"
   smtp_addr: ""
-  #
-  # mail server port. common ports are:
-  #   25:  insecure smtp
-  #   465: smtp secure
-  #   587: starttls
-  # if no protocol is specified, it will be inferred by this setting.
-  # (before 1.18, this was combined with SMTP_ADDR as HOST.)
-  smtp_port: ""
-  #
-  # enable helo operation. defaults to true.
-  enable_helo: true
-  #
-  # custom hostname for helo operation.
-  # if no value is provided, one is retrieved from system.
+  smtp_port: ""                                   # 25:  insecure smtp / 465: smtp secure / 587: starttls
+  enable_helo: ""                                 # true
   helo_hostname: ""
-  #
-  # if set to `true`, completely ignores server certificate validation errors.
-  # this option is unsafe. consider adding the certificate to the system trust store instead.
-  force_trust_server_cert: false
-  #
-  # use client certificate in connection.
-  use_client_cert: false
-  client_cert_file: custom/mailer/cert.pem
-  client_key_file: custom/mailer/key.pem
-  #
-  # mail from address, rfc 5322. This can be just an email address, or the `"Name" <email@example.com>` format
+  force_trust_server_cert: ""                     # false
+  use_client_cert: ""                             # false
+  client_cert_file: ""                            # custom/mailer/cert.pem
+  client_key_file: ""                             # custom/mailer/key.pem
   from: ""
-  #
-  # sometimes it is helpful to use a different address on the envelope. Set this to use ENVELOPE_FROM as the from on the envelope. Set to `<>` to send an empty address.
   envelope_from: ""
-  #
-  # mailer user name and password, if required by provider.
   user: ""
-  #
-  # use passwd: `your password` for quoting if you use special characters in the password.
   passwd: ""
-  #
-  # send mails only in plain text, without HTML alternative
-  send_as_plain_text: false
-  #
-  # specify an alternative sendmail binary
-  sendmail_path: sendmail
-  #
-  # specify any extra sendmail arguments
-  # warning: if your sendmail program interprets options you should set this to "--" or terminate these args with "--"
+  send_as_plain_text: ""                          # false
+  sendmail_path: ""                               # sendmail
   sendmail_args: ""
-  #
-  # timeout for sendmail
-  sendmail_timeout: 5m
-  #
-  # convert \r\n to \n for sendmail
-  sendmail_convert_crlf: true
+  sendmail_timeout: ""                            # 5m
+  sendmail_convert_crlf: ""                       # true
 
 gitea_defaults_markdown:
-  enable_hard_line_break_in_comments: true
-  enable_hard_line_break_in_documents: false
+  enable_hard_line_break_in_comments: ""          # true
+  enable_hard_line_break_in_documents: ""         # false
   custom_url_schemes: []
-  file_extensions:
-    - ".md"
-    - ".markdown"
-    - ".mdown"
-    - ".mkd"
-  enable_math: true
+  file_extensions: []                             # [".md", ".markdown", ".mdown", ".mkd"]
+  enable_math: ""                                 # true
 
 gitea_defaults_markup:
-  mermaid_max_source_characters: 5000
-  # the following keys can appear once to define a sanitation policy rule.
-  # this section can appear multiple times by adding a unique alphanumeric suffix to define multiple rules.
-  # e.g., [markup.sanitizer.1] -> [markup.sanitizer.2] -> [markup.sanitizer.TeX]
+  mermaid_max_source_characters: ""               # 5000
   sanitizer: []
   #  - id: 1
   #    element: span
@@ -601,179 +468,97 @@ gitea_defaults_markup:
   #    allow_attr: class
   #    regexp: ^(info|warning|error)$
   asciidoc:
-    enabled: false
-    file_extensions:
-      - .adoc
-      - .asciidoc
-    render_command: "asciidoc --out-file=- -"
-    is_input_file: false
-    render_content_mode: sanitized
+    enabled: ""                                   # false
+    file_extensions: []                           # [.adoc, .asciidoc]
+    render_command: ""                            # "asciidoc --out-file=- -"
+    is_input_file: ""                             # false
+    render_content_mode: ""                       # sanitized
 
 gitea_defaults_metrics:
-  enabled: false
-  # if you want to add authorization, specify a token here
+  enabled: ""                                     # false
   token: ""
-  # enable issue by label metrics; default is false
-  enabled_issue_by_label: false
-  # enable issue by repository metrics; default is false
-  enabled_issue_by_repository: false
+  enabled_issue_by_label: ""                      # false
+  enabled_issue_by_repository: ""                 # false
 
 gitea_defaults_migrations:
-  max_attempts: 3
-  retry_backoff: 3
+  max_attempts: ""                                # 3
+  retry_backoff: ""                               # 3
   allowed_domains: []
   blocked_domains: []
-  allow_localnetworks: false
+  allow_localnetworks: ""                         # false
 
 gitea_defaults_mirror:
-  enabled: true
-  disable_new_pull: false
-  disable_new_push: false
-  default_interval: 8h
-  min_interval: 10m
+  enabled: ""                                     # true
+  disable_new_pull: ""                            # false
+  disable_new_push: ""                            # false
+  default_interval: ""                            # 8h
+  min_interval: ""                                # 10m
 
 gitea_defaults_oauth2:
-  enabled: true
-  #
-  # algorithm used to sign oauth2 tokens. Valid values: HS256, HS384, HS512, RS256, RS384, RS512, ES256, ES384, ES512, EdDSA
-  jwt_signing_algorithm: RS256
-  #
-  # private key file path used to sign OAuth2 tokens. The path is relative to APP_DATA_PATH.
-  # this setting is only needed if JWT_SIGNING_ALGORITHM is set to RS256, RS384, RS512, ES256, ES384 or ES512.
-  # the file must contain a rsa or ECDSA private key in the PKCS8 format. If no key exists a 4096 bit key will be created for you.
-  jwt_signing_private_key_file: jwt/private.pem
-  #
-  # oauth2 authentication secret for access and refresh tokens, change this yourself to a unique string. CLI generate option is helpful in this case. https://docs.gitea.io/en-us/command-line/#generate
-  # this setting is only needed if JWT_SIGNING_ALGORITHM is set to HS256, HS384 or HS512.
-  jwt_secret: ""
-  #
-  # lifetime of an oauth2 access token in seconds
-  access_token_expiration_time: 3600
-  #
-  # lifetime of an oauth2 refresh token in hours
-  refresh_token_expiration_time: 730
-  #
-  # check if refresh token got already used
-  invalidate_refresh_tokens: false
-  #
-  # maximum length of oauth2 token/cookie stored on server
-  max_token_length: 32767
+  enabled: ""                                     # true
+  jwt_signing_algorithm: ""                       # RS256 (Valid values: HS256, HS384, HS512, RS256, RS384, RS512, ES256, ES384, ES512, EdDSA)
+  jwt_signing_private_key_file: ""                # jwt/private.pem
+  jwt_secret: ""                                  #
+  access_token_expiration_time: ""                # 3600
+  refresh_token_expiration_time: ""               # 730
+  invalidate_refresh_tokens: ""                   # false
+  max_token_length: ""                            # 32767
 
 gitea_defaults_oauth2_client:
   register_email_confirm: ""
   openid_connect_scopes: ""
-  enable_auto_registration: false
-  username: nickname
-  update_avatar: false
-  account_linking: login
+  enable_auto_registration: ""                    # false
+  username: ""                                    # nickname
+  update_avatar: ""                               # false
+  account_linking: ""                             # login
 
 gitea_defaults_openid:
-  # whether to allow signin in via OpenID
-  enable_openid_signin: true
-  #
-  # whether to allow registering via OpenID
-  # do not include to rely on rhw DISABLE_REGISTRATION setting
-  enable_openid_signup: true
-  #
-  # allowed uri patterns (pOSIX regexp).
-  # space separated.
-  # only these would be allowed if non-blank.
-  # example value: trusted.domain.org trusted.domain.net
+  enable_openid_signin: ""                        # true
+  enable_openid_signup: ""                        # true
   whitelisted_uris: []
-  #
-  # forbidden uri patterns (POSIX regexp).
-  # space separated.
-  # only used if whitelisteD_URIS is blank.
-  # example value: loadaverage.org/badguy stackexchange.com/.*spammer
   blacklisted_uris: []
 
 gitea_defaults_other:
-  show_footer_branding: false
-  # show version information about Gitea and Go in the footer
-  show_footer_version: true
-  # show template execution time in the footer
-  show_footer_template_load_time: true
-  # generate sitemap. defaults to `true`.
-  enable_sitemap: true
-  # enable/disable rss/atom feed
-  enable_feed: true
+  show_footer_branding: ""                        # false
+  show_footer_version: ""                         # true
+  show_footer_template_load_time: ""              # true
+  enable_sitemap: ""                              # true
+  enable_feed: ""                                 # true
 
 gitea_defaults_packages:
-  enabled: true
-  #
-  # path for chunked uploads. Defaults to APP_DATA_PATH + `tmp/package-upload`
-  chunked_upload_path: tmp/package-upload
-  #
-  # maximum count of package versions a single owner can have (`-1` means no limits)
-  limit_total_owner_count: -1
-  # maximum size of packages a single owner can use (`-1` means no limits, format `1000`, `1 MB`, `1 GiB`)
-  limit_total_owner_size: -1
-  # maximum size of a cargo upload (`-1` means no limits, format `1000`, `1 MB`, `1 GiB`)
-  limit_size_cargo: -1
-  # maximum size of a chef upload (`-1` means no limits, format `1000`, `1 MB`, `1 GiB`)
-  limit_size_chef: -1
-  # maximum size of a composer upload (`-1` means no limits, format `1000`, `1 MB`, `1 GiB`)
-  limit_size_composer: -1
-  # maximum size of a conan upload (`-1` means no limits, format `1000`, `1 MB`, `1 GiB`)
-  limit_size_conan: -1
-  # maximum size of a conda upload (`-1` means no limits, format `1000`, `1 MB`, `1 GiB`)
-  limit_size_conda: -1
-  # maximum size of a container upload (`-1` means no limits, format `1000`, `1 MB`, `1 GiB`)
-  limit_size_container: -1
-  # maximum size of a generic upload (`-1` means no limits, format `1000`, `1 MB`, `1 GiB`)
-  limit_size_generic: -1
-  # maximum size of a helm upload (`-1` means no limits, format `1000`, `1 MB`, `1 GiB`)
-  limit_size_helm: -1
-  # maximum size of a maven upload (`-1` means no limits, format `1000`, `1 MB`, `1 GiB`)
-  limit_size_maven: -1
-  # maximum size of a npm upload (`-1` means no limits, format `1000`, `1 MB`, `1 GiB`)
-  limit_size_npm: -1
-  # maximum size of a nuget upload (`-1` means no limits, format `1000`, `1 MB`, `1 GiB`)
-  limit_size_nuget: -1
-  # maximum size of a pub upload (`-1` means no limits, format `1000`, `1 MB`, `1 GiB`)
-  limit_size_pub: -1
-  # maximum size of a pypI upload (`-1` means no limits, format `1000`, `1 MB`, `1 GiB`)
-  limit_size_pypi: -1
-  # maximum size of a rubyGems upload (`-1` means no limits, format `1000`, `1 MB`, `1 GiB`)
-  limit_size_rubygems: -1
-  # maximum size of a swift upload (`-1` means no limits, format `1000`, `1 MB`, `1 GiB`)
-  limit_size_swift: -1
-  # maximum size of a vagrant upload (`-1` means no limits, format `1000`, `1 MB`, `1 GiB`)
-  limit_size_vagrant: -1
+  enabled: ""                                     # true
+  chunked_upload_path: ""                         # tmp/package-upload
+  limit_total_owner_count: ""                     # -1 (`-1` means no limits)
+  limit_total_owner_size: ""                      # -1 (`-1` means no limits, format `1000`, `1 MB`, `1 GiB`)
+  limit_size_cargo: ""                            # -1
+  limit_size_chef: ""                             # -1
+  limit_size_composer: ""                         # -1
+  limit_size_conan: ""                            # -1
+  limit_size_conda: ""                            # -1
+  limit_size_container: ""                        # -1
+  limit_size_generic: ""                          # -1
+  limit_size_helm: ""                             # -1
+  limit_size_maven: ""                            # -1
+  limit_size_npm: ""                              # -1
+  limit_size_nuget: ""                            # -1
+  limit_size_pub: ""                              # -1
+  limit_size_pypi: ""                             # -1
+  limit_size_rubygems: ""                         # -1
+  limit_size_swift: ""                            # -1
+  limit_size_vagrant: ""                          # -1
 
 gitea_defaults_picture:
-  avatar_upload_path: data/avatars
-  repository_avatar_upload_path: data/repo-avatars
-  #
-  # how gitea deals with missing repository avatars
-  # none: no avatar will be displayed; random = random avatar will be displayed; image = default image will be used
-  repository_avatar_fallback: none
-  repository_avatar_fallback_image: /img/repo_default.png
-  #
-  # max width and height of uploaded avatars.
-  # this is to limit the amount of RAM used when resizing the image.
-  avatar_max_width: 4096
-  avatar_max_height: 3072
-  #
-  # the multiplication factor for rendered avatar images.
-  # larger values result in finer rendering on HiDPI devices.
-  avatar_rendered_size_factor: 3
-  #
-  # maximum allowed file size for uploaded avatars.
-  # this is to limit the amount of RAM used when resizing the image.
-  avatar_max_file_size: 1048576
-  #
-  # chinese users can choose "duoshuo"
-  # or a custom avatar source, like: http://cn.gravatar.com/avatar/
-  gravatar_source: gravatar
-  #
-  # this value will always be true in offline mode.
-  disable_gravatar: true
-  #
-  # federated avatar lookup uses dNS to discover avatar associated
-  # with emails, see https://www.libravatar.org
-  # this value will always be false in offline mode or when Gravatar is disabled.
-  enable_federated_avatar: false
+  avatar_upload_path: ""                          # data/avatars
+  repository_avatar_upload_path: ""               # data/repo-avatars
+  repository_avatar_fallback: ""                  # none (none: no avatar will be displayed; random = random avatar will be displayed; image = default image will be used)
+  repository_avatar_fallback_image: ""            # /img/repo_default.png
+  avatar_max_width: ""                            # 4096
+  avatar_max_height: ""                           # 3072
+  avatar_rendered_size_factor: ""                 # 3
+  avatar_max_file_size: ""                        # 1048576
+  gravatar_source: ""                             # gravatar
+  disable_gravatar: ""                            # true
+  enable_federated_avatar: ""                     # false
 
 gitea_defaults_project:
   project_board_basic_kanban_type:
@@ -787,344 +572,196 @@ gitea_defaults_project:
     - Closed
 
 gitea_defaults_proxy:
-  # enable the proxy, all requests to external via HTTP will be affected
-  proxy_enabled: false
-  # proxy server uRL, support http://, https//, socks://, blank will follow environment http_proxy/https_proxy/no_proxy
+  proxy_enabled: ""                               # false
   proxy_url: ""
-  # comma separated list of host names requiring proxy. Glob patterns (*) are accepted; use ** to match all hosts.
   proxy_hosts: []
 
 gitea_defaults_queue:
   default:
-    type: persistable-channel
-    #
-    # data-dir for storing persistable queues and level queues, individual queues will default to `queues/common` meaning the queue is shared.
-    datadir: queues/ # Relative paths will be made absolute against `%(APP_DATA_PATH)s`.
-    #
-    # default queue length before a channel queue will block
-    length: 20
-    #
-    # batch size to send for batched queues
-    batch_length: 20
-    #
-    # connection string for redis queues this will store the redis connection string.
-    # when `type` is `persistable-channel`, this provides a directory for the underlying leveldb
-    # or additional options of the form `leveldb://path/to/db?option=value&....`, and will override `DATADIR`.
-    conn_str: "addrs=127.0.0.1:6379 db=0"
-    #
-    # provides the suffix of the default redis/disk queue name - specific queues can be overridden within in their [queue.name] sections.
-    queue_name: "_queue"
-    #
-    # provides the suffix of the default redis/disk unique queue set name - specific queues can be overridden within in their [queue.name] sections.
-    set_name: "_unique"
-    #
-    # if the queue cannot be created at startup - level queues may need a timeout at startup - wrap the queue:
-    wrap_if_necessary: true
-    #
-    # attempt to create the wrapped queue at max
-    max_attempts: 10
-    #
-    # timeout queue creation
-    timeout: 15m30s
-    #
-    # create a pool with this many workers
-    workers: 0
-    #
-    # dynamically scale the worker pool to at this many workers
-    max_workers: 10
-    #
-    # add boost workers when the queue blocks for BLOCK_TIMEOUT
-    block_timeout: 1s
-    #
-    # remove the boost workers after BOOST_TIMEOUT
-    boost_timeout: 5m
-    #
-    # during a boost add BOOST_WORKERS
-    boost_workers: 1
-  foo:
-    type: persistable-channel
+    type: ""                                      # persistable-channel
+    datadir: ""                                   # queues/ # Relative paths will be made absolute against `%(APP_DATA_PATH)s`.
+    length: ""                                    # 20
+    batch_length: ""                              # 20
+    conn_str: ""                                  # "addrs=127.0.0.1:6379 db=0"
+    queue_name: ""                                # "_queue"
+    set_name: ""                                  # "_unique"
+    wrap_if_necessary: ""                         # true
+    max_attempts: ""                              # 10
+    timeout: ""                                   # 15m30s
+    workers: ""                                   # 0
+    max_workers: ""                               # 10
+    block_timeout: ""                             # 1s
+    boost_timeout: ""                             # 5m
+    boost_workers: ""                             # 1
 
 gitea_defaults_repository:
   root: ""
   script_type: bash
-  detected_charsets_order:
-    - UTF-8
-    - UTF-16BE
-    - UTF-16LE
-    - UTF-32BE
-    - UTF-32LE
-    - ISO-8859
-    - windows-1252
-    - windows-1250
-    - windows-1253
-    - windows-1255
-    - windows-1251
-    - windows-1256
-    - KOI8-R
-    - ISO-8859
-    - windows-1254
-    - Shift_JIS
-    - GB18030
-    - EUC-JP
-    - EUC-KR
-    - Big5
-    - ISO-2022
-    - IBM424_rtl
-    - IBM424_ltr
-    - IBM420_rtl
-    - IBM420_ltr
+  detected_charsets_order: []                     # [UTF-8, UTF-16BE, UTF-16LE, UTF-32BE, UTF-32LE, ISO-8859, ...]
   ansi_charset: ""
-  force_private: false
-  default_private: last
-  default_push_create_private: true
-  max_creation_limit: -1
-  mirror_queue_length: 1000
-  pull_request_queue_length: 1000
-  preferred_licenses:
-    - Apache License 2.0
-    - MIT License
-  disable_http_git: false
+  force_private: ""                               # false
+  default_private: ""                             # last
+  default_push_create_private: ""                 # true
+  max_creation_limit: ""                          # -1
+  mirror_queue_length: ""                         # 1000
+  pull_request_queue_length: ""                   # 1000
+  preferred_licenses: []                          # [Apache License 2.0, MIT License]
+  disable_http_git: ""                            # false
   access_control_allow_origin: ""
-  use_compat_ssh_uri: false
-  # comma separated list of globally disabled repo units.
-  # allowed values: repo.issues, repo.ext_issues, repo.pulls, repo.wiki, repo.ext_wiki, repo.projects, repo.packages, repo.actions.
-  disabled_repo_units: []
-  #
-  # comma separated list of default new repo units.
-  # allowed values: repo.code, repo.releases, repo.issues, repo.pulls, repo.wiki, repo.projects, repo.packages, repo.actions.
-  # note: code and releases can currently not be deactivated. if you specify default repo units you should still list them for future compatibility.
-  # external wiki and issue tracker can't be enabled by default as it requires additional settings.
-  # disabled repo units will not be added to new repositories regardless if it is in the default list.
-  default_repo_units:
-    - repo.code
-    - repo.releases
-    - repo.issues
-    - repo.pulls
-    - repo.wiki
-    - repo.projects
-    - repo.packages
-  #
-  # comma separated list of default forked repo units.
-  # the set of allowed values and rules are the same as default_REPO_UNITS.
-  default_fork_repo_units:
-    - repo.code
-    - repo.pulls
-  prefix_archive_files: true
-  disable_migrations: false
-  disable_stars: false
-  default_branch: main
-  allow_adoption_of_unadopted_repositories: false
-  allow_deletion_of_unadopted_repositories: false
-  disable_download_source_archives: false
-  allow_fork_without_maximum_limit: true
-
+  use_compat_ssh_uri: ""                          # false
+  disabled_repo_units: []                         # allowed values: repo.issues, repo.ext_issues, repo.pulls, repo.wiki, repo.ext_wiki, repo.projects, repo.packages, repo.actions.
+  default_repo_units: []                          # allowed values: repo.code, repo.releases, repo.issues, repo.pulls, repo.wiki, repo.projects, repo.packages, repo.actions.
+  default_fork_repo_units:                        # [repo.code, repo.pulls]
+  prefix_archive_files: ""                        # true
+  disable_migrations: ""                          # false
+  disable_stars: ""                               # false
+  default_branch: ""                              # main
+  allow_adoption_of_unadopted_repositories: ""    # false
+  allow_deletion_of_unadopted_repositories: ""    # false
+  disable_download_source_archives: ""            # false
+  allow_fork_without_maximum_limit: ""            # true
   editor:
-    line_wrap_extensions:
-      - .txt
-      - .md
-      - .markdown
-      - .mdown
-      - .mkd
-
+    line_wrap_extensions: []                      # [.txt, .md, .markdown, .mdown, .mkd]
   local:
-    local_copy_path: tmp/local-repo
-
+    local_copy_path: ""                           # tmp/local-repo
   upload:
-    enabled: true
-    temp_path: data/tmp/uploads
+    enabled: ""                                   # true
+    temp_path: ""                                 # data/tmp/uploads
     allowed_types: []
-    file_max_size: 3
-    max_files: 5
-
+    file_max_size: ""                             # 3
+    max_files: ""                                 # 5
   pull_request:
-    work_in_progress_prefixes:
-      - "WIP:"
-      - "[WIP]"
-    close_keywords:
-      - close
-      - closes
-      - closed
-      - fix
-      - fixes
-      - fixed
-      - resolve
-      - resolves
-      - resolved
-    reopen_keywords:
-      - reopen
-      - reopens
-      - reopened
-    default_merge_style: merge
-    default_merge_message_commits_limit: 50
-    default_merge_message_size: 5120
-    default_merge_message_all_authors: false
-    default_merge_message_max_approvers: 10
-    default_merge_message_official_approvers_only: true
-    add_co_committer_trailers: true
-    test_conflicting_patches_with_git_apply: false
-
+    work_in_progress_prefixes: []                 # ["WIP:", "[WIP]"]
+    close_keywords: []                            # [close, closes, closed, fix, fixes, fixed, resolve, resolves, resolved]
+    reopen_keywords: []                           # [reopen, reopens, reopened]
+    default_merge_style: ""                       # merge
+    default_merge_message_commits_limit: ""       # 50
+    default_merge_message_size: ""                # 5120
+    default_merge_message_all_authors: ""         # false
+    default_merge_message_max_approvers: ""       # 10
+    default_merge_message_official_approvers_only: "" # true
+    add_co_committer_trailers: ""                 # true
+    test_conflicting_patches_with_git_apply: ""   # false
   issue:
-    lock_reasons:
-      - Too heated
-      - Off-topic
-      - Resolved
-      - Spam
-
+    lock_reasons: []                              # [Too heated, Off-topic, Resolved, Spam]
   release:
     allowed_types: []
-    default_paging_num: 10
-
+    default_paging_num: ""                        # 10
   signing:
-    signing_key: default
+    signing_key: ""                               # default
     signing_name: ""
     signing_email: ""
-    default_trust_model: collaborator
-    initial_commit:
-      - always
-    crud_actions:
-      - pubkey
-      - twofa
-      - parentsigned
-    wiki:
-      - never
-    merges:
-      - pubkey
-      - twofa
-      - basesigned
-      - commitssigned
-
-  mimetype_mapping:
-    .apk: application/vnd.android.package-archive
+    default_trust_model: ""                       # collaborator
+    initial_commit: []                            # [always]
+    crud_actions: []                              # [pubkey, twofa, parentsigned]
+    wiki: []                                      # [never]
+    merges: []                                    # [pubkey, twofa, basesigned, commitssigned]
+  mimetype_mapping: {}
+  #  .apk: application/vnd.android.package-archive
 
 gitea_defaults_security:
-  install_lock: false
+  install_lock: ""                                # false
   secret_key: ""
-  secret_key_uri: file:/etc/gitea/secret_key
+  secret_key_uri: ""                              # file:/etc/gitea/secret_key
   internal_token: ""
-  internal_token_uri: file:/etc/gitea/internal_token
-  login_remember_days: 7
-  cookie_username: gitea_awesome
-  cookie_remember_name: gitea_incredible
+  internal_token_uri: ""                          # file:/etc/gitea/internal_token
+  login_remember_days: ""                         # 7
+  cookie_username: ""                             # gitea_awesome
+  cookie_remember_name: ""                        # gitea_incredible
   reverse_proxy:
     authentication:
-      user: X-WEBAUTH-USER
-      email: X-WEBAUTH-EMAIL
-      full_name: X-WEBAUTH-FULLNAME
-    limit: 1
-    trusted_proxies:
-      - 127.0.0.0/8
-      - ::1/128
-  min_password_length: 6
-  import_local_paths: false
-  disable_git_hooks: true
-  disable_webhooks: false
-  only_allow_push_if_gitea_environment_set: true
-  password_complexity:
-    - off
-  password_hash_algo: pbkdf2
-  csrf_cookie_http_only: true
-  password_check_pwn: false
-  successful_tokens_cache_size: 20
+      user: ""                                    # X-WEBAUTH-USER
+      email: ""                                   # X-WEBAUTH-EMAIL
+      full_name: ""                               # X-WEBAUTH-FULLNAME
+    limit: ""                                     # 1
+    trusted_proxies: []                           # [127.0.0.0/8, ::1/128]
+  min_password_length: ""                         # 6
+  import_local_paths: ""                          # false
+  disable_git_hooks: ""                           # true
+  disable_webhooks: ""                            # false
+  only_allow_push_if_gitea_environment_set: ""    # true
+  password_complexity: []                         # [off]
+  password_hash_algo: ""                          # pbkdf2
+  csrf_cookie_http_only: ""                       # true
+  password_check_pwn: ""                          # false
+  successful_tokens_cache_size: ""                # 20
 
 gitea_defaults_server:
-  protocol: http
-  use_proxy_protocol: false
-  proxy_protocol_tls_bridging: false
-  proxy_protocol_header_timeout: 5s
-  proxy_protocol_accept_unknown: false
-  domain: localhost
-  root_url: "%(protocol)s://%(domain)s:%(HTTP_PORT)s/"
+  protocol: ""                                    # http
+  use_proxy_protocol: ""                          # false
+  proxy_protocol_tls_bridging: ""                 # false
+  proxy_protocol_header_timeout: ""               # 5s
+  proxy_protocol_accept_unknown: ""               # false
+  domain: ""                                      # localhost
+  root_url: ""                                    # "%(protocol)s://%(domain)s:%(HTTP_PORT)s/"
   static_url_prefix: ""
-  http_addr: 0.0.0.0
-  http_port: 3000
-  redirect_other_port: false
-  port_to_redirect: 80
-  redirector_use_proxy_protocol: "%(use_proxy_pROTOCOL)s"
-  ssl_min_version: tlsv1.2
+  http_addr: ""                                   # 0.0.0.0
+  http_port: ""                                   # 3000
+  redirect_other_port: ""                         # false
+  port_to_redirect: ""                            # 80
+  redirector_use_proxy_protocol: ""               # "%(use_proxy_pROTOCOL)s"
+  ssl_min_version: ""                             # tlsv1.2
   ssl_max_version: ""
-  ssl_curve_preferences:
-    - x25519
-    - p256
+  ssl_curve_preferences: []                       # [x25519, p256]
   # will default to "ecdhe_ecdsa_with_aes_256_gcm_sha384,ecdhe_rsa_with_aes_256_gcm_sha384,ecdhe_ecdsa_with_aes_128_gcm_sha256,ecdhe_rsa_with_aes_128_gcm_sha256,ecdhe_ecdsa_with_chacha20_poly1305,ecdhe_rsa_with_chacha20_poly1305" if aes is supported by hardware, otherwise chacha will be first.
   ssl_cipher_suites: []
-  per_write_timeout: 30s
-  per_write_per_kb_timeout: 30s
-  unix_socket_permission: 666
-  local_root_url: "%(PROTOCOL)s://%(HTTP_ADDR)s:%(HTTP_PORT)s/"
-  local_use_proxy_protocol: "%(USE_PROXY_PROTOCOL)s"
-  disable_ssh: false
-  start_ssh_server: false
-  ssh_server_use_proxy_protocol: false
-  builtin_ssh_server_user: "%(RUN_USER)s"
-  ssh_domain: "%(DOMAIN)s"
-  ssh_user: "%(BUILTIN_SSH_SERVER_USER)s"
+  per_write_timeout: ""                           # 30s
+  per_write_per_kb_timeout: ""                    # 30s
+  unix_socket_permission: ""                      # 666
+  local_root_url: ""                              # "%(PROTOCOL)s://%(HTTP_ADDR)s:%(HTTP_PORT)s/"
+  local_use_proxy_protocol: ""                    # "%(USE_PROXY_PROTOCOL)s"
+  disable_ssh: ""                                 # false
+  start_ssh_server: ""                            # false
+  ssh_server_use_proxy_protocol: ""               # false
+  builtin_ssh_server_user: ""                     # "%(RUN_USER)s"
+  ssh_domain: ""                                  # "%(DOMAIN)s"
+  ssh_user: ""                                    # "%(BUILTIN_SSH_SERVER_USER)s"
   ssh_listen_host: ""
-  ssh_port: 22
-  ssh_listen_port: "%(SSH_PORT)s"
+  ssh_port: ""                                    # 22
+  ssh_listen_port: ""                             # "%(SSH_PORT)s"
   ssh_root_path: ""
-  ssh_create_authorized_keys_file: true
-  ssh_create_authorized_principals_file: true
-  ssh_server_ciphers:
-    - chacha20-poly1305@openssh.com
-    - aes128-ctr
-    - aes192-ctr
-    - aes256-ctr
-    - aes128-gcm@openssh.com
-    - aes256-gcm@openssh.com
-  ssh_server_key_exchanges:
-    - curve25519-sha256
-    - ecdh-sha2-nistp256
-    - ecdh-sha2-nistp384
-    - ecdh-sha2-nistp521
-    - diffie-hellman-group14-sha256
-    - diffie-hellman-group14-sha1
-  ssh_server_macs:
-    - hmac-sha2-256-etm@openssh.com
-    - hmac-sha2-256
-    - hmac-sha1
-  ssh_server_host_keys:
-    - ssh/gitea.rsa
-    - ssh/gogs.rsa
+  ssh_create_authorized_keys_file: ""             # true
+  ssh_create_authorized_principals_file: ""       # true
+  ssh_server_ciphers: []                          # [chacha20-poly1305@openssh.com, aes128-ctr, aes192-ctr, aes256-ctr, aes128-gcm@openssh.com, aes256-gcm@openssh.com]
+  ssh_server_key_exchanges: []                    # [curve25519-sha256, ecdh-sha2-nistp256, ecdh-sha2-nistp384, ecdh-sha2-nistp521, diffie-hellman-group14-sha256, diffie-hellman-group14-sha1]
+  ssh_server_macs: []                             # [hmac-sha2-256-etm@openssh.com, hmac-sha2-256, hmac-sha1]
+  ssh_server_host_keys:                           # [ssh/gitea.rsa, ssh/gogs.rsa]
   ssh_key_test_path: ""
-  ssh_keygen_path: ssh-keygen
-  ssh_authorized_keys_backup: true
-  ssh_authorized_principals_allow:
-    - email
-    - username
-  ssh_authorized_principals_backup: true
+  ssh_keygen_path: ""                             # ssh-keygen
+  ssh_authorized_keys_backup: ""                  # true
+  ssh_authorized_principals_allow: []             # [email, username]
+  ssh_authorized_principals_backup: ""            # true
   ssh_trusted_user_ca_keys: []
   ssh_trusted_user_ca_keys_filename: ""
-  ssh_expose_anonymous: false
-  ssh_per_write_timeout: 30s
-  ssh_per_write_per_kb_timeout: 30s
-  minimum_key_size_check: false
-  offline_mode: false
-  disable_router_log: false
-  enable_acme: false
+  ssh_expose_anonymous: ""                        # false
+  ssh_per_write_timeout: ""                       # 30s
+  ssh_per_write_per_kb_timeout: ""                # 30s
+  minimum_key_size_check: ""                      # false
+  offline_mode: ""                                # false
+  disable_router_log: ""                          # false
+  enable_acme: ""                                 # false
   acme_url: ""
-  acme_accepttos: false
+  acme_accepttos: ""                              # false
   acme_ca_root: ""
   acme_email: ""
-  acme_directory: https
-  cert_file: https/cert.pem
-  key_file: https/key.pem
-  static_root_path: "" # will default to the built-in value _`StaticRootPath`_
-  app_data_path: data # relative paths will be made absolute with _`AppWorkPath`_
-  enable_gzip: false
-  enable_pprof: false
-  pprof_data_path: data/tmp/pprof # path is relative to _`AppWorkPath`_
-  # landing page, can be "home", "explore", "organizations", "login", or any URL such as "/org/repo" or even "https://anotherwebsite.com"
-  # the "login" choice is not a security measure but just a UI flow change, use REQUIRE_SIGNIN_VIEW to force users to log in.
-  landing_page: home
-  lfs_start_server: false
+  acme_directory: ""                              # https
+  cert_file: ""                                   # https/cert.pem
+  key_file: ""                                    # https/key.pem
+  static_root_path: ""
+  app_data_path: ""                               # data
+  enable_gzip: ""                                 # false
+  enable_pprof: ""                                # false
+  pprof_data_path: ""                             # data/tmp/pprof
+  landing_page: ""                                # home  (can be "home", "explore", "organizations", "login", or any URL such as "/org/repo" or even "https://anotherwebsite.com")
+  lfs_start_server: ""                            # false
   lfs_jwt_secret: ""
-  lfs_http_auth_expiry: 20m
-  lfs_max_file_size: 0
-  lfs_locks_paging_num: 50
-  allow_graceful_restarts: true
-  graceful_hammer_time: 60s
-  startup_timeout: 0
-  static_cache_time: 6h
+  lfs_http_auth_expiry: ""                        # 20m
+  lfs_max_file_size: ""                           # 0
+  lfs_locks_paging_num: ""                        # 50
+  allow_graceful_restarts: ""                     # true
+  graceful_hammer_time: ""                        # 60s
+  startup_timeout: ""                             # 0
+  static_cache_time: ""                           # 6h
 
 gitea_defaults_service:
   active_code_live_minutes: 180
@@ -1226,50 +863,21 @@ gitea_defaults_time:
   default_ui_location: ""
 
 gitea_defaults_ui:
-  # number of repositories that are displayed on one explore page
   explore_paging_num: 20
-  #
-  # number of issues that are displayed on one page
   issue_paging_num: 20
-  #
-  # number of maximum commits displayed in one activity feed
   feed_max_commit_num: 5
-  #
-  # number of items that are displayed in home feed
   feed_paging_num: 20
-  #
-  # number of items that are displayed in a single subsitemap
   sitemap_paging_num: 20
-  #
-  # number of maximum commits displayed in commit graph.
   graph_max_commit_num: 100
-  #
-  # number of line of codes shown for a code comment
   code_comment_lines: 4
-  #
-  # value of `theme-color` meta tag, used by android >= 5.0
-  # an invalid color like "none" or "disable" will have the default style
-  # more info: https://developers.google.com/web/updates/2014/11/Support-for-theme-color-in-Chrome-39-for-Android
   theme_color_meta_tag: "#6cc644"
-  #
-  # max size of files to be displayed (default is 8MiB)
   max_display_file_size: 8388608
-  #
-  # whether the email of the user should be shown in the Explore Users page
   show_user_email: true
-  #
-  # set the default theme for the gitea install
   default_theme: auto
-  #
-  # all available themes. allow users select personalized themes regardless of the value of `DEFAULT_THEME`.
   themes:
     - auto
     - gitea
     - arc-green
-  #
-  # all available reactions users can choose on issues/prs and comments.
-  # values can be emoji alias (:smile:) or a unicode emoji.
-  # for custom reactions, add a tightly cropped square image to public/img/emoji/reaction_name.png
   reactions:
     - "+1"
     - "-1"
@@ -1279,10 +887,6 @@ gitea_defaults_ui:
     - heart
     - rocket
     - eyes
-  #
-  # additional emojis not defined in the utf8 standard
-  # by default we support gitea (:gitea:), to add more copy them to public/img/emoji/emoji_name.png and add it to this config.
-  # dont mistake it for reactions.
   custom_emojis:
     - gitea
     - codeberg
@@ -1290,92 +894,45 @@ gitea_defaults_ui:
     - git
     - github
     - gogs
-  #
-  # whether the full name of the users should be shown where possible. If the full name isn't set, the username will be used.
   default_show_full_name: false
-  #
-  # whether to search within description at repository search on explore page.
   search_repo_description: true
-  #
-  # whether to enable a service worker to cache frontend assets
   use_service_worker: false
-  #
-  # whether to only show relevant repos on the explore page when no keyword is specified and default sorting is used.
-  # a repo is considered irrelevant if it's a fork or if it has no metadata (no description, no icon, no topic).
   only_show_relevant_repos: false
-
-  ##############################################;;;;
-  ##############################################;;;;
   admin:
-    ##############################################;;;;
-    ##############################################;;;;
-    #
-    # number of users that are displayed on one page
     user_paging_num: 50
-    #
-    # number of repos that are displayed on one page
     repo_paging_num: 50
-    #
-    # number of notices that are displayed on one page
     notice_paging_num: 25
-    #
-    # number of organizations that are displayed on one page
     org_paging_num: 50
-
-  ##############################################;;;;
-  ##############################################;;;;
   user:
-    ##############################################;;;;
-    ##############################################;;;;
-    # number of repos that are displayed on one page
     repo_paging_num: 15
-
-  ##############################################;;;;
-  ##############################################;;;;
   meta:
-    ##############################################;;;;
-    ##############################################;;;;
     author: gitea - git with a cup of tea
     description: gitea (git with a cup of tea) is a painless self-hosted Git service written in Go
-    keywords: go,git,self-hosted,gitea
-
-  ##############################################;;;;
-  ##############################################;;;;
-
+    keywords:
+      - go
+      - git
+      - self-hosted
+      - gitea
   notification:
-    ##############################################;;;;
-    ##############################################;;;;
-    #
-    # control how often the notification endpoint is polled to update the notification
-    # the timeout will increase to max_timeout in TIMEOUT_STEPs if the notification count is unchanged
-    # set min_timeout to -1 to turn off
     min_timeout: 10s
     max_timeout: 60s
     timeout_step: 10s
-    #
-    # this setting determines how often the db is queried to get the latest notification counts.
-    # if the browser client supports eventsource and SharedWorker, a SharedWorker will be used in preference to polling notification. Set to -1 to disable the EventSource
     event_source_update_time: 10s
-
-  ##############################################;;;;
-  ##############################################;;;;
   svg:
-    ##############################################;;;;
-    ##############################################;;;;
-    #
-    # whether to render svg files as images.  if sVG rendering is disabled, SVG files are displayed as text and cannot be embedded in markdown files as images.
     enable_render: true
-
-  ##############################################;;;;
-  ##############################################;;;;
   csv:
-    ##############################################;;;;
-    ##############################################;;;;
-    #
-    # maximum allowed file size in bytes to render CSV files as table. (Set to 0 for no limit).
     max_file_size: 524288
 
-gitea_defaults_webhook: {}
+gitea_defaults_webhook:
+  queue_length: 1000
+  deliver_timeout: 5
+  allowed_host_list:
+    - external
+  skip_tls_verify: false
+  paging_num: 10
+  proxy_url: ""
+  proxy_hosts: []
+
 
 
 

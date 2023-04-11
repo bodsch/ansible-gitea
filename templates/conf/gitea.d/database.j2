@@ -1,0 +1,86 @@
+  {% if gitea_database.db_type | default('') | string | length > 0 and
+        gitea_database.db_type in ["mysql", "postgres", "mssql", "sqlite3"] %}
+[database]
+DB_TYPE = {{ gitea_database.db_type }}
+    {% if gitea_database.host | default('') | string | length > 0 %}
+HOST = {{ gitea_database.host }}
+    {% endif %}
+    {% if gitea_database.name | default('') | string | length > 0 %}
+NAME = {{ gitea_database.name }}
+    {% endif %}
+    {% if gitea_database.user | default('') | string | length > 0 %}
+USER = {{ gitea_database.user }}
+    {% endif %}
+    {% if gitea_database.db_type in ["mysql", "postgres", "mssql"] %}
+      {% if gitea_database.passwd | default('') | string | length > 0 %}
+PASSWD = {{ gitea_database.passwd }}
+      {% endif %}
+    {% endif %}
+    {# DB specials ... #}
+    {# mysql | mariadb #}
+    {% if gitea_database.db_type == "mysql" %}
+      {% if gitea_database.ssl_mode | default('') | string | length > 0 and
+            gitea_database.ssl_mode in ["false", "true", "skip-verify"] %}
+        {% if gitea_database.ssl_mode != "skip-verify" %}
+SSL_MODE = {{ gitea_database.ssl_mode | bodsch.core.config_bool(true_as='true', false_as='false') }}
+        {% else %}
+SSL_MODE = {{ gitea_database.ssl_mode }}
+        {% endif %}
+      {% endif %}
+      {% if gitea_database.charset | default('') | string | length > 0 %}
+CHARSET = {{ gitea_database.charset }}
+      {% endif %}
+    {% endif %}
+    {# postgres #}
+    {% if gitea_database.db_type == "postgres" %}
+      {% if gitea_database.ssl_mode | default('') | string | length > 0 and
+            gitea_database.ssl_mode in ["disable", "require", "verify-full"] %}
+SSL_MODE = {{ gitea_database.ssl_mode }}
+      {% endif %}
+      {% if gitea_database.schema | default('') | string | length > 0 %}
+SCHEMA = {{ gitea_database.schema }}
+      {% endif %}
+    {% endif %}
+    {# sqlite #}
+    {% if gitea_database.db_type == "sqlite3" %}
+      {% if gitea_database.path | default('') | string | length > 0 %}
+PATH = {{ gitea_database.path }}
+      {% endif %}
+      {% if gitea_database.sqlite_timeout | default('') | string | length > 0 %}
+SQLITE_TIMEOUT = {{ gitea_database.sqlite_timeout }}
+      {% if gitea_database.sqlite_journal_mode | default('') | string | length > 0 %}
+      {% endif %}
+SQLITE_JOURNAL_MODE = {{ gitea_database.sqlite_journal_mode }}
+      {% endif %}
+    {% endif %}
+    {# mssql #}
+    {% if gitea_database.db_type == "mssql" %}
+      {# #}
+    {% endif %}
+    {% if gitea_database.iterate_buffer_size | default('') | string | length > 0 %}
+ITERATE_BUFFER_SIZE = {{ gitea_database.iterate_buffer_size }}
+    {% endif %}
+    {% if gitea_database.log_sql | default('') | string | length > 0 %}
+LOG_SQL = {{ gitea_database.log_sql | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% endif %}
+    {% if gitea_database.db_retries | default('') | string | length > 0 %}
+DB_RETRIES = {{ gitea_database.db_retries }}
+    {% endif %}
+    {% if gitea_database.db_retry_backoff | default('') | string | length > 0 %}
+DB_RETRY_BACKOFF = {{ gitea_database.db_retry_backoff }}
+    {% endif %}
+    {% if gitea_database.max_idle_conns | default('') | string | length > 0 %}
+MAX_IDLE_CONNS = {{ gitea_database.max_idle_conns }}
+    {% endif %}
+    {% if gitea_database.conn_max_lifetime | default('') | string | length > 0 %}
+CONN_MAX_LIFETIME = {{ gitea_database.conn_max_lifetime }}
+    {% endif %}
+    {% if gitea_database.max_open_conns | default('') | string | length > 0 %}
+MAX_OPEN_CONNS = {{ gitea_database.max_open_conns }}
+    {% endif %}
+    {% if gitea_database.auto_migration | default('') | string | length > 0 %}
+AUTO_MIGRATION = {{ gitea_database.auto_migration | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% endif %}
+  {% else %}
+;; unkown database type
+  {% endif %}

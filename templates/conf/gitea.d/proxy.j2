@@ -1,0 +1,9 @@
+
+[proxy]
+PROXY_ENABLED = {{ gitea_proxy.proxy_enabled | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% if gitea_proxy.proxy_url | default('') | string | length > 0 %}
+PROXY_URL = {{ gitea_proxy.proxy_url }}
+  {% endif %}
+  {% if gitea_proxy.proxy_hosts | count > 0 %}
+PROXY_HOSTS = {{ gitea_proxy.proxy_hosts | join(', ') }}
+  {% endif %}

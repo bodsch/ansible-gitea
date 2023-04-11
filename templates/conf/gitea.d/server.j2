@@ -1,0 +1,237 @@
+
+[server]
+  {% if gitea_server.protocol | default('') | string | length > 0 and
+        gitea_server.protocol in  ["http", "https", "http+unix", "fcgi", "fcgi+unix"] %}
+PROTOCOL = {{ gitea_server.protocol }}
+  {% endif %}
+  {% if gitea_server.use_proxy_protocol | default('') | string | length > 0 %}
+USE_PROXY_PROTOCOL = {{ gitea_server.use_proxy_protocol | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.proxy_protocol_tls_bridging | default('') | string | length > 0 %}
+PROXY_PROTOCOL_TLS_BRIDGING = {{ gitea_server.proxy_protocol_tls_bridging | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.proxy_protocol_header_timeout | default('') | string | length > 0 %}
+PROXY_PROTOCOL_HEADER_TIMEOUT = {{ gitea_server.proxy_protocol_header_timeout }}
+  {% endif %}
+  {% if gitea_server.proxy_protocol_accept_unknown | default('') | string | length > 0 %}
+PROXY_PROTOCOL_ACCEPT_UNKNOWN = {{ gitea_server.proxy_protocol_accept_unknown | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.domain | default('') | string | length > 0 %}
+DOMAIN = {{ gitea_server.domain }}
+  {% endif %}
+  {% if gitea_server.root_url | default('') | string | length > 0 %}
+ROOT_URL = {{ gitea_server.root_url }}
+  {% endif %}
+  {% if gitea_server.static_url_prefix | default('') | string | length > 0 %}
+STATIC_URL_PREFIX = {{ gitea_server.static_url_prefix }}
+  {% endif %}
+  {% if gitea_server.http_addr | default('') | string | length > 0 %}
+HTTP_ADDR = {{ gitea_server.http_addr }}
+  {% endif %}
+  {% if gitea_server.http_port | default('') | string | length > 0 %}
+HTTP_PORT = {{ gitea_server.http_port }}
+  {% endif %}
+  {% if gitea_server.redirect_other_port | default('') | string | length > 0 %}
+REDIRECT_OTHER_PORT = {{ gitea_server.redirect_other_port | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% if gitea_server.port_to_redirect | default('') | string | length > 0 %}
+PORT_TO_REDIRECT = 80
+    {% endif %}
+  {% endif %}
+  {% if gitea_server.redirector_use_proxy_protocol | default('') | string | length > 0 %}
+REDIRECTOR_USE_PROXY_PROTOCOL = {{ gitea_server.redirector_use_proxy_protocol }}
+  {% endif %}
+  {% if gitea_server.ssl_min_version | default('') | string | length > 0 %}
+SSL_MIN_VERSION = {{ gitea_server.ssl_min_version }}
+  {% endif %}
+  {% if gitea_server.ssl_max_version | default('') | string | length > 0 %}
+SSL_MAX_VERSION = {{ gitea_server.ssl_max_version }}
+  {% endif %}
+  {% if gitea_server.ssl_curve_preferences | count > 0 %}
+SSL_CURVE_PREFERENCES = {{ gitea_server.ssl_curve_preferences | join(', ') }}
+  {% endif %}
+  {% if gitea_server.ssl_cipher_suites | count > 0 %}
+SSL_CIPHER_SUITES =  {{ gitea_server.ssl_cipher_suites | join(', ') }}
+  {% endif %}
+  {% if gitea_server.per_write_timeout | default('') | string | length > 0 %}
+PER_WRITE_TIMEOUT = {{ gitea_server.per_write_timeout }}
+  {% endif %}
+  {% if gitea_server.per_write_per_kb_timeout | default('') | string | length > 0 %}
+PER_WRITE_PER_KB_TIMEOUT = {{ gitea_server.per_write_per_kb_timeout }}
+  {% endif %}
+  {% if gitea_server.unix_socket_permission | default('') | string | length > 0 %}
+UNIX_SOCKET_PERMISSION = {{ gitea_server.unix_socket_permission }}
+  {% endif %}
+  {% if gitea_server.local_root_url | default('') | string | length > 0 %}
+LOCAL_ROOT_URL = {{ gitea_server.local_root_url }}
+  {% endif %}
+  {% if gitea_server.local_use_proxy_protocol | default('') | string | length > 0 %}
+LOCAL_USE_PROXY_PROTOCOL = {{ gitea_server.local_use_proxy_protocol }}
+  {% endif %}
+  {% if gitea_server.disable_ssh | default('') | string | length > 0 %}
+DISABLE_SSH = {{ gitea_server.disable_ssh | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.start_ssh_server | default('') | string | length > 0 %}
+START_SSH_SERVER = {{ gitea_server.start_ssh_server | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.ssh_server_use_proxy_protocol | default('') | string | length > 0 %}
+SSH_SERVER_USE_PROXY_PROTOCOL = {{ gitea_server.ssh_server_use_proxy_protocol | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.builtin_ssh_server_user | default('') | string | length > 0 %}
+BUILTIN_SSH_SERVER_USER = {{ gitea_server.builtin_ssh_server_user }}
+  {% endif %}
+  {% if gitea_server.ssh_domain | default('') | string | length > 0 %}
+SSH_DOMAIN = {{ gitea_server.ssh_domain }}
+  {% endif %}
+  {% if gitea_server.ssh_user | default('') | string | length > 0 %}
+SSH_USER = {{ gitea_server.ssh_user }}
+  {% endif %}
+  {% if gitea_server.ssh_listen_host | default('') | string | length > 0 %}
+SSH_LISTEN_HOST = {{ gitea_server.ssh_listen_host }}
+  {% endif %}
+  {% if gitea_server.ssh_port | default('') | string | length > 0 %}
+SSH_PORT = {{ gitea_server.ssh_port }}
+  {% endif %}
+  {% if gitea_server.ssh_listen_port | default('') | string | length > 0 %}
+SSH_LISTEN_PORT = {{ gitea_server.ssh_listen_port }}
+  {% endif %}
+  {% if gitea_server.ssh_root_path | default('') | string | length > 0 %}
+SSH_ROOT_PATH = {{ gitea_server.ssh_root_path }}
+  {% endif %}
+  {% if gitea_server.ssh_create_authorized_keys_file | default('') | string | length > 0 %}
+SSH_CREATE_AUTHORIZED_KEYS_FILE = {{ gitea_server.ssh_create_authorized_keys_file | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.ssh_create_authorized_principals_file | default('') | string | length > 0 %}
+SSH_CREATE_AUTHORIZED_PRINCIPALS_FILE = {{ gitea_server.ssh_create_authorized_principals_file | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.ssh_server_ciphers | count > 0 %}
+SSH_SERVER_CIPHERS = {{ gitea_server.ssh_server_ciphers | join(', ') }}
+  {% endif %}
+  {% if gitea_server.ssh_server_key_exchanges | count > 0 %}
+SSH_SERVER_KEY_EXCHANGES = {{ gitea_server.ssh_server_key_exchanges | join(', ') }}
+  {% endif %}
+  {% if gitea_server.ssh_server_macs | count > 0 %}
+SSH_SERVER_MACS = {{ gitea_server.ssh_server_macs | join(', ') }}
+  {% endif %}
+  {% if gitea_server.ssh_server_host_keys | count > 0 %}
+SSH_SERVER_HOST_KEYS = {{ gitea_server.ssh_server_host_keys | join(', ') }}
+  {% endif %}
+  {% if gitea_server.ssh_key_test_path | default('') | string | length > 0 %}
+SSH_KEY_TEST_PATH = {{ gitea_server.ssh_key_test_path }}
+  {% endif %}
+  {% if gitea_server.ssh_keygen_path | default('') | string | length > 0 %}
+SSH_KEYGEN_PATH = {{ gitea_server.ssh_keygen_path }}
+  {% endif %}
+  {% if gitea_server.ssh_authorized_keys_backup | default('') | string | length > 0 %}
+SSH_AUTHORIZED_KEYS_BACKUP = {{ gitea_server.ssh_authorized_keys_backup | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.ssh_authorized_principals_allow | default('') | string | length > 0 %}
+    {% if gitea_server.ssh_trusted_user_ca_keys is defined and
+          gitea_server.ssh_trusted_user_ca_keys | string | length == 0 %}
+      {% set valid_principals = ["off"] %}
+    {% else %}
+      {% set valid_principals = ["empty", "off", "email", "username", "anything"] %}
+      {% set valid_principals = gitea_server.ssh_authorized_principals_allow | bodsch.core.compare_list(compare_to_list=valid_principals) %}
+    {% endif %}
+SSH_AUTHORIZED_PRINCIPALS_ALLOW = {{ valid_principals | join(', ') }}
+  {% endif %}
+  {% if gitea_server.ssh_authorized_principals_backup | default('') | string | length > 0 %}
+SSH_AUTHORIZED_PRINCIPALS_BACKUP = {{ gitea_server.ssh_authorized_principals_backup | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.ssh_trusted_user_ca_keys | count > 0 %}
+SSH_TRUSTED_USER_CA_KEYS = {{ gitea_server.ssh_trusted_user_ca_keys | join(', ') }}
+  {% endif %}
+  {% if gitea_server.ssh_trusted_user_ca_keys_filename | default('') | string | length > 0 %}
+SSH_TRUSTED_USER_CA_KEYS_FILENAME = {{ gitea_server.ssh_trusted_user_ca_keys_filename }}
+  {% endif %}
+  {% if gitea_server.ssh_expose_anonymous | default('') | string | length > 0 %}
+SSH_EXPOSE_ANONYMOUS = {{ gitea_server.ssh_expose_anonymous | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.ssh_per_write_timeout | default('') | string | length > 0 %}
+SSH_PER_WRITE_TIMEOUT = {{ gitea_server.ssh_per_write_timeout }}
+  {% endif %}
+  {% if gitea_server.ssh_per_write_per_kb_timeout | default('') | string | length > 0 %}
+SSH_PER_WRITE_PER_KB_TIMEOUT = {{ gitea_server.ssh_per_write_per_kb_timeout }}
+  {% endif %}
+  {% if gitea_server.minimum_key_size_check | default('') | string | length > 0 %}
+MINIMUM_KEY_SIZE_CHECK = {{ gitea_server.minimum_key_size_check | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.offline_mode | default('') | string | length > 0 %}
+OFFLINE_MODE = {{ gitea_server.offline_mode | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.disable_router_log | default('') | string | length > 0 %}
+DISABLE_ROUTER_LOG = {{ gitea_server.disable_router_log | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.enable_acme | default('') | string | length > 0 %}
+ENABLE_ACME = {{ gitea_server.enable_acme | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% if gitea_server.acme_url | default('') | string | length > 0 %}
+ACME_URL = {{ gitea_server.acme_url }}
+    {% endif %}
+    {% if gitea_server.acme_accepttos | default('') | string | length > 0 %}
+ACME_ACCEPTTOS = {{ gitea_server.acme_accepttos | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% endif %}
+    {% if gitea_server.acme_ca_root | default('') | string | length > 0 %}
+ACME_CA_ROOT = {{ gitea_server.acme_ca_root }}
+    {% endif %}
+    {% if gitea_server.acme_email | default('') | string | length > 0 %}
+ACME_EMAIL = {{ gitea_server.acme_email }}
+    {% endif %}
+    {% if gitea_server.acme_directory | default('') | string | length > 0 %}
+ACME_DIRECTORY = {{ gitea_server.acme_directory }}
+    {% endif %}
+  {% endif %}
+  {% if gitea_server.cert_file | default('') | string | length > 0 %}
+CERT_FILE = {{ gitea_server.cert_file }}
+  {% endif %}
+  {% if gitea_server.key_file | default('') | string | length > 0 %}
+KEY_FILE = {{ gitea_server.key_file }}
+  {% endif %}
+  {% if gitea_server.static_root_path | default('') | string | length > 0 %}
+STATIC_ROOT_PATH = {{ gitea_server.static_root_path }}
+  {% endif %}
+  {% if gitea_server.app_data_path | default('') | string | length > 0 %}
+APP_DATA_PATH = {{ gitea_server.app_data_path }}
+  {% endif %}
+  {% if gitea_server.enable_gzip | default('') | string | length > 0 %}
+ENABLE_GZIP = {{ gitea_server.enable_gzip | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.enable_pprof | default('') | string | length > 0 %}
+ENABLE_PPROF = {{ gitea_server.enable_pprof | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.pprof_data_path | default('') | string | length > 0 %}
+PPROF_DATA_PATH = {{ gitea_server.pprof_data_path }}
+  {% endif %}
+  {% if gitea_server.landing_page | default('') | string | length > 0 and
+        gitea_server.landing_page in ["home", "explore", "organizations", "login"] %}
+    {#
+        Landing page, can be "home", "explore", "organizations", "login", or any URL such as "/org/repo" or even "https://anotherwebsite.com"
+        The "login" choice is not a security measure but just a UI flow change, use REQUIRE_SIGNIN_VIEW to force users to log in.
+    #}
+LANDING_PAGE = {{ gitea_server.landing_page }}
+  {% endif %}
+  {% if gitea_server.lfs_start_server | default('') | string | length > 0 %}
+LFS_START_SERVER = {{ gitea_server.lfs_start_server | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.lfs_jwt_secret | default('') | string | length > 0 %}
+LFS_JWT_SECRET = {{ gitea_server.lfs_jwt_secret }}
+  {% endif %}
+  {% if gitea_server.lfs_http_auth_expiry | default('') | string | length > 0 %}
+LFS_HTTP_AUTH_EXPIRY = {{ gitea_server.lfs_http_auth_expiry }}
+  {% endif %}
+  {% if gitea_server.lfs_max_file_size | default('') | string | length > 0 %}
+LFS_MAX_FILE_SIZE = {{ gitea_server.lfs_max_file_size }}
+  {% endif %}
+  {% if gitea_server.lfs_locks_paging_num | default('') | string | length > 0 %}
+LFS_LOCKS_PAGING_NUM = {{ gitea_server.lfs_locks_paging_num }}
+  {% endif %}
+  {% if gitea_server.allow_graceful_restarts | default('') | string | length > 0 %}
+ALLOW_GRACEFUL_RESTARTS = {{ gitea_server.allow_graceful_restarts | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_server.graceful_hammer_time | default('') | string | length > 0 %}
+GRACEFUL_HAMMER_TIME = {{ gitea_server.graceful_hammer_time }}
+  {% endif %}
+  {% if gitea_server.startup_timeout | default('') | string | length > 0 %}
+STARTUP_TIMEOUT = {{ gitea_server.startup_timeout }}
+  {% endif %}
+  {% if gitea_server.static_cache_time | default('') | string | length > 0 %}
+STATIC_CACHE_TIME = {{ gitea_server.static_cache_time }}
+  {% endif %}

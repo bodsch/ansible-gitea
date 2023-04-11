@@ -1,0 +1,14 @@
+
+[task]
+  {% if gitea_task.queue_type | default('') | string | length > 0 and
+        gitea_task.queue_type in ["channel", "redis"] %}
+QUEUE_TYPE = {{ gitea_task.queue_type }}
+    {% if gitea_task.queue_type == "channel" and
+          gitea_task.queue_length | default('') | string | length > 0 %}
+QUEUE_LENGTH = {{ gitea_task.queue_length }}
+    {% endif %}
+    {% if gitea_task.queue_type == "redis" and
+          gitea_task.queue_conn_str | default('') | string | length > 0 %}
+QUEUE_CONN_STR = {{ gitea_task.queue_conn_str }}
+    {% endif %}
+  {% endif %}

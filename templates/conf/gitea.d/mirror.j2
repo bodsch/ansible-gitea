@@ -1,0 +1,15 @@
+
+[mirror]
+ENABLED = {{ gitea_mirror.enabled | default('false') | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% if gitea_mirror.disable_new_pull | default('') | string | length > 0 %}
+DISABLE_NEW_PULL = {{ gitea_mirror.disable_new_pull | default('false') | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_mirror.disable_new_push | default('') | string | length > 0 %}
+DISABLE_NEW_PUSH = {{ gitea_mirror.disable_new_push | default('false') | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_mirror.default_interval | default('') | string | length > 0 %}
+DEFAULT_INTERVAL = {{ gitea_mirror.default_interval }}
+  {% endif %}
+  {% if gitea_mirror.min_interval | default('') | string | length > 0 %}
+MIN_INTERVAL = {{ gitea_mirror.min_interval }}
+  {% endif %}

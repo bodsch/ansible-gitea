@@ -60,11 +60,3 @@ gitea_ui: {}
 gitea_webhook: {}
 
 ...
-
-
-
-# And place the original in /usr/lib/gitea with working files in /var/lib/gitea
-# and main configuration in /etc/gitea/app.ini
-#GITEA="/usr/lib/gitea/gitea"
-#WORK_DIR="/var/lib/gitea"
-#APP_INI="/etc/gitea/app.ini"

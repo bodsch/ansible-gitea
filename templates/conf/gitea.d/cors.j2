@@ -1,0 +1,28 @@
+
+[cors]
+ENABLED = {{ gitea_cors.enabled | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% if gitea_cors.scheme | default('') | string | length > 0 %}
+SCHEME = {{ gitea_cors.scheme }}
+  {% endif %}
+  {% if gitea_cors.allow_domain | count > 0 %}
+;; list of requesting domains that are allowed
+ALLOW_DOMAIN = {{ gitea_cors.allow_domain | join(', ') }}
+  {% endif %}
+  {% if gitea_cors.allow_subdomain | default('') | string | length > 0 %}
+ALLOW_SUBDOMAIN = {{ gitea_cors.allow_subdomain | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_cors.methods | count > 0 %}
+METHODS =  {{ gitea_cors.methods | join(', ') }}
+  {% endif %}
+  {% if gitea_cors.max_age | default('') | string | length > 0 %}
+MAX_AGE = {{ gitea_cors.max_age }}
+  {% endif %}
+  {% if gitea_cors.allow_credentials | default('') | string | length > 0 %}
+ALLOW_CREDENTIALS = {{ gitea_cors.allow_credentials | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% endif %}
+  {% if gitea_cors.allow_credentials | default('') | string | length > 0 %}
+HEADERS = {{ gitea_cors.headers | join(', ') }}
+  {% endif %}
+  {% if gitea_cors.x_frame_options | default('') | string | length > 0 %}
+X_FRAME_OPTIONS = {{ gitea_cors.x_frame_options | join(', ') }}
+  {% endif %}

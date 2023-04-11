@@ -1,0 +1,40 @@
+
+[markup]
+  {% if gitea_markup.mermaid_max_source_characters | default('') | string | length > 0 %}
+MERMAID_MAX_SOURCE_CHARACTERS = {{ gitea_markup.mermaid_max_source_characters }}
+  {% endif %}
+  {% if gitea_markup.sanitizer | count > 0 %}
+    {% for i in gitea_markup.sanitizer %}
+
+[markup.sanitizer.{{ i.id }}]
+      {% if i.element | default('') | string | length > 0 %}
+ELEMENT = {{ i.element }}
+      {% endif %}
+      {% if i.allow_attr | default('') | string | length > 0 %}
+ALLOW_ATTR = {{ i.allow_attr }}
+      {% endif %}
+      {% if i.regexp | default('') | string | length > 0 %}
+REGEXP = {{ i.regexp }}
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+  {% if gitea_markup.asciidoc is defined and
+        gitea_markup.asciidoc | count > 0 and
+        gitea_markup.asciidoc.enabled | bool %}
+
+[markup.asciidoc]
+ENABLED = {{ gitea_markup.asciidoc.enabled | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% if gitea_markup.asciidoc.file_extensions | count > 0 %}
+FILE_EXTENSIONS = {{ gitea_markup.asciidoc.file_extensions | join(', ') }}
+    {% endif %}
+    {% if gitea_markup.asciidoc.render_command | default('') | string | length > 0 %}
+RENDER_COMMAND = "{{ gitea_markup.asciidoc.render_command }}"
+    {% endif %}
+    {% if gitea_markup.asciidoc.is_input_file | default('') | string | length > 0 %}
+IS_INPUT_FILE = {{ gitea_markup.asciidoc.is_input_file | bodsch.core.config_bool(true_as='true', false_as='false') }}
+    {% endif %}
+    {% if gitea_markup.asciidoc.render_content_mode | default('') | string | length > 0 and
+          gitea_markup.asciidoc.render_content_mode in ["sanitized", "no-sanitizer", "iframe"] %}
+RENDER_CONTENT_MODE = {{ gitea_markup.asciidoc.render_content_mode }}
+    {% endif %}
+  {% endif %}

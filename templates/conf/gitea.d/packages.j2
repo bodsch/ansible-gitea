@@ -1,0 +1,60 @@
+
+[packages]
+ENABLED = {{ gitea_packages.enabled | bodsch.core.config_bool(true_as='true', false_as='false') }}
+  {% if gitea_packages.chunked_upload_path | default('') | string | length > 0 %}
+CHUNKED_UPLOAD_PATH = {{ gitea_packages.chunked_upload_path }}
+  {% endif %}
+  {% if gitea_packages.limit_total_owner_count | default('') | string | length > 0 %}
+LIMIT_TOTAL_OWNER_COUNT = {{ gitea_packages.limit_total_owner_count }}
+  {% endif %}
+  {% if gitea_packages.limit_total_owner_size | default('') | string | length > 0 %}
+LIMIT_TOTAL_OWNER_SIZE = {{ gitea_packages.limit_total_owner_size }}
+  {% endif %}
+  {% if gitea_packages.limit_size_cargo | default('') | string | length > 0 %}
+LIMIT_SIZE_CARGO = {{ gitea_packages.limit_size_cargo }}
+  {% endif %}
+  {% if gitea_packages.limit_size_chef | default('') | string | length > 0 %}
+LIMIT_SIZE_CHEF = {{ gitea_packages.limit_size_chef }}
+  {% endif %}
+  {% if gitea_packages.limit_size_composer | default('') | string | length > 0 %}
+LIMIT_SIZE_COMPOSER = {{ gitea_packages.limit_size_composer }}
+  {% endif %}
+  {% if gitea_packages.limit_size_conan | default('') | string | length > 0 %}
+LIMIT_SIZE_CONAN = {{ gitea_packages.limit_size_conan }}
+  {% endif %}
+  {% if gitea_packages.limit_size_conda | default('') | string | length > 0 %}
+LIMIT_SIZE_CONDA = {{ gitea_packages.limit_size_conda }}
+  {% endif %}
+  {% if gitea_packages.limit_size_container | default('') | string | length > 0 %}
+LIMIT_SIZE_CONTAINER = {{ gitea_packages.limit_size_container }}
+  {% endif %}
+  {% if gitea_packages.limit_size_generic | default('') | string | length > 0 %}
+LIMIT_SIZE_GENERIC = {{ gitea_packages.limit_size_generic }}
+  {% endif %}
+  {% if gitea_packages.limit_size_helm | default('') | string | length > 0 %}
+LIMIT_SIZE_HELM = {{ gitea_packages.limit_size_helm }}
+  {% endif %}
+  {% if gitea_packages.limit_size_maven | default('') | string | length > 0 %}
+LIMIT_SIZE_MAVEN = {{ gitea_packages.limit_size_maven }}
+  {% endif %}
+  {% if gitea_packages.limit_size_npm | default('') | string | length > 0 %}
+LIMIT_SIZE_NPM = {{ gitea_packages.limit_size_npm }}
+  {% endif %}
+  {% if gitea_packages.limit_size_nuget | default('') | string | length > 0 %}
+LIMIT_SIZE_NUGET = {{ gitea_packages.limit_size_nuget }}
+  {% endif %}
+  {% if gitea_packages.limit_size_pub | default('') | string | length > 0 %}
+LIMIT_SIZE_PUB = {{ gitea_packages.limit_size_pub }}
+  {% endif %}
+  {% if gitea_packages.limit_size_pypi | default('') | string | length > 0 %}
+LIMIT_SIZE_PYPI = {{ gitea_packages.limit_size_pypi }}
+  {% endif %}
+  {% if gitea_packages.limit_size_rubygems | default('') | string | length > 0 %}
+LIMIT_SIZE_RUBYGEMS = {{ gitea_packages.limit_size_rubygems }}
+  {% endif %}
+  {% if gitea_packages.limit_size_swift | default('') | string | length > 0 %}
+LIMIT_SIZE_SWIFT = {{ gitea_packages.limit_size_swift }}
+  {% endif %}
+  {% if gitea_packages.limit_size_vagrant | default('') | string | length > 0 %}
+LIMIT_SIZE_VAGRANT = {{ gitea_packages.limit_size_vagrant }}
+  {% endif %}

@@ -1,0 +1,10 @@
+
+[i18n]
+  {% if gitea_i18n.langs is defined and
+        gitea_i18n.langs | count > 0 %}
+LANGS = {{ gitea_i18n.langs | join(', ') }}
+  {% endif %}
+  {% if gitea_i18n.names is defined and
+        gitea_i18n.names | count > 0 %}
+NAMES = {{ gitea_i18n.names | join(', ') }}
+  {% endif %}
