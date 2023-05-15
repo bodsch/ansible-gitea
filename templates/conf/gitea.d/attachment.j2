@@ -18,7 +18,7 @@ STORAGE_TYPE = {{ gitea_attachment.storage_type }}
   {% if gitea_attachment.storage_type | default('') | string | length > 0 and
         gitea_attachment.storage_type == "minio" and
         gitea_attachment.serve_direct | default('') | string | length > 0 %}
-SERVE_DIRECT = {{ gitea_attachment.serve_direct | bool | ternary('true', 'false') }}
+SERVE_DIRECT = {{ gitea_attachment.serve_direct | bodsch.core.config_bool(true_as='true', false_as='false') }}
   {% endif %}
   {% if gitea_attachment.storage_type | default('') | string | length > 0 and
         gitea_attachment.storage_type == "local" and

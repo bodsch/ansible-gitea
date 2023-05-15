@@ -98,3 +98,93 @@ def get_vars(host):
     result = templar.template(ansible_vars, fail_on_undefined=False)
 
     return result
+
+
+def local_facts(host):
+    """
+      return local facts
+    """
+    return host.ansible("setup").get("ansible_facts").get("ansible_local").get("gitea")
+
+
+@pytest.mark.parametrize("dirs", [
+    "/etc/gitea"
+])
+def test_directories(host, dirs):
+    d = host.file(dirs)
+    assert d.is_directory
+
+
+def test_gitea_files(host, get_vars):
+    """
+    """
+    distribution = host.system_info.distribution
+    release = host.system_info.release
+
+    print(f"distribution: {distribution}")
+    print(f"release     : {release}")
+
+    version = local_facts(host).get("version")
+
+    install_dir = get_vars.get("gitea_install_path")
+    defaults_dir = get_vars.get("gitea_defaults_directory")
+    config_dir = get_vars.get("gitea_config_dir")
+
+    if 'latest' in install_dir:
+        install_dir = install_dir.replace('latest', version)
+
+    files = []
+    files.append("/usr/bin/gitea")
+
+    if install_dir:
+        files.append(f"{install_dir}/gitea")
+    if defaults_dir and not distribution == "artix":
+        files.append(f"{defaults_dir}/gitea")
+    if config_dir:
+        files.append(f"{config_dir}/gitea.ini")
+
+    print(files)
+
+    for _file in files:
+        f = host.file(_file)
+        assert f.is_file
+
+
+def test_user(host, get_vars):
+    """
+    """
+    user = get_vars.get("gitea_system_user", "gitea")
+    group = get_vars.get("gitea_system_group", "gitea")
+
+    assert host.group(group).exists
+    assert host.user(user).exists
+    assert group in host.user(user).groups
+    assert host.user(user).home == "/var/lib/gitea"
+
+
+def test_service(host, get_vars):
+    service = host.service("gitea")
+    assert service.is_enabled
+    assert service.is_running
+
+
+def test_open_port(host, get_vars):
+    for i in host.socket.get_listening_sockets():
+        print(i)
+
+    gitea_server = get_vars.get("gitea_server", {})
+
+    print(gitea_server)
+
+    if isinstance(gitea_server, dict):
+        gitea_web = gitea_server.get("web", {})
+
+        addr = gitea_web.get("http_addr", "0.0.0.0")
+        port = gitea_web.get("http_port", "3000")
+
+        listen_address = f"{addr}:{port}"
+    else:
+        listen_address = "0.0.0.0:3000"
+
+    service = host.socket(f"tcp://{listen_address}")
+    assert service.is_listening
