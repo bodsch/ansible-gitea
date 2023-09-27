@@ -4,7 +4,7 @@ gitea_database:
   db_type: sqlite3
   charset: utf8
   path: /var/lib/gitea/data/gitea.db
-  log_sql: true
+  log_sql: false
 
 gitea_repository:
   root: /var/lib/gitea/data/gitea-repositories
@@ -39,9 +39,9 @@ gitea_openid:
 
 gitea_log:
   mode: console
-  level: debug
+  level: info
   root_path: /var/lib/gitea/log
-  router: console
+  # router: console
 
 gitea_security:
   install_lock: true

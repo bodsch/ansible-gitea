@@ -1,12 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# (c) 2021, Bodo Schulz <bodo@boone-schulz.de>
-# BSD 2-clause (see LICENSE or https://opensource.org/licenses/BSD-2-Clause)
+# (c) 2023, Bodo Schulz <bodo@boone-schulz.de>
+# Apache (see LICENSE or https://opensource.org/licenses/Apache-2.0)
 
 from __future__ import absolute_import, print_function
-import os
-import re
 
 from ansible.module_utils.basic import AnsibleModule
 
@@ -47,7 +45,6 @@ class GiteaCli(object):
         if self.state == "migrate":
             result = self.migrate()
 
-
         return result
 
     def migrate(self):
@@ -80,7 +77,6 @@ class GiteaCli(object):
         ]
 
         rc, out, err = self._exec(args_list)
-
 
     def _exec(self, commands, check_rc=True):
         """

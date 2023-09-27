@@ -1,11 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# (c) 2021, Bodo Schulz <bodo@boone-schulz.de>
-# BSD 2-clause (see LICENSE or https://opensource.org/licenses/BSD-2-Clause)
+# (c) 2023, Bodo Schulz <bodo@boone-schulz.de>
+# Apache (see LICENSE or https://opensource.org/licenses/Apache-2.0)
 
 from __future__ import absolute_import, print_function
-import os
 import re
 
 from ansible.module_utils.basic import AnsibleModule
@@ -30,12 +29,12 @@ class GiteaUser(object):
         """
         self.module = module
 
-        # self._console = module.get_bin_path('console', False)
-
         self.state = module.params.get("state")
-        self.parameters = module.params.get("parameters")
+        self.admin = module.params.get("admin")
+        self.username = module.params.get("username")
+        self.password = module.params.get("password")
+        self.email = module.params.get("email")
         self.working_dir = module.params.get("working_dir")
-        self.environment = module.params.get("environment")
         self.config = module.params.get("config")
 
         self.gitea_bin = module.get_bin_path('gitea', True)
@@ -43,10 +42,55 @@ class GiteaUser(object):
     def run(self):
         """
         """
+        result = dict(
+            changed=False,
+            failed=False
+        )
 
-        if self.state == "migrate":
-            result = self.migrate()
+        if self.state == "present":
+            if not self.user_exists(self.username):
+                result = self.add_user()
+            else:
+                result = dict(
+                    changed=False,
+                    msg=f"user {self.username} already created."
+                )
 
+        return result
+
+    def user_exists(self, user_name):
+        """
+            su gitea -c "/usr/bin/gitea --config /etc/gitea/gitea.ini --work-path /var/lib/gitea admin user list"
+        """
+        args_list = [
+            self.gitea_bin,
+            "admin",
+            "user",
+            "list",
+            "--work-path", self.working_dir,
+            "--config", self.config,
+        ]
+
+        result = False
+        # self.module.log(msg=f"  args_list : '{args_list}'")
+        rc, out, err = self._exec(args_list)
+
+        outer_pattern = re.compile(r".*ID\s+Username\s+Email\s+IsActive\s+IsAdmin\s+2FA\n(?P<data>.*)", flags=re.MULTILINE | re.DOTALL)
+        inner_pattern = re.compile(r"(?P<ID>\d+)\s+(?P<username>\w+)\s+(?P<email>[a-zA-Z+_\-@\.]+)\s+(?P<active>\w+)\s+(?P<admin>\w+)\s+(?P<twofa>\w+)", flags=re.MULTILINE | re.DOTALL)
+        outer_re_result = re.search(outer_pattern, out)
+
+        if outer_re_result:
+            data = outer_re_result.group("data")
+            inner_re_result = re.finditer(inner_pattern, data)
+            # self.module.log(msg=f"  inner_re_result : '{inner_re_result}'")
+            if inner_re_result:
+                found_match = [x for x in inner_re_result if x.group("username") == user_name]
+                # self.module.log(msg=f"  found_match : '{found_match}'")
+                if found_match and len(found_match) > 0:
+                    found_match = found_match[0]
+                    self.module.log(msg=f"  found user : {found_match.group('username')} with email {found_match.group('email')}")
+
+                    result = True
 
         return result
 
@@ -57,16 +101,37 @@ class GiteaUser(object):
 
         args_list = [
             self.gitea_bin,
-            "--work-path", self.working_dir,
-            "--config", self.config,
             "admin",
             "user",
             "create",
-
+            "--work-path", self.working_dir,
+            "--config", self.config,
         ]
+
+        if self.admin:
+            args_list.append("--admin")
+
+        args_list += [
+            "--username", self.username,
+            "--password", self.password,
+            "--email", self.email
+        ]
+
+        self.module.log(msg=f"  args_list : '{args_list}'")
 
         rc, out, err = self._exec(args_list)
 
+        if rc == 0:
+            return dict(
+                failed=False,
+                changed=True,
+                msg=f"user {self.username} successful created."
+            )
+        else:
+            return dict(
+                failed=True,
+                msg=err
+            )
 
     def _exec(self, commands, check_rc=True):
         """
@@ -104,9 +169,20 @@ def main():
         password=dict(
             required=True,
             type=str,
+            no_log=True,
         ),
         email=dict(
             required=True,
+            type=str
+        ),
+        working_dir=dict(
+            required=False,
+            default="/var/lib/gitea",
+            type=str
+        ),
+        config=dict(
+            required=False,
+            default="/etc/gitea/gitea.ini",
             type=str
         )
     )
@@ -181,23 +257,3 @@ DEFAULT CONFIGURATION:
      AppPath:     /usr/bin/gitea
      AppWorkPath: /usr/bin
 """
-
-"""
-  upgrade gitea:
-
-  see: https://github.com/go-gitea/gitea/blob/main/contrib/upgrade.sh
-
-# stop gitea, create backup, replace binary, restart gitea
-echo "Flushing gitea queues at $(date)"
-giteacmd manager flush-queues
-echo "Stopping gitea at $(date)"
-$service_stop
-echo "Creating backup in $giteahome"
-giteacmd dump $backupopts
-echo "Updating binary at $giteabin"
-cp -f "$giteabin" "$giteabin.bak" && mv -f "$binname" "$giteabin"
-$service_start
-$service_status
-"""
-
-""" https://docs.gitea.com/administration/command-line """

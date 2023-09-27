@@ -20,24 +20,10 @@
         - default.yaml
       skip: true
 
-
-
 - name: install dependency
   ansible.builtin.package:
     name: "{{ gitea_requirements }}"
     state: present
-
-
-
-
-- name: detect installed gitea binary {{ gitea_install_path }}/gitea
-  ansible.builtin.stat:
-    path: "{{ gitea_install_path }}/gitea"
-  register: stat_gitea_binary
-
-
-
-
 
 - name: merge gitea configuration between defaults and custom
   ansible.builtin.set_fact:

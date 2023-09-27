@@ -46,11 +46,20 @@
 - name: restart gitea if needed
   ansible.builtin.meta: flush_handlers
 
+- name: check if gitea are available
+  ansible.builtin.wait_for:
+    port: "{{ gitea_server.http_port | default('3000') }}"
+    delay: 4
+    msg: "Timeout for open port {{ gitea_server.http_port | default('3000') }}"
+  ignore_errors: false
+
 - name: create admin user
+  remote_user: "{{ gitea_system_user }}"
   gitea_user:
     admin: true
     username: "{{ gitea_admin_user.username }}"
     password: "{{ gitea_admin_user.password }}"
     email: "{{ gitea_admin_user.email }}"
+  # no_log: true
 
 ...
