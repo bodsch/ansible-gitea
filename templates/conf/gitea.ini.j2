@@ -189,7 +189,6 @@ RUN_MODE = {{ run_mod }}
       gitea_proxy.proxy_enabled | bool %}
 {% include('gitea.d/proxy.j2') %}
 {% endif %}
-{#
 {% if gitea_queue is defined and
       gitea_queue | count > 0 %}
 {% include('gitea.d/queue.j2') %}
@@ -238,4 +237,3 @@ RUN_MODE = {{ run_mod }}
       gitea_webhook | count > 0 %}
 {% include('gitea.d/webhook.j2') %}
 {% endif %}
-#}

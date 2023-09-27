@@ -1,17 +1,113 @@
 ---
 
-- name: download gitea binary archive
+- name: get latest release
+  delegate_to: localhost
+  become: false
+  run_once: true
+  when:
+    - gitea_version == "latest"
+  block:
+    - name: get latest release
+      delegate_to: localhost
+      become: false
+      run_once: true
+      bodsch.scm.github_latest:
+        project: go-gitea
+        repository: gitea
+        user: "{{ lookup('env', 'GH_USER') | default(omit) }}"
+        password: "{{ lookup('env', 'GH_TOKEN') | default(omit) }}"
+      register: _latest_release
+
+    - name: re-define gitea_version
+      ansible.builtin.set_fact:
+        gitea_version: "{{ _latest_release.latest_release }}"
+
+- name: define download information
+  ansible.builtin.set_fact:
+    gitea_release: "{{ gitea_defaults_release | combine(gitea_release, recursive=True) }}"
+
+- name: define delegate instance for download handling
+  ansible.builtin.set_fact:
+    gitea_delegate_to: "{{ ansible_host }}"
+    gitea_local_tmp_directory: "{{
+        lookup('env', 'CUSTOM_LOCAL_TMP_DIRECTORY') |
+        default('/var/cache/ansible/gitea', true) }}/{{ gitea_version }}"
+  when:
+    - gitea_direct_download
+
+- name: create download directory
   become: false
   delegate_to: "{{ gitea_delegate_to }}"
   run_once: "{{ 'false' if gitea_direct_download else 'true' }}"
-  ansible.builtin.get_url:
-    url: "{{ gitea_release_download_url }}/download/{{ __gitea_files.archive }}"
-    dest: "{{ gitea_local_tmp_directory }}/{{ __gitea_files.binary }}"
-    mode: 0644
-  register: _download_archive
-  until: _download_archive is succeeded
-  retries: 5
-  delay: 2
-  check_mode: false
+  ansible.builtin.file:
+    path: "{{ gitea_local_tmp_directory }}"
+    state: directory
+    mode: 0750
+
+- name: detect the downloaded gitea archive
+  become: false
+  delegate_to: "{{ gitea_delegate_to }}"
+  run_once: "{{ 'false' if gitea_direct_download else 'true' }}"
+  ansible.builtin.stat:
+    path: "{{ gitea_local_tmp_directory }}/{{ gitea_release.file }}"
+  register: stat_gitea_archive
+
+- name: download
+  when:
+    - stat_gitea_archive.stat is defined
+    - not stat_gitea_archive.stat.exists | default('false')
+  block:
+    - name: checksum
+      become: false
+      delegate_to: localhost
+      run_once: true
+      block:
+        - name: get checksum list
+          bodsch.scm.github_checksum:
+            project: go-gitea
+            repository: gitea
+            checksum_file: "{{ gitea_release.checksum }}"
+            user: "{{ lookup('env', 'GH_USER') | default(omit) }}"
+            password: "{{ lookup('env', 'GH_TOKEN') | default(omit) }}"
+            architecture: "{{ ansible_architecture }}"
+            system: "{{ ansible_facts.system }}"
+            version: "v{{ gitea_version }}"
+          register: _latest_checksum
+
+        - name: define checksum for {{ system_architecture }} architecture
+          ansible.builtin.set_fact:
+            __gitea_checksum: "sha256:{{ _latest_checksum.checksum }}"
+          when:
+            - _latest_checksum.rc == 0
+            - _latest_checksum.checksum is defined
+            - _latest_checksum.checksum | string | length > 0
+
+    - name: download gitea binary archive
+      become: false
+      delegate_to: "{{ gitea_delegate_to }}"
+      run_once: "{{ 'false' if gitea_direct_download else 'true' }}"
+      ansible.builtin.get_url:
+        url: "{{ gitea_release.download_url }}/download/v{{ gitea_version }}/{{ gitea_release.file }}"
+        dest: "{{ gitea_local_tmp_directory }}/{{ gitea_release.file }}"
+        checksum: "{{ __gitea_checksum | default(omit) }}"
+        mode: 0640
+      register: _download_archive
+      until: _download_archive is succeeded
+      retries: 5
+      delay: 2
+      check_mode: false
+
+  rescue:
+    - name: delete download directory
+      become: false
+      delegate_to: "{{ gitea_delegate_to }}"
+      run_once: "{{ 'false' if gitea_direct_download else 'true' }}"
+      ansible.builtin.file:
+        path: "{{ gitea_local_tmp_directory }}"
+        state: absent
+
+    - name: exit with fail
+      ansible.builtin.fail:
+        msg: A serious error occurred when downloading the archive.
 
 ...

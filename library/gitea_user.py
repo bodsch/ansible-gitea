@@ -20,7 +20,7 @@ ANSIBLE_METADATA = {
 }
 
 
-class GiteaCli(object):
+class GiteaUser(object):
     """
     """
     module = None
@@ -32,7 +32,7 @@ class GiteaCli(object):
 
         # self._console = module.get_bin_path('console', False)
 
-        self.command = module.params.get("command")
+        self.state = module.params.get("state")
         self.parameters = module.params.get("parameters")
         self.working_dir = module.params.get("working_dir")
         self.environment = module.params.get("environment")
@@ -49,20 +49,6 @@ class GiteaCli(object):
 
 
         return result
-
-    def migrate(self):
-        """
-            gitea migrate --help --config /etc/gitea/gitea.ini
-        """
-
-        args_list = [
-            self.gitea_bin,
-            "--work-path", self.working_dir,
-            "--config", self.config,
-            "migrate"
-        ]
-
-        rc, out, err = self._exec(args_list)
 
     def add_user(self):
         """
@@ -99,28 +85,28 @@ def main():
     """
     """
     specs = dict(
-        command=dict(
-            default="migrate",
+        state=dict(
+            default="present",
             choices=[
-                "migrate",
+                "present",
+                "absent"
             ]
         ),
-        parameters=dict(
+        admin=dict(
             required=False,
-            type=list,
-            default=[]
+            type=bool,
+            default=False
         ),
-        working_dir=dict(
+        username=dict(
             required=True,
             type=str
         ),
-        environment=dict(
-            required=False,
-            default="prod"
+        password=dict(
+            required=True,
+            type=str,
         ),
-        config=dict(
-            required=False,
-            default="/etc/gitea/gitea.ini",
+        email=dict(
+            required=True,
             type=str
         )
     )
@@ -130,7 +116,7 @@ def main():
         supports_check_mode=False,
     )
 
-    kc = GiteaCli(module)
+    kc = GiteaUser(module)
     result = kc.run()
 
     module.log(msg=f"= result : '{result}'")

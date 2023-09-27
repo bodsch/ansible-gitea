@@ -1,32 +1,145 @@
 ---
 
-- name: detect binary file for gitea
+- name: user and group handling
+  when:
+    - gitea_system_user != "root"
+  block:
+    - name: create gitea group
+      ansible.builtin.group:
+        name: "{{ gitea_system_group }}"
+        state: present
+        system: true
+
+    - name: create gitea user
+      ansible.builtin.user:
+        name: "{{ gitea_system_user }}"
+        groups: "{{ gitea_system_group }}"
+        # append: true
+        shell: /bin/bash
+        system: true
+        createhome: false
+        home: "{{ gitea_working_dir }}"
+
+- name: create install directory
+  ansible.builtin.file:
+    path: "{{ gitea_install_path }}"
+    state: directory
+    owner: "{{ gitea_system_user }}"
+    group: "{{ gitea_system_group }}"
+    mode: 0755
+
+- name: detect binary file for gitea on '{{ gitea_delegate_to }}'
   become: false
   delegate_to: "{{ gitea_delegate_to }}"
   run_once: "{{ 'false' if gitea_direct_download else 'true' }}"
   ansible.builtin.stat:
-    path: "{{ gitea_local_tmp_directory }}/{{ __gitea_files.binary }}"
+    path: "{{ gitea_local_tmp_directory }}/{{ gitea_release.binary }}"
   register: stat_file_binary
 
-- name: propagate files
+- name: fail when binary are missing
+  ansible.builtin.fail:
+    msg: "missing binary on ansible controller"
   when:
-    - stat_file_binary.stat.exists
-  block:
-    - name: propagate gitea binaries
-      ansible.builtin.copy:
-        src: "{{ gitea_local_tmp_directory }}/{{ __gitea_files.binary }}"
-        dest: "{{ gitea_install_path }}/gitea"
-        mode: 0755
-        owner: "{{ gitea_system_user }}"
-        group: "{{ gitea_system_group }}"
-        remote_src: "{{ 'true' if gitea_direct_download else 'false' }}"
+    - not stat_file_binary.stat.exists
 
-- name: make files executable
-  ansible.builtin.file:
+- name: detect installed gitea binary
+  ansible.builtin.stat:
     path: "{{ gitea_install_path }}/gitea"
-    mode: 0755
-    owner: "{{ gitea_system_user }}"
-    group: "{{ gitea_system_group }}"
+  register: stat_gitea_binary
+
+- name: detect activated gitea binary
+  ansible.builtin.stat:
+    path: "/usr/bin/gitea"
+  register: stat_gitea_activated
+
+- name: install and activate gitea
+  when:
+    - (stat_gitea_binary.stat is defined and not stat_gitea_binary.stat.exists | default('false')) or
+      not stat_gitea_activated.stat | bodsch.core.linked_version(gitea_install_path, gitea_version)
+  block:
+    - name: propagate files
+      block:
+        - name: propagate gitea binary
+          ansible.builtin.copy:
+            src: "{{ gitea_local_tmp_directory }}/{{ gitea_release.binary }}"
+            dest: "{{ gitea_install_path }}/gitea"
+            mode: 0755
+            owner: "{{ gitea_system_user }}"
+            group: "{{ gitea_system_group }}"
+            remote_src: "{{ 'true' if gitea_direct_download else 'false' }}"
+
+        - name: make files executable
+          ansible.builtin.file:
+            path: "{{ gitea_install_path }}/gitea"
+            mode: 0755
+            owner: "{{ gitea_system_user }}"
+            group: "{{ gitea_system_group }}"
+
+        - name: create link to binary
+          ansible.builtin.file:
+            src: "{{ gitea_install_path }}/gitea"
+            dest: "/usr/bin/gitea"
+            state: link
+            force: true
+            follow: false
+          notify:
+            - restart gitea
+
+      rescue:
+        - name: delete install directory
+          ansible.builtin.file:
+            path: "{{ gitea_install_path }}"
+            state: absent
+
+        - name: exit with fail
+          ansible.builtin.fail:
+            msg: A serious error occurred during the installation of the binary.
+
+- name: systemd
+  when:
+    - ansible_service_mgr | lower == "systemd"
+  block:
+    - name: create gitea run configuration
+      ansible.builtin.template:
+        src: "gitea.j2"
+        dest: "{{ gitea_defaults_directory }}/gitea"
+        force: true
+        owner: root
+        group: "{{ gitea_system_group }}"
+        mode: 0640
+      notify:
+        - restart gitea
+
+    - name: create systemd service unit
+      ansible.builtin.template:
+        src: "init/systemd/gitea.service.j2"
+        dest: "{{ systemd_lib_directory }}/gitea.service"
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - daemon-reload
+        - restart gitea
+
+- name: openrc
+  when:
+    - ansible_service_mgr | lower == "openrc"
+  block:
+    - name: create openrc service configuration
+      ansible.builtin.template:
+        src: "init/openrc/conf.d/gitea.j2"
+        dest: "/etc/conf.d/gitea"
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: create openrc init configuration
+      ansible.builtin.template:
+        src: "init/openrc/init.d/gitea.j2"
+        dest: "/etc/init.d/gitea"
+        owner: root
+        group: root
+        mode: 0750
 
 - name: create custom fact file
   bodsch.core.facts:
@@ -34,43 +147,4 @@
     facts:
       version: "{{ gitea_version }}"
 
-- name: create link to binary
-  ansible.builtin.file:
-    src: "{{ gitea_install_path }}/gitea"
-    dest: "/usr/bin/gitea"
-    state: link
-    force: true
-    follow: false
-  notify:
-    - restart gitea
-
-- name: create gitea configuration directory
-  ansible.builtin.file:
-    path: "{{ gitea_config_dir }}"
-    state: directory
-    owner: root
-    group: "{{ gitea_system_group }}"
-    mode: 0770
-
-- name: create gitea working directory
-  ansible.builtin.file:
-    path: "{{ gitea_working_dir }}"
-    state: directory
-    owner: root
-    group: "{{ gitea_system_group }}"
-    mode: 0770
-
-- name: create gitea custom directory tree
-  ansible.builtin.file:
-    path: "{{ gitea_working_dir }}/{{ item }}"
-    state: directory
-    owner: root
-    group: "{{ gitea_system_group }}"
-    mode: 0770
-  loop:
-    - log
-    - custom/options
-    - data
-    - data/gitea-repositories
-    - data/lfs
-    - data/home
+...

@@ -1,13 +1,6 @@
 
 
-OPTIONS=" \
-  --work-path {{ gitea_working_dir }} \
-  --custom-path {{ gitea_working_dir }}/custom \
-  --config \
-    /etc/gitea/app.ini \
-    {{ gitea_config_dir }}/gitea.ini
-"
-
+OPTIONS="--work-path {{ gitea_working_dir }} --custom-path {{ gitea_working_dir }}/custom --config {{ gitea_config_dir }}/gitea.ini"
 {#
 # gitea --help
 NAME:

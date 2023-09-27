@@ -10,14 +10,16 @@ gitea_repository:
   root: /var/lib/gitea/data/gitea-repositories
 
 gitea_server:
-  domain: molecule.docker.local
-  ssh_domain: molecule.docker.local
+  domain: gitea.molecule.lan
+  protocol: http
   http_addr: "0.0.0.0"
   http_port: 3000
-  root_url: http://molecule.docker.local:3000
+  root_url: http://gitea.molecule.lan:3000
   disable_ssh: true
-  lfs_start_server: true
-  lfs_jwt_secret: OkAglKI7wKkBlT1l5YyncFM-vyDpQbEZefzQKcaoVxE
+  # ssh_domain: gitea.molecule.lan
+  landing_page: login
+  lfs_start_server: false
+  # lfs_jwt_secret: OkAglKI7wKkBlT1l5YyncFM-vyDpQbEZefzQKcaoVxE
 
 gitea_git:
   home_path: /var/lib/gitea/data/home
