@@ -1362,3 +1362,8 @@ gitea_webhook:
   proxy_hosts: []
 
 ```
+
+
+## Tools
+
+[Tea - CLI for gitea](https://dl.gitea.com/tea/0.9.2/

@@ -1,0 +1,49 @@
+---
+
+gitea_database:
+  db_type: sqlite3
+  charset: utf8
+  path: /var/lib/gitea/data/gitea.db
+  log_sql: false
+
+gitea_repository:
+  root: /var/lib/gitea/data/gitea-repositories
+
+gitea_server:
+  domain: gitea.molecule.lan
+  protocol: http
+  http_addr: "127.0.0.1"
+  http_port: 3000
+  # root_url: https://gitea.molecule.lan
+  disable_ssh: true
+  # ssh_domain: gitea.molecule.lan
+  landing_page: login
+  lfs_start_server: false
+  # lfs_jwt_secret: OkAglKI7wKkBlT1l5YyncFM-vyDpQbEZefzQKcaoVxE
+
+gitea_git:
+  home_path: /var/lib/gitea/data/home
+
+gitea_lfs:
+  path: /var/lib/gitea/data/lfs
+
+gitea_mailer:
+  enabled: false
+
+gitea_service:
+  register_email_confirm: false
+
+gitea_openid:
+  enable_openid_signin: false
+  enable_openid_signup: false
+
+gitea_log:
+  mode: console
+  level: info
+  root_path: /var/lib/gitea/log
+  # router: console
+
+gitea_security:
+  install_lock: true
+  internal_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE2ODEyMjMxMjR9.tTmy5Nuv6_p66VZCxASiviwKSZCFk9GXggQ1-naqH7g
+...
