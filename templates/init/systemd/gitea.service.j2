@@ -1,9 +1,21 @@
-{{ ansible_managed | comment }}
+#jinja2: trim_blocks: True, lstrip_blocks: True
+# {{ ansible_managed }}
 
 [Unit]
-Description       = Gitea (Git with a cup of tea)
-After             = syslog.target
-After             = network.target
+Description             = Gitea (Git with a cup of tea)
+
+{% if gitea_systemd.unit.after is defined and
+      gitea_systemd.unit.after | count > 0 %}
+After                   = {{ gitea_systemd.unit.after | join(' ') }}
+{% endif %}
+{% if gitea_systemd.unit.wants is defined and
+      gitea_systemd.unit.wants | count > 0 %}
+Wants                   = {{ gitea_systemd.unit.wants | join(' ') }}
+{% endif %}
+{% if gitea_systemd.unit.requires is defined and
+      gitea_systemd.unit.requires | count > 0 %}
+Requires              = network.target {{ gitea_systemd.unit.requires | join(' ') }}
+{% endif %}
 
 ###
 # Don't forget to add the database service dependencies
@@ -53,38 +65,43 @@ After             = network.target
 
 [Service]
 # Uncomment the next line if you have repos with lots of files and get a HTTP 500 error because of that
-# LimitNOFILE=524288:524288
-RestartSec        = 2s
-Type              = simple
-User              = {{ gitea_system_user }}
-Group             = {{ gitea_system_group }}
-WorkingDirectory  = {{ gitea_working_dir }}
+# LimitNOFILE             = 524288:524288
+RestartSec              = 4s
+Type                    = simple
+User                    = {{ gitea_system_user }}
+Group                   = {{ gitea_system_group }}
+WorkingDirectory        = {{ gitea_working_dir }}
 
 # If using Unix socket: tells systemd to create the /run/gitea folder, which will contain the gitea.sock file
 # (manually creating /run/gitea doesn't work, because it would not persist across reboots)
-#RuntimeDirectory=gitea
+# RuntimeDirectory        = gitea
 
-EnvironmentFile   = {{ gitea_defaults_directory }}/gitea
+EnvironmentFile         = -{{ gitea_defaults_directory }}/gitea
 
-ExecStart         = /usr/bin/gitea web ${OPTIONS}
-Restart=always
+ExecStart               = /usr/bin/gitea web $OPTIONS
+# --work-path {{ gitea_working_dir }} --custom-path {{ gitea_working_dir }}/custom --config {{ gitea_config_dir }}/gitea.ini
+Restart                 = always
+ExecReload              = /bin/kill -HUP $MAINPID
 
-Environment       = USER={{ gitea_system_user }}
-Environment       = HOME={{ gitea_working_dir }}
-Environment       = GITEA_WORK_DIR={{ gitea_working_dir }}
+#ExecStartPre             = /bin/bash -l -c 'echo "/usr/bin/gitea web ${OPTIONS}" > /tmp/systemd_gitea.debug'
+#ExecStartPre             = /bin/bash -l -c 'cat ${OPTIONS} >> /tmp/systemd_gitea.debug'
+
+#Environment             = USER={{ gitea_system_user }}
+#Environment             = HOME={{ gitea_working_dir }}
+#Environment             = GITEA_WORK_DIR={{ gitea_working_dir }}
 
 # If you install Git to directory prefix other than default PATH (which happens
 # for example if you install other versions of Git side-to-side with
 # distribution version), uncomment below line and add that prefix to PATH
 # Don't forget to place git-lfs binary on the PATH below if you want to enable
 # Git LFS support
-#Environment      = PATH=/path/to/git/bin:/bin:/sbin:/usr/bin:/usr/sbin
+#Environment             = PATH=/path/to/git/bin:/bin:/sbin:/usr/bin:/usr/sbin
 
 # If you want to bind Gitea to a port below 1024, uncomment
 # the two values below, or use socket activation to pass Gitea its ports as above
 ###
-#CapabilityBoundingSet=CAP_NET_BIND_SERVICE
-#AmbientCapabilities=CAP_NET_BIND_SERVICE
+#CapabilityBoundingSet   = CAP_NET_BIND_SERVICE
+#AmbientCapabilities     = CAP_NET_BIND_SERVICE
 ###
 
 # In some cases, when using CapabilityBoundingSet and AmbientCapabilities option, you may want to
@@ -92,8 +109,8 @@ Environment       = GITEA_WORK_DIR={{ gitea_working_dir }}
 # value if set to true sandboxes gitea service and prevent any processes from running with privileges
 # in the host user namespace.
 ###
-#PrivateUsers=false
+PrivateUsers            = false
 ###
 
 [Install]
-WantedBy          = multi-user.target
+WantedBy                = multi-user.target

@@ -103,16 +103,16 @@ SSH_CREATE_AUTHORIZED_KEYS_FILE = {{ gitea_server.ssh_create_authorized_keys_fil
   {% if gitea_server.ssh_create_authorized_principals_file | default('') | string | length > 0 %}
 SSH_CREATE_AUTHORIZED_PRINCIPALS_FILE = {{ gitea_server.ssh_create_authorized_principals_file | bodsch.core.config_bool(true_as='true', false_as='false') }}
   {% endif %}
-  {% if gitea_server.ssh_server_ciphers | count > 0 %}
+  {% if gitea_server.ssh_server_ciphers | default([]) | count > 0 %}
 SSH_SERVER_CIPHERS = {{ gitea_server.ssh_server_ciphers | join(', ') }}
   {% endif %}
-  {% if gitea_server.ssh_server_key_exchanges | count > 0 %}
+  {% if gitea_server.ssh_server_key_exchanges | default([]) | count > 0 %}
 SSH_SERVER_KEY_EXCHANGES = {{ gitea_server.ssh_server_key_exchanges | join(', ') }}
   {% endif %}
-  {% if gitea_server.ssh_server_macs | count > 0 %}
+  {% if gitea_server.ssh_server_macs | default([]) | count > 0 %}
 SSH_SERVER_MACS = {{ gitea_server.ssh_server_macs | join(', ') }}
   {% endif %}
-  {% if gitea_server.ssh_server_host_keys | count > 0 %}
+  {% if gitea_server.ssh_server_host_keys | default([]) | count > 0 %}
 SSH_SERVER_HOST_KEYS = {{ gitea_server.ssh_server_host_keys | join(', ') }}
   {% endif %}
   {% if gitea_server.ssh_key_test_path | default('') | string | length > 0 %}
@@ -124,7 +124,7 @@ SSH_KEYGEN_PATH = {{ gitea_server.ssh_keygen_path }}
   {% if gitea_server.ssh_authorized_keys_backup | default('') | string | length > 0 %}
 SSH_AUTHORIZED_KEYS_BACKUP = {{ gitea_server.ssh_authorized_keys_backup | bodsch.core.config_bool(true_as='true', false_as='false') }}
   {% endif %}
-  {% if gitea_server.ssh_authorized_principals_allow | default('') | string | length > 0 %}
+  {% if gitea_server.ssh_authorized_principals_allow | default([]) | count > 0 %}
     {% if gitea_server.ssh_trusted_user_ca_keys is defined and
           gitea_server.ssh_trusted_user_ca_keys | string | length == 0 %}
       {% set valid_principals = ["off"] %}
@@ -137,7 +137,7 @@ SSH_AUTHORIZED_PRINCIPALS_ALLOW = {{ valid_principals | join(', ') }}
   {% if gitea_server.ssh_authorized_principals_backup | default('') | string | length > 0 %}
 SSH_AUTHORIZED_PRINCIPALS_BACKUP = {{ gitea_server.ssh_authorized_principals_backup | bodsch.core.config_bool(true_as='true', false_as='false') }}
   {% endif %}
-  {% if gitea_server.ssh_trusted_user_ca_keys | count > 0 %}
+  {% if gitea_server.ssh_trusted_user_ca_keys | default([]) | count > 0 %}
 SSH_TRUSTED_USER_CA_KEYS = {{ gitea_server.ssh_trusted_user_ca_keys | join(', ') }}
   {% endif %}
   {% if gitea_server.ssh_trusted_user_ca_keys_filename | default('') | string | length > 0 %}

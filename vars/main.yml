@@ -611,7 +611,7 @@ gitea_defaults_repository:
   use_compat_ssh_uri: ""                          # false
   disabled_repo_units: []                         # allowed values: repo.issues, repo.ext_issues, repo.pulls, repo.wiki, repo.ext_wiki, repo.projects, repo.packages, repo.actions.
   default_repo_units: []                          # allowed values: repo.code, repo.releases, repo.issues, repo.pulls, repo.wiki, repo.projects, repo.packages, repo.actions.
-  default_fork_repo_units:                        # [repo.code, repo.pulls]
+  default_fork_repo_units: []                     # [repo.code, repo.pulls]
   prefix_archive_files: ""                        # true
   disable_migrations: ""                          # false
   disable_stars: ""                               # false
@@ -660,7 +660,7 @@ gitea_defaults_repository:
   #  .apk: application/vnd.android.package-archive
 
 gitea_defaults_security:
-  install_lock: ""                                # false
+  install_lock: true                              # false
   secret_key: ""
   secret_key_uri: ""                              # file:/etc/gitea/secret_key
   internal_token: ""
@@ -728,7 +728,7 @@ gitea_defaults_server:
   ssh_server_ciphers: []                          # [chacha20-poly1305@openssh.com, aes128-ctr, aes192-ctr, aes256-ctr, aes128-gcm@openssh.com, aes256-gcm@openssh.com]
   ssh_server_key_exchanges: []                    # [curve25519-sha256, ecdh-sha2-nistp256, ecdh-sha2-nistp384, ecdh-sha2-nistp521, diffie-hellman-group14-sha256, diffie-hellman-group14-sha1]
   ssh_server_macs: []                             # [hmac-sha2-256-etm@openssh.com, hmac-sha2-256, hmac-sha1]
-  ssh_server_host_keys:                           # [ssh/gitea.rsa, ssh/gogs.rsa]
+  ssh_server_host_keys: []                        # [ssh/gitea.rsa, ssh/gogs.rsa]
   ssh_key_test_path: ""
   ssh_keygen_path: ""                             # ssh-keygen
   ssh_authorized_keys_backup: ""                  # true
@@ -909,10 +909,16 @@ gitea_defaults_webhook:
   proxy_url: ""
   proxy_hosts: []
 
-__gitea_files:
-  archive: "v{{ gitea_version }}/gitea-{{ gitea_version }}-linux-{{ system_architecture }}"
-  checksum: "v{{ gitea_version }}/gitea-{{ gitea_version }}-linux-{{ system_architecture }}.sha256"
-  binary: "gitea-{{ gitea_version }}-linux-{{ system_architecture }}"
+gitea_defaults_release:
+  download_url: https://github.com/go-gitea/gitea/releases
+  file: gitea-{{ gitea_version }}-{{ ansible_system | lower }}-{{ system_architecture }}
+  checksum: gitea-{{ gitea_version }}-{{ ansible_system | lower }}-{{ system_architecture }}.sha256
+  binary: gitea-{{ gitea_version }}-linux-{{ system_architecture }}
+
+# __gitea_files:
+#   archive: "v{{ gitea_version }}/gitea-{{ gitea_version }}-linux-{{ system_architecture }}"
+#   checksum: "v{{ gitea_version }}/gitea-{{ gitea_version }}-linux-{{ system_architecture }}.sha256"
+#   binary: "gitea-{{ gitea_version }}-linux-{{ system_architecture }}"
 
 # ----------------------------------------------------------------------------------------
 
