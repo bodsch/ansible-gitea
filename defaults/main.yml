@@ -2,10 +2,6 @@
 
 gitea_version: 1.19.0
 
-# /{{ gitea_version }} /gitea-{{ gitea_version }}-linux-amd64
-# https://github.com/go-gitea/gitea/releases/tag/v1.19.0
-# gitea_release_download_url: "https://github.com/go-gitea/gitea/releases"
-
 gitea_system_user: gitea
 gitea_system_group: gitea
 gitea_config_dir: /etc/gitea
@@ -73,5 +69,7 @@ gitea_task: {}
 gitea_time: {}
 gitea_ui: {}
 gitea_webhook: {}
+gitea_auths:
+  ldap: {}
 
 ...

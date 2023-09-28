@@ -43,7 +43,6 @@ nginx_vhosts:
     enabled: true   # default: true
 
     domains:
-      - molecule.molecule.lan
       - gitea.molecule.lan
 
     listen:

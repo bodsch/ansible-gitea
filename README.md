@@ -6,19 +6,32 @@
 ```yaml
 gitea_version: 1.19.0
 
-gitea_release_download_url: "https://github.com/go-gitea/gitea/releases"
-
 gitea_system_user: gitea
 gitea_system_group: gitea
 gitea_config_dir: /etc/gitea
 gitea_working_dir: /var/lib/gitea
 gitea_data_dir: /home/{{ gitea_system_user }}
 
+gitea_systemd:
+  unit:
+    after:
+      - syslog.target
+      - network.target
+    wants: []
+    requires: []
+
+gitea_release: {}
+
 gitea_direct_download: false
 
 gitea_name: "Gitea: Git with a cup of tea"
 # Either "dev", "prod" or "test", default is "prod"
-gitea_run_mode: "test"
+gitea_run_mode: "prod"
+
+gitea_admin_user:
+  username: "root"
+  password: "change-it-ASAP!"
+  email: "root@example.com"
 
 gitea_actions:
   enabled: false
@@ -1360,6 +1373,34 @@ gitea_webhook:
   paging_num: 10
   proxy_url: ""
   proxy_hosts: []
+
+gitea_auths:
+  ldap:
+    state: ""                                     # module.params.get("state")
+    name: ""                                      # Authentication name.
+    active: ""                                    # (de)activate the authentication source.
+    security_protocol: ""                         # Security protocol name.
+    skip_tls_verify: ""                           # Disable TLS verification.
+    hostname: ""                                  # The address where the LDAP server can be reached.
+    port: ""                                      # The port to use when connecting to the LDAP server.
+    user_search_base: ""                          # The LDAP base at which user accounts will be searched for.
+    filters:                                      #
+      users: ""                                   # An LDAP filter declaring how to find the user record that is attempting to authenticate.
+      admin: ""                                   # An LDAP filter specifying if a user should be given administrator privileges.
+      restricted: ""                              # An LDAP filter specifying if a user should be given restricted status.
+    allow_deactivate_all: ""                      # Allow empty search results to deactivate all users.
+    attributes:                                   #
+      username: ""                                # The attribute of the user’s LDAP record containing the user name.
+      firstname: ""                               # The attribute of the user’s LDAP record containing the user’s first name.
+      surename: ""                                # The attribute of the user’s LDAP record containing the user’s surname.
+      email: ""                                   # The attribute of the user’s LDAP record containing the user’s email address.
+      public_ssh_key: ""                          # The attribute of the user’s LDAP record containing the user’s public ssh key.
+      avatar: ""                                  # The attribute of the user’s LDAP record containing the user’s avatar.
+    skip_local_2fa: ""                            # Set to true to skip local 2fa for users authenticated by this source
+    bind_dn: ""                                   # The DN to bind to the LDAP server with when searching for the user.
+    bind_password: ""                             # The password for the Bind DN, if any.
+    attributes_in_bind: ""                        # Fetch attributes in bind DN context.
+    synchronize_users: ""                         # Enable/ Disable user synchronization.  
 
 ```
 

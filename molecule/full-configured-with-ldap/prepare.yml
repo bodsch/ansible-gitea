@@ -47,13 +47,13 @@
       ansible.builtin.package:
         update_cache: true
 
-# - name: prepare ldap
-#   hosts: auth
-#   gather_facts: true
-#
-#   roles:
-#     - role: glauth
-#
+- name: prepare ldap
+  hosts: auth
+  gather_facts: true
+
+  roles:
+    - role: glauth
+
 # - name: prepare database
 #   hosts: database
 #   gather_facts: true
@@ -67,13 +67,14 @@
   hosts: instance
   gather_facts: true
 
-  pre_tasks:
-    - name: do facts module to get latest information
-      ansible.builtin.setup:
-        gather_subset:
-          - 'all'
+  # pre_tasks:
+  #   - name: do facts module to get latest information
+  #     ansible.builtin.setup:
+  #       gather_subset:
+  #         - 'all'
+
   roles:
     - role: snakeoil
-    # - role: nginx
+    - role: nginx
 
 ...

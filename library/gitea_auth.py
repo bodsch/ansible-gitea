@@ -1,3 +1,272 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# (c) 2023, Bodo Schulz <bodo@boone-schulz.de>
+# Apache (see LICENSE or https://opensource.org/licenses/Apache-2.0)
+
+from __future__ import absolute_import, print_function
+import re
+
+from ansible.module_utils.basic import AnsibleModule
+
+
+__metaclass__ = type
+
+ANSIBLE_METADATA = {
+    'metadata_version': '0.1',
+    'status': ['preview'],
+    'supported_by': 'community'
+}
+
+
+class GiteaAuth(object):
+    """
+    """
+    module = None
+
+    def __init__(self, module):
+        """
+        """
+        self.module = module
+
+        self.state = module.params.get("state")
+        self.name = module.params.get("name")
+        self.active = module.params.get("active")
+        self.security_protocol = module.params.get("security_protocol")
+        self.skip_tls_verify = module.params.get("skip_tls_verify")
+        self.hostname = module.params.get("hostname")
+        self.port = module.params.get("port")
+        self.user_search_base = module.params.get("user_search_base")
+        self.filters = module.params.get("filters") # { user, admin, restricted }
+        self.allow_deactivate_all = module.params.get("allow_deactivate_all")
+        self.attributes = module.params.get("attributes") # { username, firstname, surename, email,public_ssh_key, avatar }
+        self.skip_local_2fa = module.params.get("skip_local_2fa")
+        self.bind_dn = module.params.get("bind_dn")
+        self.bind_password = module.params.get("bind_password")
+        self.attributes_in_bind = module.params.get("attributes_in_bind")
+        self.synchronize_users = module.params.get("synchronize_users")
+        self.working_dir = module.params.get("working_dir")
+        self.config = module.params.get("config")
+
+        self.gitea_bin = module.get_bin_path('gitea', True)
+
+    def run(self):
+        """
+        """
+        result = dict(
+            changed=False,
+            failed=False
+        )
+
+        if self.state == "present":
+            if not self.auth_exists(self.username):
+                result = self.add_auth()
+            else:
+                result = dict(
+                    changed=False,
+                    msg=f"user {self.username} already created."
+                )
+
+        return result
+
+    def auth_exists(self, user_name):
+        """
+            su gitea -c "/usr/bin/gitea --config /etc/gitea/gitea.ini --work-path /var/lib/gitea admin user list"
+        """
+        args_list = [
+            self.gitea_bin,
+            "admin",
+            "user",
+            "list",
+            "--work-path", self.working_dir,
+            "--config", self.config,
+        ]
+
+        result = False
+        # self.module.log(msg=f"  args_list : '{args_list}'")
+        rc, out, err = self._exec(args_list)
+
+        outer_pattern = re.compile(r".*ID\s+Username\s+Email\s+IsActive\s+IsAdmin\s+2FA\n(?P<data>.*)", flags=re.MULTILINE | re.DOTALL)
+        inner_pattern = re.compile(r"(?P<ID>\d+)\s+(?P<username>\w+)\s+(?P<email>[a-zA-Z+_\-@\.]+)\s+(?P<active>\w+)\s+(?P<admin>\w+)\s+(?P<twofa>\w+)", flags=re.MULTILINE | re.DOTALL)
+        outer_re_result = re.search(outer_pattern, out)
+
+        if outer_re_result:
+            data = outer_re_result.group("data")
+            inner_re_result = re.finditer(inner_pattern, data)
+            # self.module.log(msg=f"  inner_re_result : '{inner_re_result}'")
+            if inner_re_result:
+                found_match = [x for x in inner_re_result if x.group("username") == user_name]
+                # self.module.log(msg=f"  found_match : '{found_match}'")
+                if found_match and len(found_match) > 0:
+                    found_match = found_match[0]
+                    self.module.log(msg=f"  found user : {found_match.group('username')} with email {found_match.group('email')}")
+
+                    result = True
+
+        return result
+
+    def add_auth(self):
+        """
+            gitea admin user create --admin --username root --password admin1234 --email root@example.com
+        """
+
+        args_list = [
+            self.gitea_bin,
+            "admin",
+            "user",
+            "create",
+            "--work-path", self.working_dir,
+            "--config", self.config,
+        ]
+
+        if self.admin:
+            args_list.append("--admin")
+
+        args_list += [
+            "--username", self.username,
+            "--password", self.password,
+            "--email", self.email
+        ]
+
+        self.module.log(msg=f"  args_list : '{args_list}'")
+
+        rc, out, err = self._exec(args_list)
+
+        if rc == 0:
+            return dict(
+                failed=False,
+                changed=True,
+                msg=f"user {self.username} successful created."
+            )
+        else:
+            return dict(
+                failed=True,
+                msg=err
+            )
+
+    def _exec(self, commands, check_rc=True):
+        """
+        """
+        rc, out, err = self.module.run_command(commands, check_rc=check_rc)
+        self.module.log(msg=f"  rc : '{rc}'")
+
+        if rc != 0:
+            self.module.log(msg=f"  out: '{out}'")
+            self.module.log(msg=f"  err: '{err}'")
+
+        return rc, out, err
+
+
+def main():
+    """
+    """
+    specs = dict(
+        state=dict(
+            default="present",
+            choices=[
+                "present",
+                "absent"
+            ]
+        ),
+        name=dict(
+            required=True,
+            type=str
+        ),
+        active=dict(
+            required=False,
+            type=bool,
+            default=True
+        ),
+        security_protocol=dict(
+            required=False,
+            type=str,
+            default="none"
+        ),
+        skip_tls_verify=dict(
+            required=False,
+            type=bool,
+            default=True
+        ),
+        hostname=dict(
+            required=True,
+            type=str,
+        ),
+        port=dict(
+            required=False,
+            type=str,
+        ),
+        user_search_base=dict(
+            required=True,
+            type=str
+        ),
+        filters=dict(
+            required=False,
+            type=dict
+            # { user, admin, restricted }
+        ),
+        allow_deactivate_all=dict(
+            required=False,
+            type=bool,
+            default=False
+        ),
+        attributes=dict(
+            required=True,
+            type=dict
+            # { username, firstname, surename, email,public_ssh_key, avatar }
+        ),
+        skip_local_2fa=dict(
+            required=False,
+            type=bool,
+            default=False
+        ),
+        bind_dn=dict(
+            required=True,
+            type=str
+        ),
+        bind_password=dict(
+            required=True,
+            type=str,
+            no_log=True
+        ),
+        attributes_in_bind=dict(
+            required=False,
+            type=bool,
+            default=False
+        ),
+        synchronize_users=dict(
+            required=False,
+            type=bool,
+            default=False
+        ),
+        working_dir=dict(
+            required=False,
+            default="/var/lib/gitea",
+            type=str
+        ),
+        config=dict(
+            required=False,
+            default="/etc/gitea/gitea.ini",
+            type=str
+        )
+    )
+
+    module = AnsibleModule(
+        argument_spec=specs,
+        supports_check_mode=False,
+    )
+
+    kc = GiteaAuth(module)
+    result = kc.run()
+
+    module.log(msg=f"= result : '{result}'")
+
+    module.exit_json(**result)
+
+
+# import module snippets
+if __name__ == '__main__':
+    main()
+
 """
 
 ## LDAP

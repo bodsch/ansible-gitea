@@ -12,8 +12,9 @@ lint: |
   flake8 .
 
 platforms:
-  - name: database
-    image: "bodsch/ansible-debian:11"
+
+  - name: instance
+    image: "bodsch/ansible-${DISTRIBUTION:-debian:11}"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     docker_host: "${DOCKER_HOST:-unix://run/docker.sock}"
     privileged: true
@@ -28,10 +29,9 @@ platforms:
       - /run
       - /tmp
     published_ports:
-      - 3306:3306
-    labels:
-      service-discovery: "true"
-      service-discover: "true"
+      - 80:80
+      - 443:443
+      - 3000:3000
     docker_networks:
       - name: gitea
         ipam_config:
@@ -39,7 +39,32 @@ platforms:
             gateway: "10.16.0.1"
     networks:
       - name: gitea
-        ipv4_address: "10.16.0.10"
+        ipv4_address: "10.16.0.11"
+
+  # - name: database
+  #   image: "bodsch/ansible-debian:11"
+  #   command: ${MOLECULE_DOCKER_COMMAND:-""}
+  #   docker_host: "${DOCKER_HOST:-unix://run/docker.sock}"
+  #   privileged: true
+  #   pre_build_image: true
+  #   cgroupns_mode: host
+  #   volumes:
+  #     - /sys/fs/cgroup:/sys/fs/cgroup:rw
+  #     - /var/lib/containerd
+  #   capabilities:
+  #     - SYS_ADMIN
+  #   tmpfs:
+  #     - /run
+  #     - /tmp
+  #   published_ports:
+  #     - 3306:3306
+  #   labels:
+  #     service-discovery: "true"
+  #     service-discover: "true"
+  #
+  #   networks:
+  #     - name: gitea
+  #       ipv4_address: "10.16.0.10"
 
   - name: auth
     image: "bodsch/ansible-debian:12"
@@ -69,21 +94,6 @@ platforms:
       - name: gitea
         ipv4_address: "10.16.0.13"
 
-  - name: instance
-    image: "bodsch/ansible-${DISTRIBUTION:-debian:11}"
-    command: ${MOLECULE_DOCKER_COMMAND:-""}
-    docker_host: "${DOCKER_HOST:-unix://run/docker.sock}"
-    privileged: true
-    pre_build_image: true
-    published_ports:
-      - 80:80
-      - 443:443
-      - 3000:3000
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    networks:
-      - name: gitea
-        ipv4_address: "10.16.0.11"
 
 provisioner:
   name: ansible
