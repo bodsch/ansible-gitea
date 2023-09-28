@@ -5,8 +5,9 @@
 
 - name: download
   ansible.builtin.include_tasks: download.yml
-  when:
-    - not stat_gitea_binary.stat.exists
+
+- name: external installation
+  ansible.builtin.import_tasks: external_installation.yml
 
 - name: install
   ansible.builtin.include_tasks: install.yml

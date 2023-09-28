@@ -1,3 +1,4 @@
+
 [repository]
   {% if gitea_repository.root | default('') | string | length > 0 %}
 ROOT = {{ gitea_repository.root }}
@@ -51,14 +52,14 @@ USE_COMPAT_SSH_URI = {{ gitea_repository.use_compat_ssh_uri | bodsch.core.config
   #}
 DISABLED_REPO_UNITS = {{ gitea_repository.disabled_repo_units | join(', ') }}
   {% endif %}
-  {% if gitea_repository.default_repo_units | count > 0 %}
+  {% if gitea_repository.default_repo_units | default([]) | count > 0 %}
   {#
       TODO
       allowed values: repo.code, repo.releases, repo.issues, repo.pulls, repo.wiki, repo.projects, repo.packages, repo.actions.
   #}
 DEFAULT_REPO_UNITS = {{ gitea_repository.default_repo_units | join(', ') }}
   {% endif %}
-  {% if gitea_repository.default_fork_repo_units | count > 0 %}
+  {% if gitea_repository.default_fork_repo_units | default([]) | count > 0 %}
   {#
       TODO
       the set of allowed values and rules are the same as default_REPO_UNITS.
@@ -238,3 +239,4 @@ MERGES = {{ valid_merges | join(', ') }}
 {{ k }} = {{ v }}
     {% endfor %}
   {% endif %}
+

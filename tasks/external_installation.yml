@@ -1,0 +1,57 @@
+---
+
+- name: detect our installation path '{{ gitea_install_path | dirname }}'
+  ansible.builtin.stat:
+    path: "{{ gitea_install_path | dirname }}"
+    get_checksum: false
+  register: stat_gitea_path
+  ignore_errors: true
+
+- name: detect old installation
+  ansible.builtin.stat:
+    path: /usr/bin/gitea
+    get_checksum: false
+  register: stat_old_gitea_path
+  ignore_errors: true
+
+- name: detect if this an upgrade
+  ansible.builtin.set_fact:
+    gitea_upgrade: "{{ stat_gitea_path | bodsch.core.upgrade(stat_old_gitea_path) }}"
+
+- name: old installation
+  when:
+    - gitea_upgrade
+  block:
+    - name: stop old service
+      ansible.builtin.service:
+        name: gitea-server
+        state: stopped
+        enabled: false
+      notify:
+        - daemon-reload
+
+    - name: uninstall old gitea installation
+      ansible.builtin.package:
+        name: gitea
+        state: absent
+
+    - name: remove installed systemd unit
+      ansible.builtin.file:
+        state: absent
+        path: "{{ item }}"
+      loop:
+        - /etc/systemd/system/gitea-server.service
+        - /usr/lib/systemd/system/gitea-server.service
+
+    - name: remove installed gitea
+      ansible.builtin.file:
+        state: absent
+        path: "{{ stat_gitea_path.stat.path }}"
+      when:
+        - stat_gitea_path.stat.path is defined
+        - stat_gitea_path.stat.path | string | length > 0
+
+- name: flush handlers
+  ansible.builtin.meta: flush_handlers
+
+...

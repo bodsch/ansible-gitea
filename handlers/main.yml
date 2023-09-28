@@ -5,10 +5,10 @@
   ansible.builtin.service:
     name: gitea
     state: restarted
-  when:
-    - gitea_valid_config is defined
-    - gitea_valid_config.rc is defined
-    - gitea_valid_config.rc == 0
+  # when:
+  #   - gitea_valid_config is defined
+  #   - gitea_valid_config.rc is defined
+  #   - gitea_valid_config.rc == 0
 
 - name: reload gitea
   become: true

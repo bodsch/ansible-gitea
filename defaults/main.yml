@@ -4,7 +4,7 @@ gitea_version: 1.19.0
 
 # /{{ gitea_version }} /gitea-{{ gitea_version }}-linux-amd64
 # https://github.com/go-gitea/gitea/releases/tag/v1.19.0
-gitea_release_download_url: "https://github.com/go-gitea/gitea/releases"
+# gitea_release_download_url: "https://github.com/go-gitea/gitea/releases"
 
 gitea_system_user: gitea
 gitea_system_group: gitea
@@ -12,11 +12,26 @@ gitea_config_dir: /etc/gitea
 gitea_working_dir: /var/lib/gitea
 gitea_home_dir: /home/{{ gitea_system_user }}
 
+gitea_systemd:
+  unit:
+    after:
+      - syslog.target
+      - network.target
+    wants: []
+    requires: []
+
+gitea_release: {}
+
 gitea_direct_download: false
 
 gitea_name: "Gitea: Git with a cup of tea"
 # Either "dev", "prod" or "test", default is "prod"
-gitea_run_mode: "test"
+gitea_run_mode: "prod"
+
+gitea_admin_user:
+  username: "root"
+  password: "change-it-ASAP!"
+  email: "root@example.com"
 
 gitea_actions: {}
 gitea_admin: {}
