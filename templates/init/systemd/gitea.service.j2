@@ -74,7 +74,7 @@ WorkingDirectory        = {{ gitea_working_dir }}
 
 # If using Unix socket: tells systemd to create the /run/gitea folder, which will contain the gitea.sock file
 # (manually creating /run/gitea doesn't work, because it would not persist across reboots)
-# RuntimeDirectory        = gitea
+RuntimeDirectory        = gitea
 
 EnvironmentFile         = -{{ gitea_defaults_directory }}/gitea
 
@@ -109,7 +109,7 @@ ExecReload              = /bin/kill -HUP $MAINPID
 # value if set to true sandboxes gitea service and prevent any processes from running with privileges
 # in the host user namespace.
 ###
-PrivateUsers            = false
+# PrivateUsers            = false
 ###
 
 [Install]

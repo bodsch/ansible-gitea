@@ -4,7 +4,7 @@
   ansible.builtin.file:
     path: "{{ gitea_config_dir }}"
     state: directory
-    owner: root
+    owner: "{{ gitea_system_user }}"
     group: "{{ gitea_system_group }}"
     mode: 0770
 
@@ -12,7 +12,7 @@
   ansible.builtin.file:
     path: "{{ gitea_working_dir }}"
     state: directory
-    owner: root
+    owner: "{{ gitea_system_user }}"
     group: "{{ gitea_system_group }}"
     mode: 0770
 
@@ -20,7 +20,7 @@
   ansible.builtin.file:
     path: "{{ gitea_working_dir }}/{{ item }}"
     state: directory
-    owner: root
+    owner: "{{ gitea_system_user }}"
     group: "{{ gitea_system_group }}"
     mode: 0770
   loop:
@@ -36,9 +36,9 @@
     force: true
     src: conf/gitea.ini.j2
     dest: "{{ gitea_config_dir }}/gitea.ini"
-    owner: root
+    owner: "{{ gitea_system_user }}"
     group: "{{ gitea_system_group }}"
-    mode: 0640
+    mode: 0644
   register: gitea_config
   notify:
     - restart gitea
@@ -48,9 +48,10 @@
 
 - name: check if gitea are available
   ansible.builtin.wait_for:
-    port: "{{ gitea_server.http_port | default('3000') }}"
-    delay: 4
-    msg: "Timeout for open port {{ gitea_server.http_port | default('3000') }}"
+    path: /run/gitea/gitea.pid
+    state: present
+    delay: 2
+    msg: "Timeout to find /run/gitea/gitea.pid"
   ignore_errors: false
 
 - name: create admin user
