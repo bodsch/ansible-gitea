@@ -5,6 +5,7 @@
 # Apache (see LICENSE or https://opensource.org/licenses/Apache-2.0)
 
 from __future__ import absolute_import, print_function
+import os
 import re
 
 from ansible.module_utils.basic import AnsibleModule
@@ -46,6 +47,9 @@ class GiteaUser(object):
             changed=False,
             failed=False
         )
+
+        if os.path.isdir(self.working_dir):
+            os.chdir(self.working_dir)
 
         if self.state == "present":
             if not self.user_exists(self.username):
@@ -98,7 +102,6 @@ class GiteaUser(object):
         """
             gitea admin user create --admin --username root --password admin1234 --email root@example.com
         """
-
         args_list = [
             self.gitea_bin,
             "admin",
@@ -117,7 +120,7 @@ class GiteaUser(object):
             "--email", self.email
         ]
 
-        self.module.log(msg=f"  args_list : '{args_list}'")
+        # self.module.log(msg=f"  args_list : '{args_list}'")
 
         rc, out, err = self._exec(args_list)
 
@@ -137,7 +140,7 @@ class GiteaUser(object):
         """
         """
         rc, out, err = self.module.run_command(commands, check_rc=check_rc)
-        self.module.log(msg=f"  rc : '{rc}'")
+        # self.module.log(msg=f"  rc : '{rc}'")
 
         if rc != 0:
             self.module.log(msg=f"  out: '{out}'")
