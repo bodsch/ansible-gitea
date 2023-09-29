@@ -11,6 +11,4 @@
       ansible.builtin.setup:
 
   roles:
-    # - role: snakeoil
-    # - role: nginx
     - role: ansible-gitea

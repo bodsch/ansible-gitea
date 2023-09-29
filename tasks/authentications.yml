@@ -1,0 +1,47 @@
+---
+
+- name: create admin user
+  remote_user: "{{ gitea_system_user }}"
+  gitea_user:
+    admin: true
+    username: "{{ gitea_admin_user.username }}"
+    password: "{{ gitea_admin_user.password }}"
+    email: "{{ gitea_admin_user.email }}"
+  when:
+    - (gitea_admin_user.username is defined and gitea_admin_user.username | string | length > 0)
+    - (gitea_admin_user.password is defined and gitea_admin_user.password | string | length > 0)
+    - (gitea_admin_user.email is defined and gitea_admin_user.email | string | length > 0)
+
+- name: enable ldap authentication
+  remote_user: "{{ gitea_system_user }}"
+  gitea_auth:
+    name: "{{ gitea_auths.ldap.name | default(omit) }}"
+    state: "{{ gitea_auths.ldap.state | default(omit) }}"
+    active: "{{ gitea_auths.ldap.active | default(omit) }}"
+    security_protocol: "{{ gitea_auths.ldap.security_protocol | default(omit) }}"
+    skip_tls_verify: "{{ gitea_auths.ldap.skip_tls_verify | default(omit) }}"
+    hostname: "{{ gitea_auths.ldap.hostname | default(omit) }}"
+    port: "{{ gitea_auths.ldap.port | default(omit) }}"
+    user_search_base: "{{ gitea_auths.ldap.user_search_base | default(omit) }}"
+    filters:
+      users: "{{ gitea_auths.ldap.filters.users | default(omit) }}"
+      admin: "{{ gitea_auths.ldap.filters.admin | default(omit) }}"
+      restricted: "{{ gitea_auths.ldap.filters.restricted | default(omit) }}"
+    allow_deactivate_all: "{{ gitea_auths.ldap.allow_deactivate_all | default(omit) }}"
+    attributes:
+      username: "{{ gitea_auths.ldap.attributes.username | default(omit) }}"
+      firstname: "{{ gitea_auths.ldap.attributes.firstname | default(omit) }}"
+      surename: "{{ gitea_auths.ldap.attributes.surename | default(omit) }}"
+      email: "{{ gitea_auths.ldap.attributes.email | default(omit) }}"
+      public_ssh_key: "{{ gitea_auths.ldap.attributes.public_ssh_key | default(omit) }}"
+      avatar: "{{ gitea_auths.ldap.attributes.avatar | default(omit) }}"
+    skip_local_2fa: "{{ gitea_auths.ldap.skip_local_2fa | default(omit) }}"
+    bind_dn: "{{ gitea_auths.ldap.bind_dn | default(omit) }}"
+    bind_password: "{{ gitea_auths.ldap.bind_password | default(omit) }}"
+    attributes_in_bind: "{{ gitea_auths.ldap.attributes_in_bind | default(omit) }}"
+    synchronize_users: "{{ gitea_auths.ldap.synchronize_users | default(omit) }}"
+  when:
+    - gitea_auths.ldap is defined
+    - gitea_auths.ldap | count > 0
+
+...

@@ -927,7 +927,7 @@ gitea_defaults_auths:
     attributes:                                   #
       username: ""                                # The attribute of the user’s LDAP record containing the user name.
       firstname: ""                               # The attribute of the user’s LDAP record containing the user’s first name.
-      surename: ""                                # The attribute of the user’s LDAP record containing the user’s surname.
+      surname: ""                                 # The attribute of the user’s LDAP record containing the user’s surname.
       email: ""                                   # The attribute of the user’s LDAP record containing the user’s email address.
       public_ssh_key: ""                          # The attribute of the user’s LDAP record containing the user’s public ssh key.
       avatar: ""                                  # The attribute of the user’s LDAP record containing the user’s avatar.

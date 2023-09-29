@@ -25,9 +25,9 @@ gitea_name: "Gitea: Git with a cup of tea"
 gitea_run_mode: "prod"
 
 gitea_admin_user:
-  username: "root"
-  password: "change-it-ASAP!"
-  email: "root@example.com"
+  username: ""
+  password: ""
+  email: ""
 
 gitea_actions: {}
 gitea_admin: {}

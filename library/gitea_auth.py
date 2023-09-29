@@ -49,7 +49,7 @@ class GiteaAuth(object):
         self.attributes = module.params.get("attributes")  # { username, firstname, surename, email, public_ssh_key, avatar }
         self.attribute_username = self.attributes.get("username", None)
         self.attribute_firstname = self.attributes.get("firstname", None)
-        self.attribute_surename = self.attributes.get("surename", None)
+        self.attribute_surname = self.attributes.get("surname", None)
         self.attribute_email = self.attributes.get("email", None)
         self.attribute_public_ssh_key = self.attributes.get("public_ssh_key", None)
         self.attribute_avatar = self.attributes.get("avatar", None)
@@ -62,7 +62,7 @@ class GiteaAuth(object):
         self.config = module.params.get("config")
 
         self.gitea_bin = module.get_bin_path('gitea', True)
-        self.cache_directory = os.path.dirname(self.config)  # "/var/cache/ansible/gitea"
+        self.cache_directory = os.path.dirname(self.config)
         self.checksum_file_name = os.path.join(self.cache_directory, "gitea_auth.checksum")
         self.auth_config_json_file = os.path.join(self.cache_directory, "gitea_auth.json")
 
@@ -80,6 +80,8 @@ class GiteaAuth(object):
             changed = not (new_checksum == old_checksum)
             new_file = False
             msg = "The authentication has not been changed."
+
+            self.module.log(f"{json.dumps(self.module.params, indent=2, sort_keys=False) + "\n"}")
 
             # self.module.log(f" changed       : {changed}")
             # self.module.log(f" new_checksum  : {new_checksum}")
@@ -206,9 +208,9 @@ class GiteaAuth(object):
                 "--firstname-attribute", self.attribute_firstname
             ]
 
-        if self.attribute_surename:
+        if self.attribute_surname:
             args_list += [
-                "--surename-attribute", self.attribute_surename
+                "--surname-attribute", self.attribute_surname
             ]
 
         if self.attribute_email:
@@ -241,7 +243,7 @@ class GiteaAuth(object):
                 "--skip-tls-verify"
             ]
 
-        # self.module.log(msg=f"  args_list : '{args_list}'")
+        self.module.log(msg=f"  args_list : '{args_list}'")
 
         rc, out, err = self._exec(args_list)
 

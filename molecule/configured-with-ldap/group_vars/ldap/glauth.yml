@@ -64,6 +64,7 @@ glauth_users:
   bodsch:
     given_name: "B."
     sn: "Schulz"
+    mail: "bodsch@matrix.lan"
     uid: 4000
     primary_group: 4000
     other_groups:
