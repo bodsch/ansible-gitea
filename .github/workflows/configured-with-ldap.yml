@@ -26,7 +26,7 @@ jobs:
         ansible-version:
           - '6.7'
         scenario:
-          -configured-with-ldap
+          - configured-with-ldap
 
     steps:
       - name: check out the codebase.
