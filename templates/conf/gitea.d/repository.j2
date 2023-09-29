@@ -120,7 +120,7 @@ ENABLED = {{ gitea_repository.upload.enabled | bodsch.core.config_bool(true_as='
 TEMP_PATH = {{ gitea_repository.upload.temp_path }}
     {% endif %}
     {% if gitea_repository.upload.allowed_types | count > 0 %}
-ALLOWED_TYPES = {{ gitea_repository.upload.allowed_types | joint(', ') }}
+ALLOWED_TYPES = {{ gitea_repository.upload.allowed_types | join(', ') }}
     {% endif %}
     {% if gitea_repository.upload.file_max_size | default('') | string | length > 0 %}
 FILE_MAX_SIZE = {{ gitea_repository.upload.file_max_size }}
