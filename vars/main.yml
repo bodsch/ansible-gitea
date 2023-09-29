@@ -920,7 +920,7 @@ gitea_defaults_auths:
     port: ""                                      # The port to use when connecting to the LDAP server.
     user_search_base: ""                          # The LDAP base at which user accounts will be searched for.
     filters:                                      #
-      users: ""                                   # An LDAP filter declaring how to find the user record that is attempting to authenticate.
+      user: ""                                    # An LDAP filter declaring how to find the user record that is attempting to authenticate.
       admin: ""                                   # An LDAP filter specifying if a user should be given administrator privileges.
       restricted: ""                              # An LDAP filter specifying if a user should be given restricted status.
     allow_deactivate_all: ""                      # Allow empty search results to deactivate all users.

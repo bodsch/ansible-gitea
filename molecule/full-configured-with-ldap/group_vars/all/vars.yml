@@ -14,7 +14,7 @@ gitea_server:
   protocol: http
   http_addr: "127.0.0.1"
   http_port: 3000
-  # root_url: https://gitea.molecule.lan
+  root_url: https://gitea.molecule.lan
   disable_ssh: true
   # ssh_domain: gitea.molecule.lan
   landing_page: login
@@ -47,18 +47,19 @@ gitea_security:
   install_lock: true
   internal_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE2ODEyMjMxMjR9.tTmy5Nuv6_p66VZCxASiviwKSZCFk9GXggQ1-naqH7g
 
-gitea_defaults_auths:
+gitea_auths:
   ldap:
     state: "present"
     name: "ldap"
     active: true
-    # security_protocol: ""
+    security_protocol: "Unencrypted"
     # skip_tls_verify: ""
     hostname: "auth"
     port: "389"
     user_search_base: "dc=molecule,dc=lan"
     filters:
-      users: "(cn=%s)"
+      # (&(objectClass=posixAccount)(|(uid=%[1]s)(mail=%[1]s)))
+      user: "(cn=%s)"
       admin: "ou=admins,ou=groups,dc=molecule,dc=lan"
       restricted: "ou=gitea,ou=groups,dc=molecule,dc=lan"
     # allow_deactivate_all: ""
@@ -67,12 +68,12 @@ gitea_defaults_auths:
       firstname: "givenName"
       surename: "sn"
       email: "email"
-      public_ssh_key: ""
+      public_ssh_key: "ssh_key"
       # avatar: ""
     # skip_local_2fa: ""
     bind_dn: "cn=admin,dc=molecule,dc=lan"
     bind_password: "{{ vault__ldap.admin }}"
     # attributes_in_bind: ""
-    # synchronize_users: ""
+    synchronize_users: true
 
 ...

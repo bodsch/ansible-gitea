@@ -5,9 +5,13 @@
 # Apache (see LICENSE or https://opensource.org/licenses/Apache-2.0)
 
 from __future__ import absolute_import, print_function
+import os
+import json
 import re
 
 from ansible.module_utils.basic import AnsibleModule
+from ansible_collections.bodsch.core.plugins.module_utils.directory import create_directory
+from ansible_collections.bodsch.core.plugins.module_utils.checksum import Checksum
 
 
 __metaclass__ = type
@@ -37,9 +41,18 @@ class GiteaAuth(object):
         self.hostname = module.params.get("hostname")
         self.port = module.params.get("port")
         self.user_search_base = module.params.get("user_search_base")
-        self.filters = module.params.get("filters") # { user, admin, restricted }
+        self.filters = module.params.get("filters")  # { user, admin, restricted }
+        self.filter_user = self.filters.get("user", None)
+        self.filter_admin = self.filters.get("admin", None)
+        self.filter_restricted = self.filters.get("restricted", None)
         self.allow_deactivate_all = module.params.get("allow_deactivate_all")
-        self.attributes = module.params.get("attributes") # { username, firstname, surename, email,public_ssh_key, avatar }
+        self.attributes = module.params.get("attributes")  # { username, firstname, surename, email, public_ssh_key, avatar }
+        self.attribute_username = self.attributes.get("username", None)
+        self.attribute_firstname = self.attributes.get("firstname", None)
+        self.attribute_surename = self.attributes.get("surename", None)
+        self.attribute_email = self.attributes.get("email", None)
+        self.attribute_public_ssh_key = self.attributes.get("public_ssh_key", None)
+        self.attribute_avatar = self.attributes.get("avatar", None)
         self.skip_local_2fa = module.params.get("skip_local_2fa")
         self.bind_dn = module.params.get("bind_dn")
         self.bind_password = module.params.get("bind_password")
@@ -49,45 +62,78 @@ class GiteaAuth(object):
         self.config = module.params.get("config")
 
         self.gitea_bin = module.get_bin_path('gitea', True)
+        self.cache_directory = os.path.dirname(self.config)  # "/var/cache/ansible/gitea"
+        self.checksum_file_name = os.path.join(self.cache_directory, "gitea_auth.checksum")
+        self.auth_config_json_file = os.path.join(self.cache_directory, "gitea_auth.json")
 
     def run(self):
         """
         """
-        result = dict(
-            changed=False,
-            failed=False
-        )
+        create_directory(directory=self.cache_directory, mode="0750")
+
+        checksum = Checksum(self.module)
 
         if self.state == "present":
-            if not self.auth_exists(self.username):
-                result = self.add_auth()
-            else:
-                result = dict(
-                    changed=False,
-                    msg=f"user {self.username} already created."
-                )
+            new_checksum = checksum.checksum(json.dumps(self.module.params, indent=2, sort_keys=False) + "\n")
+            old_checksum = checksum.checksum_from_file(self.auth_config_json_file)
 
-        return result
+            changed = not (new_checksum == old_checksum)
+            new_file = False
+            msg = "The authentication has not been changed."
 
-    def auth_exists(self, user_name):
+            # self.module.log(f" changed       : {changed}")
+            # self.module.log(f" new_checksum  : {new_checksum}")
+            # self.module.log(f" old_checksum  : {old_checksum}")
+
+            if changed:
+                if not self.auth_exists(self.name):
+                    self.add_auth()
+                    changed = True
+                    msg = f"LDAP Auth {self.name} successfully created."
+                else:
+                    self.update_auth()
+                    changed = True
+                    msg = f"LDAP Auth {self.name} successfully updated."
+
+                self.__write_config(self.auth_config_json_file, self.module.params)
+
+            if new_file:
+                msg = "The authentication was successfully created."
+                # result = dict(
+                #     changed=False,
+                #     msg=f"authentication {self.name} already created."
+                # )
+
+        else:
+            pass
+
+        return dict(
+            changed = changed,
+            failed = False,
+            msg = msg,
+        )
+
+    def auth_exists(self, name):
         """
-            su gitea -c "/usr/bin/gitea --config /etc/gitea/gitea.ini --work-path /var/lib/gitea admin user list"
+            su gitea -c "/usr/bin/gitea --config /etc/gitea/gitea.ini --work-path /var/lib/gitea admin auth list"
         """
         args_list = [
             self.gitea_bin,
             "admin",
-            "user",
+            "auth",
             "list",
             "--work-path", self.working_dir,
             "--config", self.config,
         ]
 
         result = False
-        # self.module.log(msg=f"  args_list : '{args_list}'")
+        self.module.log(msg=f"  args_list : '{args_list}'")
         rc, out, err = self._exec(args_list)
 
-        outer_pattern = re.compile(r".*ID\s+Username\s+Email\s+IsActive\s+IsAdmin\s+2FA\n(?P<data>.*)", flags=re.MULTILINE | re.DOTALL)
-        inner_pattern = re.compile(r"(?P<ID>\d+)\s+(?P<username>\w+)\s+(?P<email>[a-zA-Z+_\-@\.]+)\s+(?P<active>\w+)\s+(?P<admin>\w+)\s+(?P<twofa>\w+)", flags=re.MULTILINE | re.DOTALL)
+        self.module.log(msg=f"  out : '{out}'")
+
+        outer_pattern = re.compile(r".*ID\s+Name\s+Type\s+Enabled\n(?P<data>.*)", flags=re.MULTILINE | re.DOTALL)
+        inner_pattern = re.compile(r"(?P<ID>\d+)\s+(?P<name>\w+)\s+(?P<type>[a-zA-Z+_\-\(\ \)\.]+)\s+(?P<enabled>\w+)", flags=re.MULTILINE | re.DOTALL)
         outer_re_result = re.search(outer_pattern, out)
 
         if outer_re_result:
@@ -95,11 +141,11 @@ class GiteaAuth(object):
             inner_re_result = re.finditer(inner_pattern, data)
             # self.module.log(msg=f"  inner_re_result : '{inner_re_result}'")
             if inner_re_result:
-                found_match = [x for x in inner_re_result if x.group("username") == user_name]
+                found_match = [x for x in inner_re_result if x.group("name") == name]
                 # self.module.log(msg=f"  found_match : '{found_match}'")
                 if found_match and len(found_match) > 0:
                     found_match = found_match[0]
-                    self.module.log(msg=f"  found user : {found_match.group('username')} with email {found_match.group('email')}")
+                    self.module.log(msg=f"  found authentication : {found_match.group('name')} with type {found_match.group('type').strip()}")
 
                     result = True
 
@@ -107,28 +153,95 @@ class GiteaAuth(object):
 
     def add_auth(self):
         """
-            gitea admin user create --admin --username root --password admin1234 --email root@example.com
+            su gitea -c "gitea admin auth add-ldap
+               --name
+               --security-protocol LDAPS
+               --host
+               --port
+               --bind-dn
+               --bind-password
+               --user-search-base <ie: “DC=company,DC=int”
+               --user-filter
+               --admin-filter
+               --username-attribute
         """
-
         args_list = [
             self.gitea_bin,
             "admin",
-            "user",
-            "create",
+            "auth",
+            "add-ldap",
             "--work-path", self.working_dir,
             "--config", self.config,
+            "--name", self.name,
+            "--host", self.hostname,
+            "--port", self.port,
+            "--bind-dn", self.bind_dn,
+            "--bind-password", self.bind_password,
+            "--user-search-base", self.user_search_base,
+            "--security-protocol", self.security_protocol
         ]
 
-        if self.admin:
-            args_list.append("--admin")
+        if self.filter_user:
+            args_list += [
+                "--user-filter", self.filter_user
+            ]
 
-        args_list += [
-            "--username", self.username,
-            "--password", self.password,
-            "--email", self.email
-        ]
+        if self.filter_admin:
+            args_list += [
+                "--admin-filter", self.filter_admin
+            ]
 
-        self.module.log(msg=f"  args_list : '{args_list}'")
+        if self.filter_restricted:
+            args_list += [
+                "--restricted-filter", self.filter_restricted
+            ]
+
+        if self.attribute_username:
+            args_list += [
+                "--username-attribute", self.attribute_username
+            ]
+
+        if self.attribute_firstname:
+            args_list += [
+                "--firstname-attribute", self.attribute_firstname
+            ]
+
+        if self.attribute_surename:
+            args_list += [
+                "--surename-attribute", self.attribute_surename
+            ]
+
+        if self.attribute_email:
+            args_list += [
+                "--email-attribute", self.attribute_email
+            ]
+
+        if self.attribute_public_ssh_key:
+            args_list += [
+                "--public-ssh-key-attribute", self.attribute_public_ssh_key
+            ]
+
+        if self.attribute_avatar:
+            args_list += [
+                "--avatar-attribute", self.attribute_avatar
+            ]
+
+        if not self.synchronize_users:
+            args_list += [
+                "--disable-synchronize-users"
+            ]
+
+        if not self.active:
+            args_list += [
+                "--not-active"
+            ]
+
+        if not self.skip_tls_verify:
+            args_list += [
+                "--skip-tls-verify"
+            ]
+
+        # self.module.log(msg=f"  args_list : '{args_list}'")
 
         rc, out, err = self._exec(args_list)
 
@@ -136,13 +249,26 @@ class GiteaAuth(object):
             return dict(
                 failed=False,
                 changed=True,
-                msg=f"user {self.username} successful created."
+                msg=f"LDAP Auth {self.name} successful created."
             )
         else:
             return dict(
                 failed=True,
                 msg=err
             )
+
+    # TODO
+    def update_auth(self):
+        """
+        """
+        pass
+
+    def __write_config(self, file_name, data):
+        """
+        """
+        with open(file_name, 'w') as fp:
+            json_data = json.dumps(data, indent=2, sort_keys=False)
+            fp.write(f'{json_data}\n')
 
     def _exec(self, commands, check_rc=True):
         """
@@ -180,7 +306,12 @@ def main():
         security_protocol=dict(
             required=False,
             type=str,
-            default="none"
+            choices=[
+                "Unencrypted",
+                "LDAPS",
+                "StartTLS"
+            ],
+            default="Unencrypted"
         ),
         skip_tls_verify=dict(
             required=False,
