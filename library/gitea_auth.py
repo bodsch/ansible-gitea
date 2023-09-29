@@ -81,7 +81,7 @@ class GiteaAuth(object):
             new_file = False
             msg = "The authentication has not been changed."
 
-            self.module.log(f"{json.dumps(self.module.params, indent=2, sort_keys=False) + "\n"}")
+            self.module.log(f'{json.dumps(self.module.params, indent=2, sort_keys=False)}' + "\n")
 
             # self.module.log(f" changed       : {changed}")
             # self.module.log(f" new_checksum  : {new_checksum}")

@@ -6,7 +6,7 @@
     state: directory
     owner: "{{ gitea_system_user }}"
     group: "{{ gitea_system_group }}"
-    mode: 0770
+    mode: 0750
 
 - name: create gitea working directory
   ansible.builtin.file:

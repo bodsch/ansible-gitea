@@ -24,14 +24,14 @@
     port: "{{ gitea_auths.ldap.port | default(omit) }}"
     user_search_base: "{{ gitea_auths.ldap.user_search_base | default(omit) }}"
     filters:
-      users: "{{ gitea_auths.ldap.filters.users | default(omit) }}"
+      user: "{{ gitea_auths.ldap.filters.user | default(omit) }}"
       admin: "{{ gitea_auths.ldap.filters.admin | default(omit) }}"
       restricted: "{{ gitea_auths.ldap.filters.restricted | default(omit) }}"
     allow_deactivate_all: "{{ gitea_auths.ldap.allow_deactivate_all | default(omit) }}"
     attributes:
       username: "{{ gitea_auths.ldap.attributes.username | default(omit) }}"
       firstname: "{{ gitea_auths.ldap.attributes.firstname | default(omit) }}"
-      surename: "{{ gitea_auths.ldap.attributes.surename | default(omit) }}"
+      surname: "{{ gitea_auths.ldap.attributes.surname | default(omit) }}"
       email: "{{ gitea_auths.ldap.attributes.email | default(omit) }}"
       public_ssh_key: "{{ gitea_auths.ldap.attributes.public_ssh_key | default(omit) }}"
       avatar: "{{ gitea_auths.ldap.attributes.avatar | default(omit) }}"
