@@ -46,4 +46,5 @@ gitea_log:
 gitea_security:
   install_lock: true
   internal_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE2ODEyMjMxMjR9.tTmy5Nuv6_p66VZCxASiviwKSZCFk9GXggQ1-naqH7g
+
 ...

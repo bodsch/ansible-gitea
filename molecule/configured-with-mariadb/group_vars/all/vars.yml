@@ -1,10 +1,12 @@
 ---
 
 gitea_database:
-  db_type: sqlite3
-  charset: utf8
-  path: /var/lib/gitea/data/gitea.db
-  log_sql: false
+  db_type: mysql
+  host: "database:3306"
+  name: "gitea"
+  user: "gitea"
+  passwd: "{{ vault__database.gitea }}"
+  log_sql: true
 
 gitea_repository:
   root: /var/lib/gitea/data/gitea-repositories
@@ -51,29 +53,5 @@ gitea_admin_user:
   username: "root"
   password: "{{ vault__gitea.root }}"
   email: "root@example.com"
-
-gitea_auths:
-  ldap:
-    state: "present"
-    name: "ldap"
-    active: true
-    security_protocol: "Unencrypted"
-    # skip_tls_verify: ""
-    hostname: "auth"
-    port: "389"
-    user_search_base: "dc=molecule,dc=lan"
-    filters:
-      # (&(objectClass=posixAccount)(|(uid=%[1]s)(mail=%[1]s)))
-      user: "(cn=%s)"
-      admin: "ou=admins,ou=groups,dc=molecule,dc=lan"
-      restricted: "ou=gitea,ou=groups,dc=molecule,dc=lan"
-    attributes:
-      username: "cn"
-      firstname: "givenName"
-      sur name: "sn"
-      email: "email"
-    bind_dn: "cn=admin,dc=molecule,dc=lan"
-    bind_password: "{{ vault__ldap.admin }}"
-    synchronize_users: true
 
 ...
