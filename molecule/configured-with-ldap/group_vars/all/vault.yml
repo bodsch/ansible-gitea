@@ -1,0 +1,9 @@
+---
+
+vault__ldap:
+  admin: xxx
+
+vault__database:
+  gitea: gitea
+
+...

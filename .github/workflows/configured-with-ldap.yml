@@ -1,5 +1,5 @@
 ---
-name: gitea with configuration
+name: gitea with ldap
 
 on:
   workflow_dispatch:
@@ -26,7 +26,7 @@ jobs:
         ansible-version:
           - '6.7'
         scenario:
-          - configured
+          -configured-with-ldap
 
     steps:
       - name: check out the codebase.

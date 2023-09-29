@@ -15,6 +15,9 @@
 - name: configure
   ansible.builtin.include_tasks: configure.yml
 
+- name: authentications
+  ansible.builtin.include_tasks: authentications.yml
+
 - name: service
   ansible.builtin.include_tasks: service.yml
 
