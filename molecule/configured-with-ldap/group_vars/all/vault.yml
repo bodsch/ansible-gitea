@@ -6,7 +6,7 @@ vault__ldap:
 vault__database:
   gitea: gitea
 
-vault_gitea:
+vault__gitea:
   root: "change-it-ASAP!"
 
 ...
